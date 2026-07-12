@@ -1,7 +1,6 @@
 class AssetConstants {
   AssetConstants._();
 
-  // SVG Decorations
   static const String mandala = 'assets/svg/mandala.svg';
   static const String paisley = 'assets/svg/paisley.svg';
   static const String lotus = 'assets/svg/lotus.svg';
@@ -12,9 +11,26 @@ class AssetConstants {
   static const String goldenCorner = 'assets/svg/golden_corner.svg';
   static const String minimalDivider = 'assets/svg/minimal_divider.svg';
   static const String floral = 'assets/svg/floral.svg';
-
-  // Lottie Animations
+  static const String geometricStar = 'assets/svg/geometric_star.svg';
   static const String emptyState = 'assets/lottie/empty_state.json';
   static const String success = 'assets/lottie/success.json';
   static const String loading = 'assets/lottie/loading.json';
+  static const String onboarding1 = 'assets/lottie/onboarding1.json';
+  static const String onboarding2 = 'assets/lottie/onboarding2.json';
+  static const String onboarding3 = 'assets/lottie/onboarding3.json';
+
+  static String decorationAsset(String key) {
+    switch (key) {
+      case 'mandala': return mandala;
+      case 'floral': return floral;
+      case 'lotus': return lotus;
+      case 'temple': return templeBorder;
+      case 'geometric': return geometricStar;
+      case 'ornate':
+      case 'royal': return paisley;
+      case 'minimal':
+      case 'simple':
+      default: return minimalDivider;
+    }
+  }
 }
