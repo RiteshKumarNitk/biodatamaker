@@ -1,0 +1,253 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  passwordHash String?
+  googleId     String?  @unique
+  username     String?
+  fullName     String?
+  avatar       String?
+  bio          String?
+  phoneNumber  String?
+  gender       String?
+  role         String   @default("user")
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  referralCode String? @unique
+  referredBy   String?
+  points       Int     @default(0)
+
+  likes           Like[]
+  quoteLikes      QuoteLike[]
+  photos          Photo[]              @relation("UserPhotos")
+  resetTokens     PasswordResetToken[]
+  referralRewards ReferralReward[]
+  deviceTokens    DeviceToken[]
+  collections     Collection[]
+
+  @@map("users")
+}
+
+model PasswordResetToken {
+  id        String   @id @default(cuid())
+  token     String   @unique
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  @@map("password_reset_tokens")
+}
+
+model Category {
+  id            String        @id @default(cuid())
+  name          String        @unique
+  icon          String?
+  color         String?
+  imageUrl      String?
+  isActive      Boolean       @default(true)
+  subCategories SubCategory[]
+  photos        Photo[]
+
+  @@map("categories")
+}
+
+model SubCategory {
+  id         String   @id @default(cuid())
+  name       String
+  categoryId String
+  category   Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  isActive   Boolean  @default(true)
+  photos     Photo[]
+
+  @@unique([categoryId, name])
+  @@map("sub_categories")
+}
+
+model Photo {
+  id                 String       @id @default(cuid())
+  title              String?
+  description        String?
+  imageUrl           String
+  posingInstructions String?
+  categoryId         String?
+  category           Category?    @relation(fields: [categoryId], references: [id])
+  subCategoryId      String?
+  subCategory        SubCategory? @relation(fields: [subCategoryId], references: [id])
+  userId             String?
+  user               User?        @relation("UserPhotos", fields: [userId], references: [id])
+  createdAt          DateTime     @default(now())
+  updatedAt          DateTime     @updatedAt
+
+  likes Like[]
+
+  @@map("photos")
+}
+
+model Like {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  photoId   String?
+  photo     Photo?   @relation(fields: [photoId], references: [id], onDelete: Cascade)
+  imageUrl  String
+  createdAt DateTime @default(now())
+
+  @@unique([userId, imageUrl])
+  @@map("likes")
+}
+
+model Quote {
+  id        String   @id @default(cuid())
+  content   String   @unique
+  author    String   @default("Unknown")
+  category  String   @default("General")
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  likes QuoteLike[]
+
+  @@map("quotes")
+}
+
+model QuoteLike {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  quoteId   String
+  quote     Quote    @relation(fields: [quoteId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+
+  @@unique([userId, quoteId])
+  @@map("quote_likes")
+}
+
+model FaceFilter {
+  id           String   @id @default(cuid())
+  name         String   @unique
+  description  String?
+  icon         String?
+  category     String?
+  imageUrl     String?
+  thumbnailUrl String?
+  isActive     Boolean  @default(true)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@map("face_filters")
+}
+
+model ReferralReward {
+  id          String   @id @default(cuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  rewardType  String // e.g., "POZE_PACK_UNLOCK", "FILTER_UNLOCK"
+  rewardValue String
+  createdAt   DateTime @default(now())
+
+  @@map("referral_rewards")
+}
+
+model DeviceToken {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  token     String
+  platform  String? // "android", "ios", "web"
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([userId, token])
+  @@map("device_tokens")
+}
+
+model Template {
+  id        String  @id @default(cuid())
+  name      String
+  category  String
+  isPremium Boolean @default(false)
+
+  primaryColor    Int
+  secondaryColor  Int
+  backgroundColor Int
+  textColor       Int
+  subtitleColor   Int
+
+  headingFont     String @default("Playfair Display")
+  bodyFont        String @default("Poppins")
+  headingFontSize Float  @default(24.0)
+  bodyFontSize    Float  @default(14.0)
+
+  photoShape  String @default("circle")
+  borderStyle String @default("ornate")
+
+  sectionSpacing Float @default(16.0)
+  fieldSpacing   Float @default(8.0)
+  margin         Float @default(20.0)
+
+  headerDecoration String @default("mandala")
+  footerDecoration String @default("floral")
+  dividerStyle     String @default("minimal")
+
+  showWatermark Boolean @default(false)
+  watermarkText String  @default("")
+
+  sectionOrder   String[] @default(["personal", "family", "contact"])
+  hiddenFields   String[] @default([])
+  labelOverrides Json     @default("{}")
+  iconStyle      String   @default("outline")
+
+  backgroundImageUrl String? // Cloudinary secure_url
+  backgroundPublicId String? // Cloudinary public_id, needed to delete on replace
+  borderImage        String  @default("")
+  watermarkImage     String  @default("")
+
+  isPublished  Boolean @default(true)
+  displayOrder Int     @default(0)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("templates")
+}
+
+model Collection {
+  id          String   @id @default(cuid())
+  name        String
+  description String?
+  coverImage  String?
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  isPublic    Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  photos CollectionPhoto[]
+
+  @@unique([userId, name])
+  @@map("collections")
+}
+
+model CollectionPhoto {
+  id           String     @id @default(cuid())
+  collectionId String
+  collection   Collection @relation(fields: [collectionId], references: [id], onDelete: Cascade)
+  photoId      String?
+  imageUrl     String
+  imageCaption String?
+  createdAt    DateTime   @default(now())
+
+  @@unique([collectionId, imageUrl])
+  @@map("collection_photos")
+}
