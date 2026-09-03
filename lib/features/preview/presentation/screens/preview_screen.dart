@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:go_router/go_router.dart';
 
 import 'package:biodata_maker/core/services/service_locator.dart';
 import 'package:biodata_maker/core/services/pdf_service.dart';
@@ -55,7 +56,7 @@ class _PreviewScreenState extends State<PreviewScreen> {
 
   void _changeTheme(ThemeConfig theme) {
     setState(() => _currentTheme = theme);
-    _biodataRepo.update(_biodata!.copyWith(templateId: theme.id));
+    _biodataRepo.save(_biodata!.copyWith(templateId: theme.id));
   }
 
   @override
@@ -76,7 +77,16 @@ class _PreviewScreenState extends State<PreviewScreen> {
     final isPremium = _settingsRepo.isPremium;
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Preview')),
+      appBar: AppBar(
+        title: const Text('Preview'),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.print_outlined),
+            tooltip: 'Print / Save as PDF',
+            onPressed: () => _printPdf(context),
+          ),
+        ],
+      ),
       body: Column(
         children: [
           Container(
@@ -102,39 +112,51 @@ class _PreviewScreenState extends State<PreviewScreen> {
                               color: Color(theme.primaryColor), width: 2.5)
                           : Border.all(color: Colors.transparent),
                     ),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
+                    child: Stack(
                       children: [
-                        Container(
-                          width: 32,
-                          height: 32,
-                          decoration: BoxDecoration(
-                            color: Color(theme.primaryColor),
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          child: Center(
-                            child: Text(
-                              theme.name.isNotEmpty
-                                  ? theme.name[0].toUpperCase()
-                                  : '?',
-                              style: const TextStyle(
-                                color: Colors.white,
-                                fontWeight: FontWeight.bold,
+                        Positioned.fill(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Container(
+                                width: 32,
+                                height: 32,
+                                decoration: BoxDecoration(
+                                  color: Color(theme.primaryColor),
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                child: Center(
+                                  child: Text(
+                                    theme.name.isNotEmpty
+                                        ? theme.name[0].toUpperCase()
+                                        : '?',
+                                    style: const TextStyle(
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ),
                               ),
-                            ),
+                              const SizedBox(height: 4),
+                              Text(
+                                theme.name,
+                                style: GoogleFonts.poppins(
+                                  fontSize: 9,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                                textAlign: TextAlign.center,
+                                maxLines: 2,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ],
                           ),
                         ),
-                        const SizedBox(height: 4),
-                        Text(
-                          theme.name,
-                          style: GoogleFonts.poppins(
-                            fontSize: 9,
-                            fontWeight: FontWeight.w500,
+                        if (theme.isPremium && !isPremium)
+                          const Positioned(
+                            top: 4,
+                            right: 4,
+                            child: Icon(Icons.lock, size: 14, color: Colors.amber),
                           ),
-                          textAlign: TextAlign.center,
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
-                        ),
                       ],
                     ),
                   ),
@@ -162,9 +184,11 @@ class _PreviewScreenState extends State<PreviewScreen> {
                   const SizedBox(width: 8),
                   Expanded(
                     child: Text(
-                      'Free version includes watermark. Go Premium to remove.',
+                      _currentTheme.isPremium
+                          ? 'This is a Premium Template. Go Premium to unlock & remove watermark.'
+                          : 'Free version includes watermark. Go Premium to remove watermark & unlock all templates.',
                       style: GoogleFonts.poppins(
-                        fontSize: 12,
+                        fontSize: 11,
                         color: Theme.of(context).colorScheme.onTertiaryContainer,
                       ),
                     ),
@@ -182,8 +206,8 @@ class _PreviewScreenState extends State<PreviewScreen> {
               Expanded(
                 child: ElevatedButton.icon(
                   onPressed: () => _downloadPdf(context),
-                  icon: Icon(isPremium ? Icons.download : Icons.lock),
-                  label: Text(isPremium ? 'Download PDF' : 'Download PDF'),
+                  icon: Icon(_currentTheme.isPremium && !isPremium ? Icons.lock : Icons.download),
+                  label: Text(_currentTheme.isPremium && !isPremium ? 'Unlock Template' : 'Download PDF'),
                 ),
               ),
               const SizedBox(width: 12),
@@ -200,12 +224,17 @@ class _PreviewScreenState extends State<PreviewScreen> {
   }
 
   Future<void> _downloadPdf(BuildContext context) async {
+    final isPremium = _settingsRepo.isPremium;
+    if (_currentTheme.isPremium && !isPremium) {
+      context.push('/paywall');
+      return;
+    }
     try {
       final path = await _pdfService.savePdf(_biodata!, _currentTheme);
       _biodataRepo.incrementDownloadCount(widget.biodataId);
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('PDF saved to: $path')),
+          SnackBar(content: Text('PDF saved successfully to: $path')),
         );
       }
     } catch (e) {
@@ -217,7 +246,29 @@ class _PreviewScreenState extends State<PreviewScreen> {
     }
   }
 
+  Future<void> _printPdf(BuildContext context) async {
+    final isPremium = _settingsRepo.isPremium;
+    if (_currentTheme.isPremium && !isPremium) {
+      context.push('/paywall');
+      return;
+    }
+    try {
+      await _pdfService.previewPdf(_biodata!, _currentTheme);
+    } catch (e) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error preparing print preview: $e')),
+        );
+      }
+    }
+  }
+
   Future<void> _sharePdf(BuildContext context) async {
+    final isPremium = _settingsRepo.isPremium;
+    if (_currentTheme.isPremium && !isPremium) {
+      context.push('/paywall');
+      return;
+    }
     try {
       await _pdfService.sharePdf(_biodata!, _currentTheme);
     } catch (e) {

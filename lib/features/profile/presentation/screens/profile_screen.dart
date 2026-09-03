@@ -4,6 +4,7 @@ import 'package:share_plus/share_plus.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 
 import 'package:biodata_maker/core/services/service_locator.dart';
+import 'package:go_router/go_router.dart';
 import 'package:biodata_maker/features/auth/data/models/user.dart';
 import 'package:biodata_maker/features/auth/data/repositories/auth_repository.dart';
 import 'package:biodata_maker/features/biodata/data/repositories/biodata_repository.dart';
@@ -229,21 +230,21 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     leading: const Icon(Icons.admin_panel_settings_outlined),
                     title: const Text('Admin Panel'),
                     trailing: const Icon(Icons.chevron_right),
-                    onTap: () => Navigator.of(context).pushNamed('/admin/dashboard'),
+                    onTap: () => context.push('/admin/dashboard'),
                   ).animate().fadeIn(delay: 50.ms).slideX(begin: 0.1),
                 const Divider(height: 1),
                 ListTile(
                   leading: const Icon(Icons.subscriptions_outlined),
                   title: const Text('My Subscription'),
                   trailing: const Icon(Icons.chevron_right),
-                  onTap: () => Navigator.of(context).pushNamed('/paywall'),
+                  onTap: () => context.push('/paywall'),
                 ).animate().fadeIn(delay: 100.ms).slideX(begin: 0.1),
                 const Divider(height: 1),
                 ListTile(
                   leading: const Icon(Icons.settings_outlined),
                   title: const Text('Settings'),
                   trailing: const Icon(Icons.chevron_right),
-                  onTap: () => Navigator.of(context).pushNamed('/settings'),
+                  onTap: () => context.push('/settings'),
                 ).animate().fadeIn(delay: 200.ms).slideX(begin: 0.1),
                 const Divider(height: 1),
                 ListTile(
@@ -262,8 +263,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   onTap: () async {
                     await _authRepo.signOut();
                     if (context.mounted) {
-                      Navigator.of(context)
-                          .pushNamedAndRemoveUntil('/login', (_) => false);
+                      context.go('/login');
                     }
                   },
                 ).animate().fadeIn(delay: 400.ms).slideX(begin: 0.1),

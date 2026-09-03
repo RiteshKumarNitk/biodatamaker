@@ -113,7 +113,7 @@ class _MyBiodatasScreenState extends State<MyBiodatasScreen> {
                         Text('Create your first biodata to get started', style: theme.textTheme.bodyMedium?.copyWith(color: theme.colorScheme.onSurfaceVariant)),
                         const SizedBox(height: 24),
                         FilledButton.icon(
-                          onPressed: () => context.go('/create'),
+                          onPressed: () => context.push('/biodata/create'),
                           icon: const Icon(Icons.add),
                           label: const Text('Create Biodata'),
                         ),
@@ -140,7 +140,7 @@ class _MyBiodatasScreenState extends State<MyBiodatasScreen> {
         ],
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () => context.go('/create'),
+        onPressed: () => context.push('/biodata/create'),
         child: const Icon(Icons.add),
       ),
     );
@@ -269,10 +269,10 @@ class _BiodataListItem extends StatelessWidget {
               onSelected: (value) {
                 switch (value) {
                   case 'edit':
-                    context.go('/edit/${biodata.id}');
+                    context.push('/biodata/edit/${biodata.id}');
                     break;
                   case 'preview':
-                    context.go('/preview/${biodata.id}');
+                    context.push('/preview/${biodata.id}');
                     break;
                   case 'favorite':
                     context.read<BiodataListBloc>().add(ToggleFavorite(biodata.id));
@@ -327,7 +327,7 @@ class _BiodataListItem extends StatelessWidget {
             ),
           ],
         ),
-        onTap: () => context.go('/edit/${biodata.id}'),
+        onTap: () => context.push('/biodata/edit/${biodata.id}'),
       ),
     );
   }

@@ -5,6 +5,8 @@ import 'package:biodata_maker/features/biodata/data/models/biodata.dart';
 import 'package:biodata_maker/features/templates/data/models/theme_config.dart';
 import 'package:biodata_maker/features/templates/data/repositories/template_repository.dart';
 
+import 'package:biodata_maker/features/templates/data/models/theme_engine.dart';
+
 class TemplateStep extends StatefulWidget {
   final Biodata biodata;
   final void Function(Biodata) onUpdate;
@@ -28,13 +30,23 @@ class _TemplateStepState extends State<TemplateStep> {
 
   void _loadTemplates() {
     try {
-      final templates = _repo.getAll();
+      var templates = _repo.getAll();
+      if (templates.isEmpty) {
+        templates = ThemeEngine.defaultTemplates;
+      }
       setState(() {
         _templates = templates;
         _isLoading = false;
       });
+      // Select default template if none selected
+      if (widget.biodata.templateId.isEmpty && templates.isNotEmpty) {
+        widget.onUpdate(widget.biodata.copyWith(templateId: templates.first.id));
+      }
     } catch (e) {
-      setState(() => _isLoading = false);
+      setState(() {
+        _templates = ThemeEngine.defaultTemplates;
+        _isLoading = false;
+      });
     }
   }
 

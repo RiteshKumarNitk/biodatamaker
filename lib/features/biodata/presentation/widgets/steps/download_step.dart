@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+import 'package:printing/printing.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:path_provider/path_provider.dart';
 import 'dart:io';
@@ -10,6 +11,7 @@ import 'package:biodata_maker/core/services/service_locator.dart';
 import 'package:biodata_maker/features/biodata/data/models/biodata.dart';
 import 'package:biodata_maker/features/biodata/data/repositories/biodata_repository.dart';
 import 'package:biodata_maker/features/templates/data/models/theme_config.dart';
+import 'package:biodata_maker/features/templates/data/models/theme_engine.dart';
 import 'package:biodata_maker/features/templates/data/repositories/template_repository.dart';
 
 class DownloadStep extends StatefulWidget {
@@ -30,25 +32,21 @@ class _DownloadStepState extends State<DownloadStep> {
   Uint8List? _pdfBytes;
   String? _filePath;
 
-  ThemeConfig? get _template =>
-      widget.biodata.templateId.isNotEmpty ? _templateRepo.getById(widget.biodata.templateId) : null;
+  ThemeConfig get _template {
+    if (widget.biodata.templateId.isNotEmpty) {
+      final t = _templateRepo.getById(widget.biodata.templateId);
+      if (t != null) return t;
+    }
+    return ThemeEngine.defaultTemplates.first;
+  }
 
   Future<void> _generatePdf() async {
     setState(() => _isGenerating = true);
     try {
       final template = _template;
-      if (template == null) {
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Please select a template first')),
-          );
-        }
-        setState(() => _isGenerating = false);
-        return;
-      }
       final bytes = await _pdfService.generatePdf(widget.biodata, template);
       final dir = await getApplicationDocumentsDirectory();
-      final fileName = '${widget.biodata.fullName.replaceAll(' ', '_')}_biodata.pdf';
+      final fileName = '${widget.biodata.fullName.isNotEmpty ? widget.biodata.fullName.replaceAll(' ', '_') : 'my'}_biodata.pdf';
       final file = File('${dir.path}/$fileName');
       await file.writeAsBytes(bytes);
       _biodataRepo.incrementDownloadCount(widget.biodata.id);
@@ -72,7 +70,7 @@ class _DownloadStepState extends State<DownloadStep> {
     try {
       await Share.shareXFiles(
         [XFile(_filePath!)],
-        text: '${widget.biodata.fullName} - Biodata',
+        text: '${widget.biodata.fullName.isNotEmpty ? widget.biodata.fullName : 'Biodata'} - Marriage Biodata',
       );
     } catch (e) {
       if (mounted) {
@@ -83,15 +81,27 @@ class _DownloadStepState extends State<DownloadStep> {
     }
   }
 
+  Future<void> _printOrSavePdf() async {
+    if (_pdfBytes == null) {
+      await _generatePdf();
+    }
+    if (_pdfBytes != null) {
+      await Printing.layoutPdf(
+        name: widget.biodata.fullName.isNotEmpty ? widget.biodata.fullName : 'Biodata',
+        onLayout: (_) => _pdfBytes!,
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     return ListView(
       padding: const EdgeInsets.all(16),
       children: [
-        Text('Generate PDF', style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600)),
+        Text('Generate & Download PDF', style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600)),
         const SizedBox(height: 4),
-        Text('Download or share your biodata as a PDF', style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.onSurfaceVariant)),
+        Text('Export your biodata as a high quality PDF, print or share directly', style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.onSurfaceVariant)),
         const SizedBox(height: 16),
         Card(
           child: Padding(
@@ -99,7 +109,7 @@ class _DownloadStepState extends State<DownloadStep> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('Generate PDF', style: theme.textTheme.titleSmall?.copyWith(color: theme.colorScheme.primary, fontWeight: FontWeight.w600)),
+                Text('PDF Document', style: theme.textTheme.titleSmall?.copyWith(color: theme.colorScheme.primary, fontWeight: FontWeight.w600)),
                 const SizedBox(height: 12),
                 if (_isGenerating)
                   Column(
@@ -115,16 +125,14 @@ class _DownloadStepState extends State<DownloadStep> {
                   Column(
                     children: [
                       Center(
-                        child: Icon(Icons.check_circle, size: 80, color: theme.colorScheme.primary)
+                        child: Icon(Icons.check_circle, size: 72, color: theme.colorScheme.primary)
                             .animate()
-                            .scale(duration: 600.ms, curve: Curves.elasticOut)
-                            .then()
-                            .shimmer(duration: 1000.ms, color: theme.colorScheme.primary.withValues(alpha: 0.3)),
+                            .scale(duration: 500.ms, curve: Curves.elasticOut),
                       ),
                       const SizedBox(height: 16),
                       Center(
                         child: Text(
-                          'PDF generated successfully!',
+                          'PDF Generated Successfully!',
                           style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600),
                         ),
                       ),
@@ -137,31 +145,25 @@ class _DownloadStepState extends State<DownloadStep> {
                           ),
                         ),
                       const SizedBox(height: 24),
-                      FilledButton.icon(
-                        onPressed: () async {
-                          if (_filePath != null) {
-                            try {
-                              final file = File(_filePath!);
-                              final dir = await getApplicationDocumentsDirectory();
-                              final destPath = '${dir.path}/${widget.biodata.fullName.replaceAll(' ', '_')}_biodata.pdf';
-                              await file.copy(destPath);
-                              if (context.mounted) {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(content: Text('Saved to $destPath')),
-                                );
-                              }
-                            } catch (e) {
-                              if (context.mounted) {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(content: Text('Save failed: $e')),
-                                );
-                              }
-                            }
-                          }
-                        },
-                        icon: const Icon(Icons.download),
-                        label: const Text('Download'),
-                      ).animate().fadeIn(duration: 400.ms, delay: 200.ms).slideX(begin: -0.2),
+                      SizedBox(
+                        width: double.infinity,
+                        height: 48,
+                        child: FilledButton.icon(
+                          onPressed: _printOrSavePdf,
+                          icon: const Icon(Icons.print),
+                          label: const Text('Print / Save as PDF'),
+                        ),
+                      ),
+                      const SizedBox(height: 12),
+                      SizedBox(
+                        width: double.infinity,
+                        height: 48,
+                        child: OutlinedButton.icon(
+                          onPressed: _sharePdf,
+                          icon: const Icon(Icons.share),
+                          label: const Text('Share PDF File'),
+                        ),
+                      ),
                     ],
                   )
                 else
@@ -176,53 +178,26 @@ class _DownloadStepState extends State<DownloadStep> {
                       ),
                       const SizedBox(height: 4),
                       Text(
-                        'Make sure you have selected a template and filled in all details',
+                        'Template: ${_template.name} (${_template.category})',
                         style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.onSurfaceVariant),
                         textAlign: TextAlign.center,
                       ),
                       const SizedBox(height: 24),
-                      FilledButton.icon(
-                        onPressed: _template == null ? null : _generatePdf,
-                        icon: const Icon(Icons.play_arrow),
-                        label: const Text('Generate PDF'),
-                      ),
-                      if (_template == null)
-                        Padding(
-                          padding: const EdgeInsets.only(top: 8),
-                          child: Text(
-                            'Please select a template first',
-                            style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.error),
-                          ),
+                      SizedBox(
+                        width: double.infinity,
+                        height: 48,
+                        child: FilledButton.icon(
+                          onPressed: _generatePdf,
+                          icon: const Icon(Icons.play_arrow),
+                          label: const Text('Generate PDF Now'),
                         ),
+                      ),
                     ],
                   ),
               ],
             ),
           ),
         ),
-        if (_pdfBytes != null) ...[
-          const SizedBox(height: 16),
-          Card(
-            child: Padding(
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text('Share', style: theme.textTheme.titleSmall?.copyWith(color: theme.colorScheme.primary, fontWeight: FontWeight.w600)),
-                  const SizedBox(height: 12),
-                  SizedBox(
-                    width: double.infinity,
-                    child: OutlinedButton.icon(
-                      onPressed: _sharePdf,
-                      icon: const Icon(Icons.share),
-                      label: const Text('Share PDF'),
-                    ).animate().fadeIn(duration: 400.ms, delay: 400.ms).slideX(begin: -0.2),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ],
         const SizedBox(height: 32),
       ],
     );

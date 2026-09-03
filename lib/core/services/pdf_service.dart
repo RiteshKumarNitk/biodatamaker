@@ -18,15 +18,13 @@ class PdfService {
 
   Future<Uint8List> generatePdf(Biodata biodata, ThemeConfig theme) async {
     final pdf = pw.Document();
-    final headingFont = pw.Font.helvetica();
-    final bodyFont = pw.Font.helvetica();
 
     pw.MemoryImage? profileImage;
     if (biodata.profilePhotoPath.isNotEmpty) {
       profileImage = await _loadProfileImage(biodata.profilePhotoPath);
     }
 
-    final sections = BiodataRenderer.toPdfWidgets(biodata, theme);
+    final sections = BiodataRenderer.toPdfWidgets(biodata, theme, profileImage: profileImage);
 
     pdf.addPage(
       pw.MultiPage(
@@ -40,10 +38,7 @@ class PdfService {
               ),
               child: pw.Column(
                 crossAxisAlignment: pw.CrossAxisAlignment.start,
-                children: [
-                  _buildProfileHeader(biodata, theme, headingFont, bodyFont, profileImage),
-                  ...sections,
-                ],
+                children: sections,
               ),
             ),
           ];
@@ -95,97 +90,6 @@ class PdfService {
       }
     } catch (_) {}
     return null;
-  }
-
-  pw.Widget _buildProfileHeader(
-    Biodata biodata,
-    ThemeConfig theme,
-    pw.Font headingFont,
-    pw.Font bodyFont,
-    pw.MemoryImage? profileImage,
-  ) {
-    final primary = PdfColor.fromInt(theme.primaryColor);
-    final text = PdfColor.fromInt(theme.textColor);
-    final subtitle = PdfColor.fromInt(theme.subtitleColor);
-    final radius = theme.photoShape == 'circle' ? 40.0 : 12.0;
-
-    return pw.Container(
-      padding: const pw.EdgeInsets.only(bottom: 16),
-      child: pw.Row(
-        crossAxisAlignment: pw.CrossAxisAlignment.start,
-        children: [
-          pw.Container(
-            width: 80,
-            height: 80,
-            decoration: pw.BoxDecoration(
-              color: profileImage != null ? null : primary,
-              borderRadius: pw.BorderRadius.circular(radius),
-              border: profileImage != null ? pw.Border.all(color: primary, width: 2) : null,
-            ),
-            child: profileImage != null
-                ? (theme.photoShape == 'circle'
-                    ? pw.ClipOval(
-                        child: pw.Image(profileImage, fit: pw.BoxFit.cover, width: 80, height: 80),
-                      )
-                    : pw.ClipRRect(
-                        horizontalRadius: radius,
-                        verticalRadius: radius,
-                        child: pw.Image(profileImage, fit: pw.BoxFit.cover, width: 80, height: 80),
-                      ))
-                : pw.Center(
-                    child: pw.Text(
-                      _getInitials(biodata.fullName),
-                      style: pw.TextStyle(
-                        font: headingFont,
-                        fontSize: 28,
-                        color: PdfColor.fromInt(0xFFFFFFFF),
-                      ),
-                    ),
-                  ),
-          ),
-          pw.SizedBox(width: 16),
-          pw.Expanded(
-            child: pw.Column(
-              crossAxisAlignment: pw.CrossAxisAlignment.start,
-              children: [
-                pw.Text(
-                  biodata.fullName.isNotEmpty ? biodata.fullName : biodata.name,
-                  style: pw.TextStyle(
-                    font: headingFont,
-                    fontSize: theme.headingFontSize,
-                    color: text,
-                    fontWeight: pw.FontWeight.bold,
-                  ),
-                ),
-                pw.SizedBox(height: 4),
-                if (biodata.age.isNotEmpty || biodata.gender.isNotEmpty)
-                  pw.Text(
-                    [biodata.age, biodata.gender].where((s) => s.isNotEmpty).join(' | '),
-                    style: pw.TextStyle(font: bodyFont, fontSize: theme.bodyFontSize, color: subtitle),
-                  ),
-                if (biodata.occupation.isNotEmpty)
-                  pw.Padding(
-                    padding: const pw.EdgeInsets.only(top: 4),
-                    child: pw.Text(
-                      biodata.occupation,
-                      style: pw.TextStyle(font: bodyFont, fontSize: theme.bodyFontSize, color: subtitle),
-                    ),
-                  ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  String _getInitials(String name) {
-    if (name.isEmpty) return '?';
-    final parts = name.trim().split(RegExp(r'\s+'));
-    if (parts.length >= 2) {
-      return '${parts.first[0]}${parts.last[0]}'.toUpperCase();
-    }
-    return name[0].toUpperCase();
   }
 
   Future<void> previewPdf(Biodata biodata, ThemeConfig theme) async {

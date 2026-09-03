@@ -8,6 +8,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+import 'package:go_router/go_router.dart';
 
 import 'package:biodata_maker/core/config/app_config.dart';
 import 'package:biodata_maker/core/services/hive_service.dart';
@@ -306,8 +307,7 @@ class _SettingsContent extends StatelessWidget {
                 leading: const Icon(Icons.privacy_tip_outlined),
                 title: const Text('Privacy Policy'),
                 trailing: const Icon(Icons.chevron_right),
-                onTap: () =>
-                    Navigator.of(context).pushNamed('/privacy-policy'),
+                onTap: () => context.push('/privacy-policy'),
               ),
               const Divider(height: 1),
               ListTile(

@@ -5,8 +5,10 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:biodata_maker/features/biodata/presentation/bloc/form_bloc.dart';
 import 'package:biodata_maker/features/biodata/presentation/widgets/steps/photo_step.dart';
 import 'package:biodata_maker/features/biodata/presentation/widgets/steps/basic_details_step.dart';
+import 'package:biodata_maker/features/biodata/presentation/widgets/steps/education_career_step.dart';
 import 'package:biodata_maker/features/biodata/presentation/widgets/steps/family_step.dart';
 import 'package:biodata_maker/features/biodata/presentation/widgets/steps/additional_details_step.dart';
+import 'package:biodata_maker/features/biodata/presentation/widgets/steps/contact_partner_step.dart';
 import 'package:biodata_maker/features/biodata/presentation/widgets/steps/template_step.dart';
 import 'package:biodata_maker/features/biodata/presentation/widgets/steps/preview_step.dart';
 import 'package:biodata_maker/features/biodata/presentation/widgets/steps/download_step.dart';
@@ -27,8 +29,10 @@ class _MultiStepFormState extends State<MultiStepForm> {
   static const _stepLabels = [
     'Photo',
     'Basic Details',
+    'Education',
     'Family',
-    'Additional',
+    'Lifestyle',
+    'Contact & Prefs',
     'Template',
     'Preview',
     'Download',
@@ -37,9 +41,11 @@ class _MultiStepFormState extends State<MultiStepForm> {
   static const _stepIcons = [
     Icons.camera_alt,
     Icons.person,
+    Icons.school,
     Icons.family_restroom,
-    Icons.info_outline,
-    Icons.dashboard,
+    Icons.spa,
+    Icons.contact_phone,
+    Icons.dashboard_customize,
     Icons.preview,
     Icons.download,
   ];
@@ -136,14 +142,18 @@ class _MultiStepFormState extends State<MultiStepForm> {
       case 1:
         return BasicDetailsStep(biodata: biodata, onUpdate: onUpdate);
       case 2:
-        return FamilyStep(biodata: biodata, onUpdate: onUpdate);
+        return EducationCareerStep(biodata: biodata, onUpdate: onUpdate);
       case 3:
-        return AdditionalDetailsStep(biodata: biodata, onUpdate: onUpdate);
+        return FamilyStep(biodata: biodata, onUpdate: onUpdate);
       case 4:
-        return TemplateStep(biodata: biodata, onUpdate: onUpdate);
+        return AdditionalDetailsStep(biodata: biodata, onUpdate: onUpdate);
       case 5:
-        return PreviewStep(biodata: biodata);
+        return ContactPartnerStep(biodata: biodata, onUpdate: onUpdate);
       case 6:
+        return TemplateStep(biodata: biodata, onUpdate: onUpdate);
+      case 7:
+        return PreviewStep(biodata: biodata);
+      case 8:
         return DownloadStep(biodata: biodata);
       default:
         return const SizedBox();
@@ -178,59 +188,64 @@ class _StepIndicator extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     return Container(
-      padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
+      padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 8),
       decoration: BoxDecoration(
         color: theme.colorScheme.surface,
         border: Border(bottom: BorderSide(color: theme.colorScheme.outlineVariant)),
       ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        children: List.generate(totalSteps, (index) {
-          final isCompleted = index < currentStep;
-          final isActive = index == currentStep;
-          Color circleColor;
-          Widget circleChild;
-          if (isCompleted) {
-            circleColor = theme.colorScheme.primary;
-            circleChild = Icon(Icons.check, size: 14, color: theme.colorScheme.onPrimary);
-          } else if (isActive) {
-            circleColor = theme.colorScheme.primary;
-            circleChild = Icon(icons[index], size: 14, color: theme.colorScheme.onPrimary);
-          } else {
-            circleColor = theme.colorScheme.outlineVariant;
-            circleChild = Icon(icons[index], size: 14, color: theme.colorScheme.onSurfaceVariant);
-          }
-          return GestureDetector(
-            onTap: () => onStepTapped(index),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                AnimatedContainer(
-                  duration: const Duration(milliseconds: 200),
-                  curve: Curves.easeInOut,
-                  width: 28,
-                  height: 28,
-                  decoration: BoxDecoration(
-                    color: circleColor,
-                    shape: BoxShape.circle,
-                  ),
-                  child: circleChild,
+      child: SingleChildScrollView(
+        scrollDirection: Axis.horizontal,
+        child: Row(
+          children: List.generate(totalSteps, (index) {
+            final isCompleted = index < currentStep;
+            final isActive = index == currentStep;
+            Color circleColor;
+            Widget circleChild;
+            if (isCompleted) {
+              circleColor = theme.colorScheme.primary;
+              circleChild = Icon(Icons.check, size: 14, color: theme.colorScheme.onPrimary);
+            } else if (isActive) {
+              circleColor = theme.colorScheme.primary;
+              circleChild = Icon(icons[index], size: 14, color: theme.colorScheme.onPrimary);
+            } else {
+              circleColor = theme.colorScheme.outlineVariant;
+              circleChild = Icon(icons[index], size: 14, color: theme.colorScheme.onSurfaceVariant);
+            }
+            return Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 8),
+              child: GestureDetector(
+                onTap: () => onStepTapped(index),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    AnimatedContainer(
+                      duration: const Duration(milliseconds: 200),
+                      curve: Curves.easeInOut,
+                      width: 28,
+                      height: 28,
+                      decoration: BoxDecoration(
+                        color: circleColor,
+                        shape: BoxShape.circle,
+                      ),
+                      child: circleChild,
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      labels[index],
+                      style: theme.textTheme.labelSmall?.copyWith(
+                        fontSize: 10,
+                        color: isActive
+                            ? theme.colorScheme.primary
+                            : theme.colorScheme.onSurfaceVariant,
+                        fontWeight: isActive ? FontWeight.w600 : FontWeight.normal,
+                      ),
+                    ),
+                  ],
                 ),
-                const SizedBox(height: 2),
-                Text(
-                  labels[index],
-                  style: theme.textTheme.labelSmall?.copyWith(
-                    fontSize: 9,
-                    color: isActive
-                        ? theme.colorScheme.primary
-                        : theme.colorScheme.onSurfaceVariant,
-                    fontWeight: isActive ? FontWeight.w600 : FontWeight.normal,
-                  ),
-                ),
-              ],
-            ),
-          );
-        }),
+              ),
+            );
+          }),
+        ),
       ),
     );
   }

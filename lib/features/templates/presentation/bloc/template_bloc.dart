@@ -21,24 +21,19 @@ class TemplateBloc extends Bloc<TemplateEvent, TemplateState> {
   ) async {
     emit(TemplateLoading());
     try {
-      final templates = _repository.getAll();
-      final categories = _repository.getCategories();
-      if (categories.isEmpty) {
+      var templates = _repository.getAll();
+      if (templates.isEmpty) {
         await _repository.loadDefaultTemplates();
-        final loaded = _repository.getAll();
-        final cats = _repository.getCategories();
-        emit(TemplateLoaded(
-          templates: loaded,
-          categories: cats,
-          selectedCategory: cats.isNotEmpty ? cats.first : '',
-        ));
-      } else {
-        emit(TemplateLoaded(
-          templates: templates,
-          categories: categories,
-          selectedCategory: categories.isNotEmpty ? categories.first : '',
-        ));
+        templates = _repository.getAll();
       }
+      final rawCategories = _repository.getCategories();
+      final categories = ['All', ...rawCategories.where((c) => c != 'All')];
+
+      emit(TemplateLoaded(
+        templates: templates,
+        categories: categories,
+        selectedCategory: 'All',
+      ));
     } catch (e) {
       emit(TemplateError(e.toString()));
     }
@@ -50,7 +45,9 @@ class TemplateBloc extends Bloc<TemplateEvent, TemplateState> {
   ) {
     if (state is TemplateLoaded) {
       final current = state as TemplateLoaded;
-      final filtered = _repository.getByCategory(event.category);
+      final filtered = event.category == 'All'
+          ? _repository.getAll()
+          : _repository.getByCategory(event.category);
       emit(TemplateLoaded(
         templates: filtered,
         categories: current.categories,

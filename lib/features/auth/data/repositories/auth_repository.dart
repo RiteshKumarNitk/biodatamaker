@@ -81,10 +81,7 @@ class AuthRepository {
   }
 
   Future<void> signOut() async {
-    if (_currentUserId != null) {
-      await _hiveService.deleteUser(_currentUserId!);
-      _currentUserId = null;
-    }
+    _currentUserId = null;
   }
 
   User? getCurrentUser() {
@@ -92,22 +89,11 @@ class AuthRepository {
       final user = _hiveService.getUser(_currentUserId!);
       if (user != null) return user;
     }
-    final users = _hiveService.getAllUsers();
-    if (users.isNotEmpty) {
-      _currentUserId = users.first.id;
-      return users.first;
-    }
     return null;
   }
 
   bool isLoggedIn() {
-    if (_currentUserId != null) return true;
-    final users = _hiveService.getAllUsers();
-    if (users.isNotEmpty) {
-      _currentUserId = users.first.id;
-      return true;
-    }
-    return false;
+    return _currentUserId != null && _hiveService.getUser(_currentUserId!) != null;
   }
 
   Future<void> updateProfile(User user) async {

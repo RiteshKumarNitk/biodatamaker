@@ -519,9 +519,8 @@ class _TemplateEditorScreenState extends State<TemplateEditorScreen> {
                 shrinkWrap: true,
                 physics: const NeverScrollableScrollPhysics(),
                 itemCount: _sectionOrder.length,
-                onReorder: (oldIndex, newIndex) {
+                onReorderItem: (oldIndex, newIndex) {
                   setState(() {
-                    if (newIndex > oldIndex) newIndex--;
                     final item = _sectionOrder.removeAt(oldIndex);
                     _sectionOrder.insert(newIndex, item);
                   });

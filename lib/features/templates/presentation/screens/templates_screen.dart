@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+import 'package:go_router/go_router.dart';
 
 import 'package:biodata_maker/core/services/service_locator.dart';
 import 'package:biodata_maker/features/settings/data/repositories/settings_repository.dart';
@@ -420,13 +421,10 @@ class _TemplateCard extends StatelessWidget {
                   onPressed: () {
                     if (template.isPremium && !isPremium) {
                       Navigator.of(ctx).pop();
-                      Navigator.of(context).pushNamed('/paywall');
+                      context.push('/paywall');
                     } else {
                       Navigator.of(ctx).pop();
-                      Navigator.of(context).pushNamed(
-                        '/biodata/create',
-                        arguments: template.id,
-                      );
+                      context.push('/biodata/create?templateId=${template.id}');
                     }
                   },
                   child: Text(
@@ -443,7 +441,7 @@ class _TemplateCard extends StatelessWidget {
                     child: TextButton(
                       onPressed: () {
                         Navigator.of(ctx).pop();
-                        Navigator.of(context).pushNamed('/paywall');
+                        context.push('/paywall');
                       },
                       child: const Text('View Premium Plans'),
                     ),

@@ -288,7 +288,7 @@ class BiodataRenderer extends StatelessWidget {
   }
 
   // PDF mode
-  static List<pw.Widget> toPdfWidgets(Biodata biodata, ThemeConfig theme) {
+  static List<pw.Widget> toPdfWidgets(Biodata biodata, ThemeConfig theme, {pw.MemoryImage? profileImage}) {
     final primary = PdfColor.fromInt(theme.primaryColor);
     final text = PdfColor.fromInt(theme.textColor);
     final subtitle = PdfColor.fromInt(theme.subtitleColor);
@@ -297,7 +297,7 @@ class BiodataRenderer extends StatelessWidget {
     final widgets = <pw.Widget>[];
 
     // Header
-    widgets.add(_buildPdfHeader(biodata, theme, primary, text, subtitle, displayName));
+    widgets.add(_buildPdfHeader(biodata, theme, primary, text, subtitle, displayName, profileImage));
     widgets.add(pw.SizedBox(height: theme.sectionSpacing));
 
     // About Me
@@ -313,7 +313,8 @@ class BiodataRenderer extends StatelessWidget {
     // Sections from config
     for (final section in kSections) {
       final sectionFields = section.fields.where((f) => f.value(biodata).isNotEmpty).toList();
-      if (sectionFields.isEmpty) continue;
+      final sectionCustom = biodata.customFields.where((c) => c.section == section.key && c.value.isNotEmpty).toList();
+      if (sectionFields.isEmpty && sectionCustom.isEmpty) continue;
 
       widgets.add(_pdfSectionTitle(section.title, primary, theme));
       widgets.add(pw.SizedBox(height: theme.fieldSpacing));
@@ -321,15 +322,18 @@ class BiodataRenderer extends StatelessWidget {
       for (final field in sectionFields) {
         widgets.add(_pdfFieldRow(field.label, field.value(biodata), subtitle, text, theme));
       }
+      for (final cf in sectionCustom) {
+        widgets.add(_pdfFieldRow(cf.label, cf.value, subtitle, text, theme));
+      }
       widgets.add(pw.SizedBox(height: theme.sectionSpacing));
     }
 
-    // Custom fields in Additional Details
-    final customFields = biodata.customFields.where((c) => c.value.isNotEmpty).toList();
-    if (customFields.isNotEmpty) {
+    // Custom fields in Additional Details (orphan fields)
+    final orphanCustomFields = biodata.customFields.where((c) => c.value.isNotEmpty && !kSections.any((s) => s.key == c.section)).toList();
+    if (orphanCustomFields.isNotEmpty) {
       widgets.add(_pdfSectionTitle('Additional Details', primary, theme));
       widgets.add(pw.SizedBox(height: theme.fieldSpacing));
-      for (final cf in customFields) {
+      for (final cf in orphanCustomFields) {
         widgets.add(_pdfFieldRow(cf.label, cf.value, subtitle, text, theme));
       }
       widgets.add(pw.SizedBox(height: theme.sectionSpacing));
@@ -362,9 +366,10 @@ class BiodataRenderer extends StatelessWidget {
   static pw.Font _pdfFont() => pw.Font.helvetica();
 
   static pw.Widget _buildPdfHeader(
-    Biodata biodata, ThemeConfig theme, PdfColor primary, PdfColor text, PdfColor subtitle, String displayName,
+    Biodata biodata, ThemeConfig theme, PdfColor primary, PdfColor text, PdfColor subtitle, String displayName, pw.MemoryImage? profileImage,
   ) {
-    final borderRadius = theme.photoShape == 'circle' ? pw.BorderRadius.circular(40) : pw.BorderRadius.circular(12);
+    final radius = theme.photoShape == 'circle' ? 40.0 : 12.0;
+    final borderRadius = pw.BorderRadius.circular(radius);
     return pw.Container(
       padding: const pw.EdgeInsets.only(bottom: 16),
       child: pw.Row(
@@ -373,10 +378,26 @@ class BiodataRenderer extends StatelessWidget {
           pw.Container(
             width: 80, height: 80,
             decoration: pw.BoxDecoration(
-              color: primary,
+              color: profileImage != null ? null : primary,
               borderRadius: borderRadius,
+              border: profileImage != null ? pw.Border.all(color: primary, width: 2) : null,
             ),
-            child: pw.Center(child: pw.Text(displayName.isNotEmpty ? displayName[0].toUpperCase() : '?', style: pw.TextStyle(font: _pdfFont(), fontSize: 32, color: PdfColor.fromInt(0xFFFFFFFF), fontWeight: pw.FontWeight.bold))),
+            child: profileImage != null
+                ? (theme.photoShape == 'circle'
+                    ? pw.ClipOval(
+                        child: pw.Image(profileImage, fit: pw.BoxFit.cover, width: 80, height: 80),
+                      )
+                    : pw.ClipRRect(
+                        horizontalRadius: radius,
+                        verticalRadius: radius,
+                        child: pw.Image(profileImage, fit: pw.BoxFit.cover, width: 80, height: 80),
+                      ))
+                : pw.Center(
+                    child: pw.Text(
+                      displayName.isNotEmpty ? displayName[0].toUpperCase() : '?',
+                      style: pw.TextStyle(font: _pdfFont(), fontSize: 32, color: PdfColor.fromInt(0xFFFFFFFF), fontWeight: pw.FontWeight.bold),
+                    ),
+                  ),
           ),
           pw.SizedBox(width: 16),
           pw.Expanded(

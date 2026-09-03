@@ -74,7 +74,14 @@ class AppRouter {
       GoRoute(
         path: '/biodata/create',
         parentNavigatorKey: _rootNavigatorKey,
-        builder: (context, state) => const CreateBiodataScreen(),
+        builder: (context, state) => CreateBiodataScreen(
+          templateId: state.uri.queryParameters['templateId'] ?? (state.extra as String?),
+        ),
+      ),
+      GoRoute(
+        path: '/create',
+        parentNavigatorKey: _rootNavigatorKey,
+        redirect: (context, state) => '/biodata/create',
       ),
       GoRoute(
         path: '/biodata/edit/:id',
@@ -82,6 +89,11 @@ class AppRouter {
         builder: (context, state) => EditBiodataScreen(
           biodataId: state.pathParameters['id']!,
         ),
+      ),
+      GoRoute(
+        path: '/edit/:id',
+        parentNavigatorKey: _rootNavigatorKey,
+        redirect: (context, state) => '/biodata/edit/${state.pathParameters['id']}',
       ),
       GoRoute(
         path: '/preview/:id',

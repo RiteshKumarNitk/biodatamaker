@@ -13,7 +13,7 @@ class BiodataFormState extends Equatable {
   final bool isSaved;
   final String? error;
 
-  static const int totalSteps = 7;
+  static const int totalSteps = 9;
 
   const BiodataFormState({
     this.biodata,
