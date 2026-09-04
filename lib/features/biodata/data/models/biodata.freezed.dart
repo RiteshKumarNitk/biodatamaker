@@ -160,6 +160,26 @@ mixin _$Biodata {
   String get profilePhotoPath => throw _privateConstructorUsedError;
   @HiveField(69)
   List<CustomField> get customFields => throw _privateConstructorUsedError;
+  @HiveField(70)
+  List<Sibling> get siblings => throw _privateConstructorUsedError;
+  @HiveField(71)
+  String get grandFatherName => throw _privateConstructorUsedError;
+  @HiveField(72)
+  String get grandFatherOccupation => throw _privateConstructorUsedError;
+  @HiveField(73)
+  String get grandMotherName => throw _privateConstructorUsedError;
+  @HiveField(74)
+  String get familyStatus => throw _privateConstructorUsedError;
+  @HiveField(75)
+  String get familyDescription => throw _privateConstructorUsedError;
+  @HiveField(76)
+  String get contactPerson => throw _privateConstructorUsedError;
+  @HiveField(77)
+  String get contactPersonRelation => throw _privateConstructorUsedError;
+  @HiveField(78)
+  String get alternateNumber => throw _privateConstructorUsedError;
+  @HiveField(79)
+  String get pinCode => throw _privateConstructorUsedError;
 
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
   @JsonKey(ignore: true)
@@ -241,7 +261,17 @@ abstract class $BiodataCopyWith<$Res> {
       @HiveField(66) String expectations,
       @HiveField(67) List<PhotoInfo> photos,
       @HiveField(68) String profilePhotoPath,
-      @HiveField(69) List<CustomField> customFields});
+      @HiveField(69) List<CustomField> customFields,
+      @HiveField(70) List<Sibling> siblings,
+      @HiveField(71) String grandFatherName,
+      @HiveField(72) String grandFatherOccupation,
+      @HiveField(73) String grandMotherName,
+      @HiveField(74) String familyStatus,
+      @HiveField(75) String familyDescription,
+      @HiveField(76) String contactPerson,
+      @HiveField(77) String contactPersonRelation,
+      @HiveField(78) String alternateNumber,
+      @HiveField(79) String pinCode});
 }
 
 /// @nodoc
@@ -327,6 +357,16 @@ class _$BiodataCopyWithImpl<$Res, $Val extends Biodata>
     Object? photos = null,
     Object? profilePhotoPath = null,
     Object? customFields = null,
+    Object? siblings = null,
+    Object? grandFatherName = null,
+    Object? grandFatherOccupation = null,
+    Object? grandMotherName = null,
+    Object? familyStatus = null,
+    Object? familyDescription = null,
+    Object? contactPerson = null,
+    Object? contactPersonRelation = null,
+    Object? alternateNumber = null,
+    Object? pinCode = null,
   }) {
     return _then(_value.copyWith(
       id: null == id
@@ -609,6 +649,46 @@ class _$BiodataCopyWithImpl<$Res, $Val extends Biodata>
           ? _value.customFields
           : customFields // ignore: cast_nullable_to_non_nullable
               as List<CustomField>,
+      siblings: null == siblings
+          ? _value.siblings
+          : siblings // ignore: cast_nullable_to_non_nullable
+              as List<Sibling>,
+      grandFatherName: null == grandFatherName
+          ? _value.grandFatherName
+          : grandFatherName // ignore: cast_nullable_to_non_nullable
+              as String,
+      grandFatherOccupation: null == grandFatherOccupation
+          ? _value.grandFatherOccupation
+          : grandFatherOccupation // ignore: cast_nullable_to_non_nullable
+              as String,
+      grandMotherName: null == grandMotherName
+          ? _value.grandMotherName
+          : grandMotherName // ignore: cast_nullable_to_non_nullable
+              as String,
+      familyStatus: null == familyStatus
+          ? _value.familyStatus
+          : familyStatus // ignore: cast_nullable_to_non_nullable
+              as String,
+      familyDescription: null == familyDescription
+          ? _value.familyDescription
+          : familyDescription // ignore: cast_nullable_to_non_nullable
+              as String,
+      contactPerson: null == contactPerson
+          ? _value.contactPerson
+          : contactPerson // ignore: cast_nullable_to_non_nullable
+              as String,
+      contactPersonRelation: null == contactPersonRelation
+          ? _value.contactPersonRelation
+          : contactPersonRelation // ignore: cast_nullable_to_non_nullable
+              as String,
+      alternateNumber: null == alternateNumber
+          ? _value.alternateNumber
+          : alternateNumber // ignore: cast_nullable_to_non_nullable
+              as String,
+      pinCode: null == pinCode
+          ? _value.pinCode
+          : pinCode // ignore: cast_nullable_to_non_nullable
+              as String,
     ) as $Val);
   }
 }
@@ -690,7 +770,17 @@ abstract class _$$BiodataImplCopyWith<$Res> implements $BiodataCopyWith<$Res> {
       @HiveField(66) String expectations,
       @HiveField(67) List<PhotoInfo> photos,
       @HiveField(68) String profilePhotoPath,
-      @HiveField(69) List<CustomField> customFields});
+      @HiveField(69) List<CustomField> customFields,
+      @HiveField(70) List<Sibling> siblings,
+      @HiveField(71) String grandFatherName,
+      @HiveField(72) String grandFatherOccupation,
+      @HiveField(73) String grandMotherName,
+      @HiveField(74) String familyStatus,
+      @HiveField(75) String familyDescription,
+      @HiveField(76) String contactPerson,
+      @HiveField(77) String contactPersonRelation,
+      @HiveField(78) String alternateNumber,
+      @HiveField(79) String pinCode});
 }
 
 /// @nodoc
@@ -774,6 +864,16 @@ class __$$BiodataImplCopyWithImpl<$Res>
     Object? photos = null,
     Object? profilePhotoPath = null,
     Object? customFields = null,
+    Object? siblings = null,
+    Object? grandFatherName = null,
+    Object? grandFatherOccupation = null,
+    Object? grandMotherName = null,
+    Object? familyStatus = null,
+    Object? familyDescription = null,
+    Object? contactPerson = null,
+    Object? contactPersonRelation = null,
+    Object? alternateNumber = null,
+    Object? pinCode = null,
   }) {
     return _then(_$BiodataImpl(
       id: null == id
@@ -1056,6 +1156,46 @@ class __$$BiodataImplCopyWithImpl<$Res>
           ? _value._customFields
           : customFields // ignore: cast_nullable_to_non_nullable
               as List<CustomField>,
+      siblings: null == siblings
+          ? _value._siblings
+          : siblings // ignore: cast_nullable_to_non_nullable
+              as List<Sibling>,
+      grandFatherName: null == grandFatherName
+          ? _value.grandFatherName
+          : grandFatherName // ignore: cast_nullable_to_non_nullable
+              as String,
+      grandFatherOccupation: null == grandFatherOccupation
+          ? _value.grandFatherOccupation
+          : grandFatherOccupation // ignore: cast_nullable_to_non_nullable
+              as String,
+      grandMotherName: null == grandMotherName
+          ? _value.grandMotherName
+          : grandMotherName // ignore: cast_nullable_to_non_nullable
+              as String,
+      familyStatus: null == familyStatus
+          ? _value.familyStatus
+          : familyStatus // ignore: cast_nullable_to_non_nullable
+              as String,
+      familyDescription: null == familyDescription
+          ? _value.familyDescription
+          : familyDescription // ignore: cast_nullable_to_non_nullable
+              as String,
+      contactPerson: null == contactPerson
+          ? _value.contactPerson
+          : contactPerson // ignore: cast_nullable_to_non_nullable
+              as String,
+      contactPersonRelation: null == contactPersonRelation
+          ? _value.contactPersonRelation
+          : contactPersonRelation // ignore: cast_nullable_to_non_nullable
+              as String,
+      alternateNumber: null == alternateNumber
+          ? _value.alternateNumber
+          : alternateNumber // ignore: cast_nullable_to_non_nullable
+              as String,
+      pinCode: null == pinCode
+          ? _value.pinCode
+          : pinCode // ignore: cast_nullable_to_non_nullable
+              as String,
     ));
   }
 }
@@ -1134,9 +1274,20 @@ class _$BiodataImpl implements _Biodata {
       @HiveField(67) final List<PhotoInfo> photos = const <PhotoInfo>[],
       @HiveField(68) this.profilePhotoPath = '',
       @HiveField(69)
-      final List<CustomField> customFields = const <CustomField>[]})
+      final List<CustomField> customFields = const <CustomField>[],
+      @HiveField(70) final List<Sibling> siblings = const <Sibling>[],
+      @HiveField(71) this.grandFatherName = '',
+      @HiveField(72) this.grandFatherOccupation = '',
+      @HiveField(73) this.grandMotherName = '',
+      @HiveField(74) this.familyStatus = '',
+      @HiveField(75) this.familyDescription = '',
+      @HiveField(76) this.contactPerson = '',
+      @HiveField(77) this.contactPersonRelation = '',
+      @HiveField(78) this.alternateNumber = '',
+      @HiveField(79) this.pinCode = ''})
       : _photos = photos,
-        _customFields = customFields;
+        _customFields = customFields,
+        _siblings = siblings;
 
   factory _$BiodataImpl.fromJson(Map<String, dynamic> json) =>
       _$$BiodataImplFromJson(json);
@@ -1429,9 +1580,56 @@ class _$BiodataImpl implements _Biodata {
     return EqualUnmodifiableListView(_customFields);
   }
 
+  final List<Sibling> _siblings;
+  @override
+  @JsonKey()
+  @HiveField(70)
+  List<Sibling> get siblings {
+    if (_siblings is EqualUnmodifiableListView) return _siblings;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(_siblings);
+  }
+
+  @override
+  @JsonKey()
+  @HiveField(71)
+  final String grandFatherName;
+  @override
+  @JsonKey()
+  @HiveField(72)
+  final String grandFatherOccupation;
+  @override
+  @JsonKey()
+  @HiveField(73)
+  final String grandMotherName;
+  @override
+  @JsonKey()
+  @HiveField(74)
+  final String familyStatus;
+  @override
+  @JsonKey()
+  @HiveField(75)
+  final String familyDescription;
+  @override
+  @JsonKey()
+  @HiveField(76)
+  final String contactPerson;
+  @override
+  @JsonKey()
+  @HiveField(77)
+  final String contactPersonRelation;
+  @override
+  @JsonKey()
+  @HiveField(78)
+  final String alternateNumber;
+  @override
+  @JsonKey()
+  @HiveField(79)
+  final String pinCode;
+
   @override
   String toString() {
-    return 'Biodata(id: $id, name: $name, createdAt: $createdAt, updatedAt: $updatedAt, templateId: $templateId, isFavorite: $isFavorite, isArchived: $isArchived, isDraft: $isDraft, downloadCount: $downloadCount, fullName: $fullName, gender: $gender, dateOfBirth: $dateOfBirth, age: $age, height: $height, weight: $weight, religion: $religion, caste: $caste, subCaste: $subCaste, motherTongue: $motherTongue, maritalStatus: $maritalStatus, bloodGroup: $bloodGroup, complexion: $complexion, manglik: $manglik, horoscope: $horoscope, rashi: $rashi, nakshatra: $nakshatra, gotra: $gotra, birthPlace: $birthPlace, birthTime: $birthTime, aboutMe: $aboutMe, qualification: $qualification, college: $college, university: $university, occupation: $occupation, company: $company, business: $business, designation: $designation, annualIncome: $annualIncome, fatherName: $fatherName, fatherOccupation: $fatherOccupation, motherName: $motherName, motherOccupation: $motherOccupation, brothers: $brothers, sisters: $sisters, familyType: $familyType, familyValues: $familyValues, nativePlace: $nativePlace, diet: $diet, smoking: $smoking, drinking: $drinking, languages: $languages, hobbies: $hobbies, personality: $personality, mobile: $mobile, whatsapp: $whatsapp, email: $email, address: $address, city: $city, state: $state, country: $country, preferredAge: $preferredAge, preferredHeight: $preferredHeight, preferredEducation: $preferredEducation, preferredOccupation: $preferredOccupation, preferredReligion: $preferredReligion, preferredLocation: $preferredLocation, expectations: $expectations, photos: $photos, profilePhotoPath: $profilePhotoPath, customFields: $customFields)';
+    return 'Biodata(id: $id, name: $name, createdAt: $createdAt, updatedAt: $updatedAt, templateId: $templateId, isFavorite: $isFavorite, isArchived: $isArchived, isDraft: $isDraft, downloadCount: $downloadCount, fullName: $fullName, gender: $gender, dateOfBirth: $dateOfBirth, age: $age, height: $height, weight: $weight, religion: $religion, caste: $caste, subCaste: $subCaste, motherTongue: $motherTongue, maritalStatus: $maritalStatus, bloodGroup: $bloodGroup, complexion: $complexion, manglik: $manglik, horoscope: $horoscope, rashi: $rashi, nakshatra: $nakshatra, gotra: $gotra, birthPlace: $birthPlace, birthTime: $birthTime, aboutMe: $aboutMe, qualification: $qualification, college: $college, university: $university, occupation: $occupation, company: $company, business: $business, designation: $designation, annualIncome: $annualIncome, fatherName: $fatherName, fatherOccupation: $fatherOccupation, motherName: $motherName, motherOccupation: $motherOccupation, brothers: $brothers, sisters: $sisters, familyType: $familyType, familyValues: $familyValues, nativePlace: $nativePlace, diet: $diet, smoking: $smoking, drinking: $drinking, languages: $languages, hobbies: $hobbies, personality: $personality, mobile: $mobile, whatsapp: $whatsapp, email: $email, address: $address, city: $city, state: $state, country: $country, preferredAge: $preferredAge, preferredHeight: $preferredHeight, preferredEducation: $preferredEducation, preferredOccupation: $preferredOccupation, preferredReligion: $preferredReligion, preferredLocation: $preferredLocation, expectations: $expectations, photos: $photos, profilePhotoPath: $profilePhotoPath, customFields: $customFields, siblings: $siblings, grandFatherName: $grandFatherName, grandFatherOccupation: $grandFatherOccupation, grandMotherName: $grandMotherName, familyStatus: $familyStatus, familyDescription: $familyDescription, contactPerson: $contactPerson, contactPersonRelation: $contactPersonRelation, alternateNumber: $alternateNumber, pinCode: $pinCode)';
   }
 
   @override
@@ -1551,7 +1749,17 @@ class _$BiodataImpl implements _Biodata {
                 other.expectations == expectations) &&
             const DeepCollectionEquality().equals(other._photos, _photos) &&
             (identical(other.profilePhotoPath, profilePhotoPath) || other.profilePhotoPath == profilePhotoPath) &&
-            const DeepCollectionEquality().equals(other._customFields, _customFields));
+            const DeepCollectionEquality().equals(other._customFields, _customFields) &&
+            const DeepCollectionEquality().equals(other._siblings, _siblings) &&
+            (identical(other.grandFatherName, grandFatherName) || other.grandFatherName == grandFatherName) &&
+            (identical(other.grandFatherOccupation, grandFatherOccupation) || other.grandFatherOccupation == grandFatherOccupation) &&
+            (identical(other.grandMotherName, grandMotherName) || other.grandMotherName == grandMotherName) &&
+            (identical(other.familyStatus, familyStatus) || other.familyStatus == familyStatus) &&
+            (identical(other.familyDescription, familyDescription) || other.familyDescription == familyDescription) &&
+            (identical(other.contactPerson, contactPerson) || other.contactPerson == contactPerson) &&
+            (identical(other.contactPersonRelation, contactPersonRelation) || other.contactPersonRelation == contactPersonRelation) &&
+            (identical(other.alternateNumber, alternateNumber) || other.alternateNumber == alternateNumber) &&
+            (identical(other.pinCode, pinCode) || other.pinCode == pinCode));
   }
 
   @JsonKey(ignore: true)
@@ -1627,7 +1835,17 @@ class _$BiodataImpl implements _Biodata {
         expectations,
         const DeepCollectionEquality().hash(_photos),
         profilePhotoPath,
-        const DeepCollectionEquality().hash(_customFields)
+        const DeepCollectionEquality().hash(_customFields),
+        const DeepCollectionEquality().hash(_siblings),
+        grandFatherName,
+        grandFatherOccupation,
+        grandMotherName,
+        familyStatus,
+        familyDescription,
+        contactPerson,
+        contactPersonRelation,
+        alternateNumber,
+        pinCode
       ]);
 
   @JsonKey(ignore: true)
@@ -1715,7 +1933,17 @@ abstract class _Biodata implements Biodata {
       @HiveField(66) final String expectations,
       @HiveField(67) final List<PhotoInfo> photos,
       @HiveField(68) final String profilePhotoPath,
-      @HiveField(69) final List<CustomField> customFields}) = _$BiodataImpl;
+      @HiveField(69) final List<CustomField> customFields,
+      @HiveField(70) final List<Sibling> siblings,
+      @HiveField(71) final String grandFatherName,
+      @HiveField(72) final String grandFatherOccupation,
+      @HiveField(73) final String grandMotherName,
+      @HiveField(74) final String familyStatus,
+      @HiveField(75) final String familyDescription,
+      @HiveField(76) final String contactPerson,
+      @HiveField(77) final String contactPersonRelation,
+      @HiveField(78) final String alternateNumber,
+      @HiveField(79) final String pinCode}) = _$BiodataImpl;
 
   factory _Biodata.fromJson(Map<String, dynamic> json) = _$BiodataImpl.fromJson;
 
@@ -1929,6 +2157,36 @@ abstract class _Biodata implements Biodata {
   @override
   @HiveField(69)
   List<CustomField> get customFields;
+  @override
+  @HiveField(70)
+  List<Sibling> get siblings;
+  @override
+  @HiveField(71)
+  String get grandFatherName;
+  @override
+  @HiveField(72)
+  String get grandFatherOccupation;
+  @override
+  @HiveField(73)
+  String get grandMotherName;
+  @override
+  @HiveField(74)
+  String get familyStatus;
+  @override
+  @HiveField(75)
+  String get familyDescription;
+  @override
+  @HiveField(76)
+  String get contactPerson;
+  @override
+  @HiveField(77)
+  String get contactPersonRelation;
+  @override
+  @HiveField(78)
+  String get alternateNumber;
+  @override
+  @HiveField(79)
+  String get pinCode;
   @override
   @JsonKey(ignore: true)
   _$$BiodataImplCopyWith<_$BiodataImpl> get copyWith =>

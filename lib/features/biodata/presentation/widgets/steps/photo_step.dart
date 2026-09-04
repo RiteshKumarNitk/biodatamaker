@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:image_picker/image_picker.dart';
 
+import 'package:biodata_maker/core/i18n/strings.dart';
 import 'package:biodata_maker/features/biodata/data/models/biodata.dart';
 import 'package:biodata_maker/features/biodata/data/models/photo_info.dart';
 
@@ -35,7 +36,7 @@ class PhotoStep extends StatelessWidget {
     } catch (e) {
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to pick image: $e')),
+          SnackBar(content: Text('${Strings.tr('Failed to pick image')}: $e')),
         );
       }
     }
@@ -50,7 +51,7 @@ class PhotoStep extends StatelessWidget {
           children: [
             ListTile(
               leading: const Icon(Icons.camera_alt),
-              title: const Text('Camera'),
+              title: Text(Strings.tr('Camera')),
               onTap: () {
                 Navigator.pop(ctx);
                 _pickImage(context, ImageSource.camera);
@@ -58,7 +59,7 @@ class PhotoStep extends StatelessWidget {
             ),
             ListTile(
               leading: const Icon(Icons.photo_library),
-              title: const Text('Gallery'),
+              title: Text(Strings.tr('Gallery')),
               onTap: () {
                 Navigator.pop(ctx);
                 _pickImage(context, ImageSource.gallery);
@@ -111,7 +112,7 @@ class PhotoStep extends StatelessWidget {
               children: [
                 Icon(Icons.add_a_photo, size: 32, color: theme.colorScheme.onSurfaceVariant),
                 const SizedBox(height: 4),
-                Text('Tap to add', style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.onSurfaceVariant)),
+                Text(Strings.tr('Tap to add'), style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.onSurfaceVariant)),
               ],
             ),
           ),
@@ -180,7 +181,7 @@ class PhotoStep extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('Profile Photo', style: theme.textTheme.titleSmall?.copyWith(color: theme.colorScheme.primary, fontWeight: FontWeight.w600)),
+                Text(Strings.tr('Profile Photo'), style: theme.textTheme.titleSmall?.copyWith(color: theme.colorScheme.primary, fontWeight: FontWeight.w600)),
                 const SizedBox(height: 12),
                 Center(child: _buildProfilePhoto(context, theme)),
               ],
@@ -194,7 +195,7 @@ class PhotoStep extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('Additional Photos', style: theme.textTheme.titleSmall?.copyWith(color: theme.colorScheme.primary, fontWeight: FontWeight.w600)),
+                Text(Strings.tr('Additional Photos'), style: theme.textTheme.titleSmall?.copyWith(color: theme.colorScheme.primary, fontWeight: FontWeight.w600)),
                 const SizedBox(height: 12),
                 ...biodata.photos.asMap().entries.map((entry) {
                   final index = entry.key;
@@ -224,8 +225,8 @@ class PhotoStep extends StatelessWidget {
                               if (value == 'delete') _removePhoto(index);
                             },
                             itemBuilder: (_) => [
-                              const PopupMenuItem(value: 'profile', child: Text('Set as profile')),
-                                  PopupMenuItem(value: 'delete', child: Text('Remove', style: TextStyle(color: theme.colorScheme.error))),
+                              PopupMenuItem(value: 'profile', child: Text(Strings.tr('Set as profile'))),
+                                  PopupMenuItem(value: 'delete', child: Text(Strings.tr('Remove'), style: TextStyle(color: theme.colorScheme.error))),
                             ],
                           ),
                         ),
@@ -248,7 +249,7 @@ class PhotoStep extends StatelessWidget {
                         children: [
                           Icon(Icons.add, color: theme.colorScheme.onSurfaceVariant),
                           const SizedBox(width: 8),
-                          Text('Add Photo', style: theme.textTheme.bodyMedium?.copyWith(color: theme.colorScheme.onSurfaceVariant)),
+                          Text(Strings.tr('Add Photo'), style: theme.textTheme.bodyMedium?.copyWith(color: theme.colorScheme.onSurfaceVariant)),
                         ],
                       ),
                     ),

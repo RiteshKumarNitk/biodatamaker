@@ -24,61 +24,81 @@ class PdfService {
       profileImage = await _loadProfileImage(biodata.profilePhotoPath);
     }
 
-    final sections = BiodataRenderer.toPdfWidgets(biodata, theme, profileImage: profileImage);
+    final font = pw.Font.helvetica();
 
+    // MultiPage splits content between the blocks returned by
+    // BiodataRenderer.toPdfWidgets: each block is small and unbreakable, so
+    // content longer than one page flows cleanly onto further pages instead of
+    // being clipped. PageTheme keeps the themed background (and frame) painted
+    // on every page, and the footer adds "Page X of Y".
     pdf.addPage(
       pw.MultiPage(
-        pageFormat: PdfPageFormat.a4,
-        margin: pw.EdgeInsets.all(theme.margin),
-        build: (context) {
-          final pageContent = <pw.Widget>[
-            pw.Container(
-              decoration: pw.BoxDecoration(
-                color: PdfColor.fromInt(theme.backgroundColor),
-              ),
-              child: pw.Column(
-                crossAxisAlignment: pw.CrossAxisAlignment.start,
-                children: sections,
-              ),
-            ),
-          ];
-
-          if (theme.showWatermark && theme.watermarkText.isNotEmpty) {
-            return [
-              pw.Stack(
-                children: [
-                  pw.Column(
-                    crossAxisAlignment: pw.CrossAxisAlignment.start,
-                    children: pageContent,
-                  ),
-                  pw.Positioned(
-                    bottom: 40,
-                    right: 40,
-                    child: pw.Opacity(
-                      opacity: 0.15,
-                      child: pw.Transform.rotate(
-                        angle: -math.pi / 4,
-                        child: pw.Text(
-                          theme.watermarkText,
-                          style: pw.TextStyle(
-                            fontSize: 48,
-                            color: PdfColor.fromInt(theme.textColor),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ];
-          }
-
-          return pageContent;
-        },
+        pageTheme: pw.PageTheme(
+          pageFormat: PdfPageFormat.a4,
+          margin: pw.EdgeInsets.all(theme.margin),
+          theme: pw.ThemeData.withFont(base: font),
+          buildBackground: (_) => _buildPageBackground(theme),
+          buildForeground: theme.showWatermark && theme.watermarkText.isNotEmpty
+              ? (_) => _buildWatermark(theme, font)
+              : null,
+        ),
+        footer: (context) => _buildPageFooter(context, theme, font),
+        build: (_) => BiodataRenderer.toPdfWidgets(biodata, theme, profileImage: profileImage),
       ),
     );
 
     return pdf.save();
+  }
+
+  /// Fills the whole content area with the theme background on every page and,
+  /// unless the theme opts out, draws the subtle frame border around it.
+  static pw.Widget _buildPageBackground(ThemeConfig theme) {
+    return pw.Container(
+      decoration: pw.BoxDecoration(
+        color: PdfColor.fromInt(theme.backgroundColor),
+        borderRadius: pw.BorderRadius.circular(10),
+        border: theme.borderStyle == 'none'
+            ? null
+            : pw.Border.all(color: PdfColor.fromInt(theme.primaryColor), width: 1.2),
+      ),
+    );
+  }
+
+  /// A fixed-height slot at the bottom of every page showing "Page X of Y"
+  /// (hidden for single-page documents). The height is constant so content
+  /// layout does not shift between pages.
+  static pw.Widget _buildPageFooter(pw.Context context, ThemeConfig theme, pw.Font font) {
+    return pw.SizedBox(
+      height: 14,
+      child: pw.Center(
+        child: pw.Text(
+          context.pagesCount > 1 ? 'Page ${context.pageNumber} of ${context.pagesCount}' : '',
+          style: pw.TextStyle(font: font, fontSize: 9, color: PdfColor.fromInt(theme.subtitleColor)),
+        ),
+      ),
+    );
+  }
+
+  /// Diagonal watermark, drawn on top of every page when enabled.
+  static pw.Widget _buildWatermark(ThemeConfig theme, pw.Font font) {
+    return pw.Stack(
+      children: [
+        pw.Positioned(
+          bottom: 30,
+          right: 30,
+          child: pw.Opacity(
+            opacity: 0.15,
+            child: pw.Transform.rotate(
+              angle: -math.pi / 4,
+              child: pw.Text(
+                theme.watermarkText,
+                style: pw.TextStyle(fontSize: 48, font: font, color: PdfColor.fromInt(theme.textColor)),
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
   }
 
   Future<pw.MemoryImage?> _loadProfileImage(String path) async {

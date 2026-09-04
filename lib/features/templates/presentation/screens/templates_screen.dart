@@ -4,6 +4,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:go_router/go_router.dart';
 
+import 'package:biodata_maker/core/i18n/strings.dart';
 import 'package:biodata_maker/core/services/service_locator.dart';
 import 'package:biodata_maker/features/settings/data/repositories/settings_repository.dart';
 import 'package:biodata_maker/features/templates/data/models/theme_config.dart';
@@ -29,7 +30,7 @@ class _TemplatesView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Template Store')),
+      appBar: AppBar(title: Text(Strings.tr('Template Store'))),
       body: BlocBuilder<TemplateBloc, TemplateState>(
         builder: (context, state) {
           if (state is TemplateLoading) {

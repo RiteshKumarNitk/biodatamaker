@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 
+import 'package:biodata_maker/core/i18n/strings.dart';
 import 'package:biodata_maker/features/biodata/data/models/biodata.dart';
 import 'package:biodata_maker/features/biodata/presentation/bloc/biodata_list_bloc.dart';
 
@@ -57,7 +58,7 @@ class _MyBiodatasScreenState extends State<MyBiodatasScreen> {
                     context.read<BiodataListBloc>().add(SearchBiodatas(query));
                   },
                 )
-              : const Text('My Biodatas', key: ValueKey('title')),
+              : Text(Strings.tr('My Biodatas'), key: const ValueKey('title')),
         ),
         actions: [
           IconButton(
@@ -305,24 +306,24 @@ class _BiodataListItem extends StatelessWidget {
                 }
               },
               itemBuilder: (context) => [
-                const PopupMenuItem(value: 'edit', child: ListTile(leading: Icon(Icons.edit), title: Text('Edit'))),
-                const PopupMenuItem(value: 'preview', child: ListTile(leading: Icon(Icons.visibility), title: Text('Preview'))),
+                PopupMenuItem(value: 'edit', child: ListTile(leading: const Icon(Icons.edit), title: Text(Strings.tr('Edit')))),
+                PopupMenuItem(value: 'preview', child: ListTile(leading: const Icon(Icons.visibility), title: Text(Strings.tr('Preview')))),
                 PopupMenuItem(
                   value: 'favorite',
                   child: ListTile(
                     leading: Icon(biodata.isFavorite ? Icons.favorite : Icons.favorite_border),
-                    title: Text(biodata.isFavorite ? 'Unfavorite' : 'Favorite'),
+                    title: Text(biodata.isFavorite ? Strings.tr('Unfavorite') : Strings.tr('Favorite')),
                   ),
                 ),
-                const PopupMenuItem(value: 'duplicate', child: ListTile(leading: Icon(Icons.copy), title: Text('Duplicate'))),
+                PopupMenuItem(value: 'duplicate', child: ListTile(leading: const Icon(Icons.copy), title: Text(Strings.tr('Duplicate')))),
                 PopupMenuItem(
                   value: 'archive',
                   child: ListTile(
                     leading: Icon(biodata.isArchived ? Icons.unarchive : Icons.archive),
-                    title: Text(biodata.isArchived ? 'Unarchive' : 'Archive'),
+                    title: Text(biodata.isArchived ? Strings.tr('Unarchive') : Strings.tr('Archive')),
                   ),
                 ),
-                PopupMenuItem(value: 'delete', child: ListTile(leading: Icon(Icons.delete, color: Theme.of(context).colorScheme.error), title: Text('Delete', style: TextStyle(color: Theme.of(context).colorScheme.error)))),
+                PopupMenuItem(value: 'delete', child: ListTile(leading: Icon(Icons.delete, color: Theme.of(context).colorScheme.error), title: Text(Strings.tr('Delete'), style: TextStyle(color: Theme.of(context).colorScheme.error)))),
               ],
             ),
           ],

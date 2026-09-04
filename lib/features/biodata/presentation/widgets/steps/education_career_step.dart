@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:biodata_maker/core/i18n/strings.dart';
 import 'package:biodata_maker/features/biodata/data/models/biodata.dart';
 
 class EducationCareerStep extends StatefulWidget {
@@ -72,12 +73,12 @@ class _EducationCareerStepState extends State<EducationCareerStep> {
       padding: const EdgeInsets.all(16),
       children: [
         Text(
-          'Education & Career',
+          Strings.tr('Education & Career'),
           style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600),
         ),
         const SizedBox(height: 4),
         Text(
-          'Add your educational qualifications and professional career details',
+          Strings.tr('Add your educational qualifications and professional career details'),
           style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.onSurfaceVariant),
         ),
         const SizedBox(height: 16),
@@ -88,7 +89,7 @@ class _EducationCareerStepState extends State<EducationCareerStep> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Education',
+                  Strings.tr('Education'),
                   style: theme.textTheme.titleSmall?.copyWith(
                     color: theme.colorScheme.primary,
                     fontWeight: FontWeight.w600,
@@ -97,8 +98,8 @@ class _EducationCareerStepState extends State<EducationCareerStep> {
                 const SizedBox(height: 12),
                 TextFormField(
                   controller: _qualificationCtrl,
-                  decoration: const InputDecoration(
-                    labelText: 'Highest Qualification',
+                  decoration: InputDecoration(
+                    labelText: Strings.tr('Highest Qualification'),
                     hintText: 'e.g. B.Tech / MBA / MBBS',
                     prefixIcon: Icon(Icons.school_outlined),
                   ),
@@ -108,8 +109,8 @@ class _EducationCareerStepState extends State<EducationCareerStep> {
                 const SizedBox(height: 12),
                 TextFormField(
                   controller: _collegeCtrl,
-                  decoration: const InputDecoration(
-                    labelText: 'College / Institute',
+                  decoration: InputDecoration(
+                    labelText: Strings.tr('College / Institute'),
                     hintText: 'e.g. IIT Bombay / Stanford',
                     prefixIcon: Icon(Icons.account_balance_outlined),
                   ),
@@ -119,8 +120,8 @@ class _EducationCareerStepState extends State<EducationCareerStep> {
                 const SizedBox(height: 12),
                 TextFormField(
                   controller: _universityCtrl,
-                  decoration: const InputDecoration(
-                    labelText: 'University / Board',
+                  decoration: InputDecoration(
+                    labelText: Strings.tr('University / Board'),
                     hintText: 'e.g. Mumbai University',
                     prefixIcon: Icon(Icons.apartment_outlined),
                   ),
@@ -139,7 +140,7 @@ class _EducationCareerStepState extends State<EducationCareerStep> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Professional Career',
+                  Strings.tr('Professional Career'),
                   style: theme.textTheme.titleSmall?.copyWith(
                     color: theme.colorScheme.primary,
                     fontWeight: FontWeight.w600,
@@ -148,8 +149,8 @@ class _EducationCareerStepState extends State<EducationCareerStep> {
                 const SizedBox(height: 12),
                 TextFormField(
                   controller: _occupationCtrl,
-                  decoration: const InputDecoration(
-                    labelText: 'Occupation / Field',
+                  decoration: InputDecoration(
+                    labelText: Strings.tr('Occupation / Field'),
                     hintText: 'e.g. Software Engineer / Doctor / Business',
                     prefixIcon: Icon(Icons.work_outline),
                   ),
@@ -159,8 +160,8 @@ class _EducationCareerStepState extends State<EducationCareerStep> {
                 const SizedBox(height: 12),
                 TextFormField(
                   controller: _companyCtrl,
-                  decoration: const InputDecoration(
-                    labelText: 'Company / Organization',
+                  decoration: InputDecoration(
+                    labelText: Strings.tr('Company / Organization'),
                     hintText: 'e.g. Google / Private Practice',
                     prefixIcon: Icon(Icons.business_outlined),
                   ),
@@ -170,8 +171,8 @@ class _EducationCareerStepState extends State<EducationCareerStep> {
                 const SizedBox(height: 12),
                 TextFormField(
                   controller: _designationCtrl,
-                  decoration: const InputDecoration(
-                    labelText: 'Designation / Job Role',
+                  decoration: InputDecoration(
+                    labelText: Strings.tr('Designation / Job Role'),
                     hintText: 'e.g. Senior Tech Lead',
                     prefixIcon: Icon(Icons.badge_outlined),
                   ),
@@ -181,8 +182,8 @@ class _EducationCareerStepState extends State<EducationCareerStep> {
                 const SizedBox(height: 12),
                 TextFormField(
                   controller: _businessCtrl,
-                  decoration: const InputDecoration(
-                    labelText: 'Business / Firm Details (Optional)',
+                  decoration: InputDecoration(
+                    labelText: Strings.tr('Business / Firm Details (Optional)'),
                     hintText: 'e.g. Family Retail Business',
                     prefixIcon: Icon(Icons.storefront_outlined),
                   ),
@@ -192,8 +193,8 @@ class _EducationCareerStepState extends State<EducationCareerStep> {
                 const SizedBox(height: 12),
                 TextFormField(
                   controller: _annualIncomeCtrl,
-                  decoration: const InputDecoration(
-                    labelText: 'Annual Income',
+                  decoration: InputDecoration(
+                    labelText: Strings.tr('Annual Income'),
                     hintText: 'e.g. ₹18 LPA / \$120k USD',
                     prefixIcon: Icon(Icons.currency_rupee_outlined),
                   ),

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:printing/printing.dart';
+
+import 'package:biodata_maker/core/i18n/strings.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:path_provider/path_provider.dart';
 import 'dart:io';
@@ -59,7 +61,7 @@ class _DownloadStepState extends State<DownloadStep> {
       setState(() => _isGenerating = false);
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to generate PDF: $e')),
+          SnackBar(content: Text('${Strings.tr('Failed to generate PDF')}: $e')),
         );
       }
     }
@@ -75,7 +77,7 @@ class _DownloadStepState extends State<DownloadStep> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to share: $e')),
+          SnackBar(content: Text('${Strings.tr('Failed to share')}: $e')),
         );
       }
     }
@@ -99,9 +101,9 @@ class _DownloadStepState extends State<DownloadStep> {
     return ListView(
       padding: const EdgeInsets.all(16),
       children: [
-        Text('Generate & Download PDF', style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600)),
+        Text(Strings.tr('Generate & Download PDF'), style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600)),
         const SizedBox(height: 4),
-        Text('Export your biodata as a high quality PDF, print or share directly', style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.onSurfaceVariant)),
+        Text(Strings.tr('Export your biodata as a high quality PDF, print or share directly'), style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.onSurfaceVariant)),
         const SizedBox(height: 16),
         Card(
           child: Padding(
@@ -109,7 +111,7 @@ class _DownloadStepState extends State<DownloadStep> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('PDF Document', style: theme.textTheme.titleSmall?.copyWith(color: theme.colorScheme.primary, fontWeight: FontWeight.w600)),
+                Text(Strings.tr('PDF Document'), style: theme.textTheme.titleSmall?.copyWith(color: theme.colorScheme.primary, fontWeight: FontWeight.w600)),
                 const SizedBox(height: 12),
                 if (_isGenerating)
                   Column(
@@ -118,7 +120,7 @@ class _DownloadStepState extends State<DownloadStep> {
                       const SizedBox(height: 24),
                       const Center(child: CircularProgressIndicator()),
                       const SizedBox(height: 16),
-                      Center(child: Text('Generating your biodata PDF...', style: theme.textTheme.bodyMedium)),
+                      Center(child: Text(Strings.tr('Generating your biodata PDF...'), style: theme.textTheme.bodyMedium)),
                     ],
                   )
                 else if (_pdfBytes != null)
@@ -151,7 +153,7 @@ class _DownloadStepState extends State<DownloadStep> {
                         child: FilledButton.icon(
                           onPressed: _printOrSavePdf,
                           icon: const Icon(Icons.print),
-                          label: const Text('Print / Save as PDF'),
+                          label: Text(Strings.tr('Print / Save as PDF')),
                         ),
                       ),
                       const SizedBox(height: 12),
@@ -161,7 +163,7 @@ class _DownloadStepState extends State<DownloadStep> {
                         child: OutlinedButton.icon(
                           onPressed: _sharePdf,
                           icon: const Icon(Icons.share),
-                          label: const Text('Share PDF File'),
+                          label: Text(Strings.tr('Share PDF File')),
                         ),
                       ),
                     ],

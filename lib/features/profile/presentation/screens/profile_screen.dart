@@ -3,6 +3,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 
+import 'package:biodata_maker/core/i18n/strings.dart';
 import 'package:biodata_maker/core/services/service_locator.dart';
 import 'package:go_router/go_router.dart';
 import 'package:biodata_maker/features/auth/data/models/user.dart';
@@ -108,7 +109,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     final colorScheme = Theme.of(context).colorScheme;
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Profile')),
+      appBar: AppBar(title: Text(Strings.tr('Profile'))),
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [

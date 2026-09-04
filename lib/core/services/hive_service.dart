@@ -4,6 +4,7 @@ import 'package:biodata_maker/core/config/app_config.dart';
 import 'package:biodata_maker/features/biodata/data/models/biodata.dart';
 import 'package:biodata_maker/features/biodata/data/models/custom_field.dart';
 import 'package:biodata_maker/features/biodata/data/models/photo_info.dart';
+import 'package:biodata_maker/features/biodata/data/models/sibling.dart';
 import 'package:biodata_maker/features/settings/data/models/user_settings.dart';
 import 'package:biodata_maker/features/templates/data/models/theme_config.dart';
 import 'package:biodata_maker/features/auth/data/models/user.dart';
@@ -24,6 +25,7 @@ class HiveService {
     await Hive.initFlutter();
     Hive.registerAdapter(BiodataAdapter());
     Hive.registerAdapter(CustomFieldAdapter());
+    Hive.registerAdapter(SiblingAdapter());
     Hive.registerAdapter(PhotoInfoAdapter());
     Hive.registerAdapter(ThemeConfigAdapter());
     Hive.registerAdapter(UserSettingsAdapter());

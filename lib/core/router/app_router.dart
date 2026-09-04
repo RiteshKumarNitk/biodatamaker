@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:biodata_maker/core/i18n/strings.dart';
 import 'package:biodata_maker/features/auth/presentation/screens/splash_screen.dart';
 import 'package:biodata_maker/features/auth/presentation/screens/onboarding_screen.dart';
 import 'package:biodata_maker/features/auth/presentation/screens/login_screen.dart';
@@ -179,26 +180,26 @@ class MainScaffold extends StatelessWidget {
             case 3: context.go('/profile');
           }
         },
-        destinations: const [
+        destinations: [
           NavigationDestination(
-            icon: Icon(Icons.home_outlined),
-            selectedIcon: Icon(Icons.home),
-            label: 'Home',
+            icon: const Icon(Icons.home_outlined),
+            selectedIcon: const Icon(Icons.home),
+            label: Strings.tr('Home'),
           ),
           NavigationDestination(
-            icon: Icon(Icons.description_outlined),
-            selectedIcon: Icon(Icons.description),
-            label: 'My Biodatas',
+            icon: const Icon(Icons.description_outlined),
+            selectedIcon: const Icon(Icons.description),
+            label: Strings.tr('My Biodatas'),
           ),
           NavigationDestination(
-            icon: Icon(Icons.dashboard_outlined),
-            selectedIcon: Icon(Icons.dashboard),
-            label: 'Templates',
+            icon: const Icon(Icons.dashboard_outlined),
+            selectedIcon: const Icon(Icons.dashboard),
+            label: Strings.tr('Templates'),
           ),
           NavigationDestination(
-            icon: Icon(Icons.person_outline),
-            selectedIcon: Icon(Icons.person),
-            label: 'Profile',
+            icon: const Icon(Icons.person_outline),
+            selectedIcon: const Icon(Icons.person),
+            label: Strings.tr('Profile'),
           ),
         ],
       ),

@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+
+import 'package:biodata_maker/core/constants/app_constants.dart';
+import 'package:biodata_maker/core/i18n/strings.dart';
 import 'package:biodata_maker/features/biodata/data/models/biodata.dart';
-import 'package:biodata_maker/features/biodata/data/models/custom_field.dart';
+import 'package:biodata_maker/shared/widgets/custom_fields_editor.dart';
 
 class ContactPartnerStep extends StatefulWidget {
   final Biodata biodata;
@@ -17,12 +21,15 @@ class ContactPartnerStep extends StatefulWidget {
 }
 
 class _ContactPartnerStepState extends State<ContactPartnerStep> {
+  late TextEditingController _contactPersonCtrl;
   late TextEditingController _mobileCtrl;
+  late TextEditingController _alternateCtrl;
   late TextEditingController _whatsappCtrl;
   late TextEditingController _emailCtrl;
   late TextEditingController _addressCtrl;
   late TextEditingController _cityCtrl;
   late TextEditingController _stateCtrl;
+  late TextEditingController _pinCodeCtrl;
   late TextEditingController _countryCtrl;
 
   late TextEditingController _prefAgeCtrl;
@@ -37,12 +44,15 @@ class _ContactPartnerStepState extends State<ContactPartnerStep> {
   void initState() {
     super.initState();
     final b = widget.biodata;
+    _contactPersonCtrl = TextEditingController(text: b.contactPerson);
     _mobileCtrl = TextEditingController(text: b.mobile);
+    _alternateCtrl = TextEditingController(text: b.alternateNumber);
     _whatsappCtrl = TextEditingController(text: b.whatsapp);
     _emailCtrl = TextEditingController(text: b.email);
     _addressCtrl = TextEditingController(text: b.address);
     _cityCtrl = TextEditingController(text: b.city);
     _stateCtrl = TextEditingController(text: b.state);
+    _pinCodeCtrl = TextEditingController(text: b.pinCode);
     _countryCtrl = TextEditingController(text: b.country);
 
     _prefAgeCtrl = TextEditingController(text: b.preferredAge);
@@ -56,12 +66,15 @@ class _ContactPartnerStepState extends State<ContactPartnerStep> {
 
   @override
   void dispose() {
+    _contactPersonCtrl.dispose();
     _mobileCtrl.dispose();
+    _alternateCtrl.dispose();
     _whatsappCtrl.dispose();
     _emailCtrl.dispose();
     _addressCtrl.dispose();
     _cityCtrl.dispose();
     _stateCtrl.dispose();
+    _pinCodeCtrl.dispose();
     _countryCtrl.dispose();
 
     _prefAgeCtrl.dispose();
@@ -76,12 +89,15 @@ class _ContactPartnerStepState extends State<ContactPartnerStep> {
 
   void _update() {
     widget.onUpdate(widget.biodata.copyWith(
+      contactPerson: _contactPersonCtrl.text,
       mobile: _mobileCtrl.text,
+      alternateNumber: _alternateCtrl.text,
       whatsapp: _whatsappCtrl.text,
       email: _emailCtrl.text,
       address: _addressCtrl.text,
       city: _cityCtrl.text,
       state: _stateCtrl.text,
+      pinCode: _pinCodeCtrl.text,
       country: _countryCtrl.text,
       preferredAge: _prefAgeCtrl.text,
       preferredHeight: _prefHeightCtrl.text,
@@ -93,156 +109,113 @@ class _ContactPartnerStepState extends State<ContactPartnerStep> {
     ));
   }
 
-  void _showAddCustomFieldDialog() {
-    final labelCtrl = TextEditingController();
-    final valueCtrl = TextEditingController();
-    String section = 'personal';
-
-    showDialog(
-      context: context,
-      builder: (ctx) => StatefulBuilder(
-        builder: (context, setDlgState) => AlertDialog(
-          title: const Text('Add Custom Field'),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              TextField(
-                controller: labelCtrl,
-                decoration: const InputDecoration(
-                  labelText: 'Field Name (e.g. Passport, Hobby)',
-                ),
-                textCapitalization: TextCapitalization.words,
-              ),
-              const SizedBox(height: 12),
-              TextField(
-                controller: valueCtrl,
-                decoration: const InputDecoration(
-                  labelText: 'Field Value',
-                ),
-                textCapitalization: TextCapitalization.sentences,
-              ),
-              const SizedBox(height: 12),
-              DropdownButtonFormField<String>(
-                initialValue: section,
-                decoration: const InputDecoration(labelText: 'Belongs to Section'),
-                items: const [
-                  DropdownMenuItem(value: 'personal', child: Text('Personal Details')),
-                  DropdownMenuItem(value: 'education', child: Text('Education & Career')),
-                  DropdownMenuItem(value: 'family', child: Text('Family Details')),
-                  DropdownMenuItem(value: 'lifestyle', child: Text('Lifestyle & Astro')),
-                  DropdownMenuItem(value: 'contact', child: Text('Contact Info')),
-                  DropdownMenuItem(value: 'partner_preference', child: Text('Partner Preference')),
-                ],
-                onChanged: (v) {
-                  if (v != null) setDlgState(() => section = v);
-                },
-              ),
-            ],
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(ctx),
-              child: const Text('Cancel'),
-            ),
-            ElevatedButton(
-              onPressed: () {
-                if (labelCtrl.text.trim().isNotEmpty && valueCtrl.text.trim().isNotEmpty) {
-                  final newField = CustomField(
-                    id: DateTime.now().millisecondsSinceEpoch.toString(),
-                    label: labelCtrl.text.trim(),
-                    value: valueCtrl.text.trim(),
-                    section: section,
-                  );
-                  final updatedList = [...widget.biodata.customFields, newField];
-                  widget.onUpdate(widget.biodata.copyWith(customFields: updatedList));
-                  Navigator.pop(ctx);
-                }
-              },
-              child: const Text('Add'),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  void _removeCustomField(int index) {
-    final updatedList = [...widget.biodata.customFields]..removeAt(index);
-    widget.onUpdate(widget.biodata.copyWith(customFields: updatedList));
-  }
-
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final b = widget.biodata;
+
+    InputDecoration deco(String label, {String? hint, Widget? prefixIcon}) {
+      return InputDecoration(
+        labelText: Strings.tr(label),
+        hintText: hint,
+        prefixIcon: prefixIcon,
+      );
+    }
 
     return ListView(
       padding: const EdgeInsets.all(16),
       children: [
         Text(
-          'Contact & Partner Preference',
+          Strings.tr('Contact & Partner Preference'),
           style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600),
         ),
         const SizedBox(height: 4),
         Text(
-          'Enter contact info, partner expectations, or add custom fields',
+          Strings.tr('Enter contact info, partner expectations, or add custom fields'),
           style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.onSurfaceVariant),
         ),
         const SizedBox(height: 16),
         Card(
+          margin: EdgeInsets.zero,
           child: Padding(
             padding: const EdgeInsets.all(16),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Contact Information',
+                  Strings.tr('Contact Details'),
                   style: theme.textTheme.titleSmall?.copyWith(
                     color: theme.colorScheme.primary,
                     fontWeight: FontWeight.w600,
                   ),
                 ),
                 const SizedBox(height: 12),
-                TextFormField(
-                  controller: _mobileCtrl,
-                  keyboardType: TextInputType.phone,
-                  decoration: const InputDecoration(
-                    labelText: 'Mobile Number',
-                    hintText: '+91 9876543210',
-                    prefixIcon: Icon(Icons.phone_outlined),
-                  ),
-                  onChanged: (_) => _update(),
+                Row(
+                  children: [
+                    Expanded(
+                      child: TextFormField(
+                        controller: _contactPersonCtrl,
+                        decoration: deco('Contact Person', hint: 'Who should be contacted?'),
+                        textCapitalization: TextCapitalization.words,
+                        onChanged: (_) => _update(),
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: DropdownButtonFormField<String>(
+                        initialValue: b.contactPersonRelation.isEmpty
+                            ? null
+                            : (AppConstants.relationships.contains(b.contactPersonRelation)
+                                ? b.contactPersonRelation
+                                : null),
+                        decoration: deco('Relationship'),
+                        items: AppConstants.relationships.map((r) => DropdownMenuItem(value: r, child: Text(r))).toList(),
+                        onChanged: (v) => widget.onUpdate(widget.biodata.copyWith(contactPersonRelation: v ?? '')),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 12),
+                Row(
+                  children: [
+                    Expanded(
+                      child: TextFormField(
+                        controller: _mobileCtrl,
+                        keyboardType: TextInputType.phone,
+                        decoration: deco('Contact Number', hint: '+91 9876543210', prefixIcon: const Icon(Icons.phone_outlined)),
+                        onChanged: (_) => _update(),
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: TextFormField(
+                        controller: _alternateCtrl,
+                        keyboardType: TextInputType.phone,
+                        decoration: deco('Alternate Number', hint: 'Optional', prefixIcon: const Icon(Icons.phone_android_outlined)),
+                        onChanged: (_) => _update(),
+                      ),
+                    ),
+                  ],
                 ),
                 const SizedBox(height: 12),
                 TextFormField(
                   controller: _whatsappCtrl,
                   keyboardType: TextInputType.phone,
-                  decoration: const InputDecoration(
-                    labelText: 'WhatsApp Number',
-                    hintText: '+91 9876543210',
-                    prefixIcon: Icon(Icons.chat_outlined),
-                  ),
+                  decoration: deco('WhatsApp Number', hint: '+91 9876543210', prefixIcon: const Icon(Icons.chat_outlined)),
                   onChanged: (_) => _update(),
                 ),
                 const SizedBox(height: 12),
                 TextFormField(
                   controller: _emailCtrl,
                   keyboardType: TextInputType.emailAddress,
-                  decoration: const InputDecoration(
-                    labelText: 'Email Address',
-                    hintText: 'example@domain.com',
-                    prefixIcon: Icon(Icons.email_outlined),
-                  ),
+                  decoration: deco('Email Address', hint: 'example@domain.com', prefixIcon: const Icon(Icons.email_outlined)),
                   onChanged: (_) => _update(),
                 ),
                 const SizedBox(height: 12),
                 TextFormField(
                   controller: _addressCtrl,
                   maxLines: 2,
-                  decoration: const InputDecoration(
-                    labelText: 'Residential Address',
-                    hintText: 'Street / House No / Landmark',
-                    prefixIcon: Icon(Icons.home_outlined),
-                  ),
+                  decoration: deco('Residential Address', hint: 'Street / House No / Landmark', prefixIcon: const Icon(Icons.home_outlined)),
                   onChanged: (_) => _update(),
                 ),
                 const SizedBox(height: 12),
@@ -251,10 +224,7 @@ class _ContactPartnerStepState extends State<ContactPartnerStep> {
                     Expanded(
                       child: TextFormField(
                         controller: _cityCtrl,
-                        decoration: const InputDecoration(
-                          labelText: 'City',
-                          hintText: 'e.g. Mumbai',
-                        ),
+                        decoration: deco('City', hint: 'e.g. Mumbai'),
                         textCapitalization: TextCapitalization.words,
                         onChanged: (_) => _update(),
                       ),
@@ -263,10 +233,7 @@ class _ContactPartnerStepState extends State<ContactPartnerStep> {
                     Expanded(
                       child: TextFormField(
                         controller: _stateCtrl,
-                        decoration: const InputDecoration(
-                          labelText: 'State',
-                          hintText: 'e.g. Maharashtra',
-                        ),
+                        decoration: deco('State', hint: 'e.g. Maharashtra'),
                         textCapitalization: TextCapitalization.words,
                         onChanged: (_) => _update(),
                       ),
@@ -274,15 +241,27 @@ class _ContactPartnerStepState extends State<ContactPartnerStep> {
                   ],
                 ),
                 const SizedBox(height: 12),
-                TextFormField(
-                  controller: _countryCtrl,
-                  decoration: const InputDecoration(
-                    labelText: 'Country',
-                    hintText: 'e.g. India',
-                    prefixIcon: Icon(Icons.public_outlined),
-                  ),
-                  textCapitalization: TextCapitalization.words,
-                  onChanged: (_) => _update(),
+                Row(
+                  children: [
+                    Expanded(
+                      child: TextFormField(
+                        controller: _pinCodeCtrl,
+                        keyboardType: TextInputType.number,
+                        inputFormatters: [FilteringTextInputFormatter.digitsOnly, LengthLimitingTextInputFormatter(6)],
+                        decoration: deco('PIN Code', hint: 'e.g. 400001', prefixIcon: const Icon(Icons.markunread_mailbox_outlined)),
+                        onChanged: (_) => _update(),
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: TextFormField(
+                        controller: _countryCtrl,
+                        decoration: deco('Country', hint: 'e.g. India', prefixIcon: const Icon(Icons.public_outlined)),
+                        textCapitalization: TextCapitalization.words,
+                        onChanged: (_) => _update(),
+                      ),
+                    ),
+                  ],
                 ),
               ],
             ),
@@ -290,13 +269,14 @@ class _ContactPartnerStepState extends State<ContactPartnerStep> {
         ),
         const SizedBox(height: 16),
         Card(
+          margin: EdgeInsets.zero,
           child: Padding(
             padding: const EdgeInsets.all(16),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Partner Preferences',
+                  Strings.tr('Partner Preferences'),
                   style: theme.textTheme.titleSmall?.copyWith(
                     color: theme.colorScheme.primary,
                     fontWeight: FontWeight.w600,
@@ -308,10 +288,7 @@ class _ContactPartnerStepState extends State<ContactPartnerStep> {
                     Expanded(
                       child: TextFormField(
                         controller: _prefAgeCtrl,
-                        decoration: const InputDecoration(
-                          labelText: 'Preferred Age',
-                          hintText: 'e.g. 24-28 yrs',
-                        ),
+                        decoration: deco('Preferred Age', hint: 'e.g. 24-28 yrs'),
                         onChanged: (_) => _update(),
                       ),
                     ),
@@ -319,10 +296,7 @@ class _ContactPartnerStepState extends State<ContactPartnerStep> {
                     Expanded(
                       child: TextFormField(
                         controller: _prefHeightCtrl,
-                        decoration: const InputDecoration(
-                          labelText: 'Preferred Height',
-                          hintText: 'e.g. 5\'4" to 5\'8"',
-                        ),
+                        decoration: deco('Preferred Height', hint: "e.g. 5'4\" to 5'8\""),
                         onChanged: (_) => _update(),
                       ),
                     ),
@@ -331,41 +305,25 @@ class _ContactPartnerStepState extends State<ContactPartnerStep> {
                 const SizedBox(height: 12),
                 TextFormField(
                   controller: _prefEducationCtrl,
-                  decoration: const InputDecoration(
-                    labelText: 'Preferred Education',
-                    hintText: 'e.g. Graduate / Post Graduate',
-                    prefixIcon: Icon(Icons.school_outlined),
-                  ),
+                  decoration: deco('Preferred Education', hint: 'e.g. Graduate / Post Graduate', prefixIcon: const Icon(Icons.school_outlined)),
                   onChanged: (_) => _update(),
                 ),
                 const SizedBox(height: 12),
                 TextFormField(
                   controller: _prefOccupationCtrl,
-                  decoration: const InputDecoration(
-                    labelText: 'Preferred Occupation',
-                    hintText: 'e.g. Working Professional / Business',
-                    prefixIcon: Icon(Icons.work_outline),
-                  ),
+                  decoration: deco('Preferred Occupation', hint: 'e.g. Working Professional / Business', prefixIcon: const Icon(Icons.work_outline)),
                   onChanged: (_) => _update(),
                 ),
                 const SizedBox(height: 12),
                 TextFormField(
                   controller: _prefReligionCtrl,
-                  decoration: const InputDecoration(
-                    labelText: 'Preferred Caste / Religion',
-                    hintText: 'e.g. Hindu / No caste bar',
-                    prefixIcon: Icon(Icons.diversity_3_outlined),
-                  ),
+                  decoration: deco('Preferred Caste / Religion', hint: 'e.g. Hindu / No caste bar', prefixIcon: const Icon(Icons.diversity_3_outlined)),
                   onChanged: (_) => _update(),
                 ),
                 const SizedBox(height: 12),
                 TextFormField(
                   controller: _prefLocationCtrl,
-                  decoration: const InputDecoration(
-                    labelText: 'Preferred Location',
-                    hintText: 'e.g. Mumbai, Pune or Abroad',
-                    prefixIcon: Icon(Icons.location_city_outlined),
-                  ),
+                  decoration: deco('Preferred Location', hint: 'e.g. Mumbai, Pune or Abroad', prefixIcon: const Icon(Icons.location_city_outlined)),
                   onChanged: (_) => _update(),
                 ),
                 const SizedBox(height: 12),
@@ -384,55 +342,12 @@ class _ContactPartnerStepState extends State<ContactPartnerStep> {
           ),
         ),
         const SizedBox(height: 16),
-        Card(
-          child: Padding(
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      'Custom Fields',
-                      style: theme.textTheme.titleSmall?.copyWith(
-                        color: theme.colorScheme.primary,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                    TextButton.icon(
-                      onPressed: _showAddCustomFieldDialog,
-                      icon: const Icon(Icons.add),
-                      label: const Text('Add Field'),
-                    ),
-                  ],
-                ),
-                if (widget.biodata.customFields.isEmpty)
-                  Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 8),
-                    child: Text(
-                      'No custom fields added. Tap "Add Field" to include extra information (e.g. Passport status, Property details).',
-                      style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.onSurfaceVariant),
-                    ),
-                  )
-                else
-                  ...widget.biodata.customFields.asMap().entries.map((entry) {
-                    final index = entry.key;
-                    final field = entry.value;
-                    return ListTile(
-                      dense: true,
-                      contentPadding: EdgeInsets.zero,
-                      title: Text(field.label, style: const TextStyle(fontWeight: FontWeight.w600)),
-                      subtitle: Text('${field.value} (${field.section})'),
-                      trailing: IconButton(
-                        icon: const Icon(Icons.delete_outline, color: Colors.red),
-                        onPressed: () => _removeCustomField(index),
-                      ),
-                    );
-                  }),
-              ],
-            ),
-          ),
+        CustomFieldsEditor(
+          section: 'contact',
+          sectionLabel: 'Contact Details',
+          fields: widget.biodata.customFields,
+          onChanged: (fields) =>
+              widget.onUpdate(widget.biodata.copyWith(customFields: fields)),
         ),
         const SizedBox(height: 32),
       ],

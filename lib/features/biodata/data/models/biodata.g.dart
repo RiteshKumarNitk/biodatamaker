@@ -87,13 +87,25 @@ class BiodataAdapter extends TypeAdapter<Biodata> {
       photos: (fields[67] as List).cast<PhotoInfo>(),
       profilePhotoPath: fields[68] as String,
       customFields: (fields[69] as List).cast<CustomField>(),
+      // Fields 70+ were added later; tolerate records saved by older app
+      // versions that never wrote them (null -> default).
+      siblings: (fields[70] as List?)?.cast<Sibling>() ?? const <Sibling>[],
+      grandFatherName: fields[71] as String? ?? '',
+      grandFatherOccupation: fields[72] as String? ?? '',
+      grandMotherName: fields[73] as String? ?? '',
+      familyStatus: fields[74] as String? ?? '',
+      familyDescription: fields[75] as String? ?? '',
+      contactPerson: fields[76] as String? ?? '',
+      contactPersonRelation: fields[77] as String? ?? '',
+      alternateNumber: fields[78] as String? ?? '',
+      pinCode: fields[79] as String? ?? '',
     );
   }
 
   @override
   void write(BinaryWriter writer, Biodata obj) {
     writer
-      ..writeByte(70)
+      ..writeByte(80)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
@@ -233,7 +245,27 @@ class BiodataAdapter extends TypeAdapter<Biodata> {
       ..writeByte(68)
       ..write(obj.profilePhotoPath)
       ..writeByte(69)
-      ..write(obj.customFields);
+      ..write(obj.customFields)
+      ..writeByte(70)
+      ..write(obj.siblings)
+      ..writeByte(71)
+      ..write(obj.grandFatherName)
+      ..writeByte(72)
+      ..write(obj.grandFatherOccupation)
+      ..writeByte(73)
+      ..write(obj.grandMotherName)
+      ..writeByte(74)
+      ..write(obj.familyStatus)
+      ..writeByte(75)
+      ..write(obj.familyDescription)
+      ..writeByte(76)
+      ..write(obj.contactPerson)
+      ..writeByte(77)
+      ..write(obj.contactPersonRelation)
+      ..writeByte(78)
+      ..write(obj.alternateNumber)
+      ..writeByte(79)
+      ..write(obj.pinCode);
   }
 
   @override
@@ -329,6 +361,19 @@ _$BiodataImpl _$$BiodataImplFromJson(Map<String, dynamic> json) =>
               ?.map((e) => CustomField.fromJson(e as Map<String, dynamic>))
               .toList() ??
           const <CustomField>[],
+      siblings: (json['siblings'] as List<dynamic>?)
+              ?.map((e) => Sibling.fromJson(e as Map<String, dynamic>))
+              .toList() ??
+          const <Sibling>[],
+      grandFatherName: json['grandFatherName'] as String? ?? '',
+      grandFatherOccupation: json['grandFatherOccupation'] as String? ?? '',
+      grandMotherName: json['grandMotherName'] as String? ?? '',
+      familyStatus: json['familyStatus'] as String? ?? '',
+      familyDescription: json['familyDescription'] as String? ?? '',
+      contactPerson: json['contactPerson'] as String? ?? '',
+      contactPersonRelation: json['contactPersonRelation'] as String? ?? '',
+      alternateNumber: json['alternateNumber'] as String? ?? '',
+      pinCode: json['pinCode'] as String? ?? '',
     );
 
 Map<String, dynamic> _$$BiodataImplToJson(_$BiodataImpl instance) =>
@@ -403,4 +448,14 @@ Map<String, dynamic> _$$BiodataImplToJson(_$BiodataImpl instance) =>
       'photos': instance.photos,
       'profilePhotoPath': instance.profilePhotoPath,
       'customFields': instance.customFields,
+      'siblings': instance.siblings,
+      'grandFatherName': instance.grandFatherName,
+      'grandFatherOccupation': instance.grandFatherOccupation,
+      'grandMotherName': instance.grandMotherName,
+      'familyStatus': instance.familyStatus,
+      'familyDescription': instance.familyDescription,
+      'contactPerson': instance.contactPerson,
+      'contactPersonRelation': instance.contactPersonRelation,
+      'alternateNumber': instance.alternateNumber,
+      'pinCode': instance.pinCode,
     };

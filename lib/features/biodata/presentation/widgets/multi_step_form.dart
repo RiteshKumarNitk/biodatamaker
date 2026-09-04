@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 
+import 'package:biodata_maker/core/i18n/strings.dart';
 import 'package:biodata_maker/features/biodata/presentation/bloc/form_bloc.dart';
 import 'package:biodata_maker/features/biodata/presentation/widgets/steps/photo_step.dart';
 import 'package:biodata_maker/features/biodata/presentation/widgets/steps/basic_details_step.dart';
@@ -28,13 +29,13 @@ class _MultiStepFormState extends State<MultiStepForm> {
 
   static const _stepLabels = [
     'Photo',
-    'Basic Details',
+    'Personal',
     'Education',
     'Family',
     'Lifestyle',
-    'Contact & Prefs',
+    'Contact',
     'Template',
-    'Preview',
+    'Review',
     'Download',
   ];
 
@@ -78,7 +79,7 @@ class _MultiStepFormState extends State<MultiStepForm> {
               key: ValueKey(state.currentStep),
               currentStep: state.currentStep,
               totalSteps: BiodataFormState.totalSteps,
-              labels: _stepLabels,
+              labels: [for (final label in _stepLabels) Strings.tr(label)],
               icons: _stepIcons,
               onStepTapped: (step) {
                 context.read<BiodataFormBloc>().add(GoToStep(step));
@@ -117,7 +118,19 @@ class _MultiStepFormState extends State<MultiStepForm> {
               isSaving: state.isSaving,
               onBack: () => context.read<BiodataFormBloc>().add(const PrevStep()),
               onNext: () {
-                if (state.currentStep == BiodataFormState.totalSteps - 1) {
+                final name = (state.biodata?.fullName ?? '').trim();
+                final isLast = state.currentStep == BiodataFormState.totalSteps - 1;
+                if (name.isEmpty && (state.currentStep == 1 || isLast)) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text(
+                          Strings.tr('Please enter your full name to continue')),
+                      behavior: SnackBarBehavior.floating,
+                    ),
+                  );
+                  return;
+                }
+                if (isLast) {
                   context.read<BiodataFormBloc>().add(const SaveForm());
                 } else {
                   context.read<BiodataFormBloc>().add(const NextStep());
@@ -285,7 +298,7 @@ class _BottomNav extends StatelessWidget {
               child: OutlinedButton.icon(
                 onPressed: onBack,
                 icon: const Icon(Icons.arrow_back),
-                label: const Text('Back'),
+                label: Text(Strings.tr('Back')),
               ),
             )
           else
@@ -297,7 +310,9 @@ class _BottomNav extends StatelessWidget {
               icon: isSaving
                   ? const SizedBox(width: 16, height: 16, child: CircularProgressIndicator(strokeWidth: 2))
                   : Icon(isLastStep ? Icons.save : Icons.arrow_forward),
-              label: Text(isLastStep ? (isSaving ? 'Saving...' : 'Save') : 'Next'),
+              label: Text(isLastStep
+                  ? (isSaving ? Strings.tr('Saving...') : Strings.tr('Save'))
+                  : Strings.tr('Next')),
             ),
           ),
         ],

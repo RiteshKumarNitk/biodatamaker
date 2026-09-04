@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 
+import 'package:biodata_maker/core/i18n/strings.dart';
 import 'package:biodata_maker/core/services/service_locator.dart';
 import 'package:biodata_maker/features/biodata/data/models/biodata.dart';
 import 'package:biodata_maker/features/templates/data/models/theme_config.dart';
 import 'package:biodata_maker/features/templates/data/repositories/template_repository.dart';
 
 import 'package:biodata_maker/features/templates/data/models/theme_engine.dart';
+import 'package:biodata_maker/shared/widgets/biodata_renderer.dart';
 
 class TemplateStep extends StatefulWidget {
   final Biodata biodata;
@@ -18,7 +20,6 @@ class TemplateStep extends StatefulWidget {
 }
 
 class _TemplateStepState extends State<TemplateStep> {
-  final _repo = sl<TemplateRepository>();
   List<ThemeConfig> _templates = [];
   bool _isLoading = true;
 
@@ -28,9 +29,19 @@ class _TemplateStepState extends State<TemplateStep> {
     _loadTemplates();
   }
 
+  /// The currently selected template, falling back to the first available one.
+  ThemeConfig get _selectedTemplate {
+    if (_templates.isEmpty) return ThemeEngine.defaultTemplates.first;
+    return _templates.firstWhere(
+      (t) => t.id == widget.biodata.templateId,
+      orElse: () => _templates.first,
+    );
+  }
+
   void _loadTemplates() {
     try {
-      var templates = _repo.getAll();
+      final repo = sl<TemplateRepository>();
+      var templates = repo.getAll();
       if (templates.isEmpty) {
         templates = ThemeEngine.defaultTemplates;
       }
@@ -60,17 +71,23 @@ class _TemplateStepState extends State<TemplateStep> {
     return ListView(
       padding: const EdgeInsets.all(16),
       children: [
-        Text('Choose Template', style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600)),
+        Text(Strings.tr('Choose Template'), style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600)),
         const SizedBox(height: 4),
-        Text('Select a design template for your biodata', style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.onSurfaceVariant)),
+        Text(Strings.tr('Select a design template for your biodata'), style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.onSurfaceVariant)),
         const SizedBox(height: 16),
+        if (!_isLoading)
+          _LiveTemplatePreview(
+            biodata: widget.biodata,
+            template: _selectedTemplate,
+          ),
+        if (!_isLoading) const SizedBox(height: 16),
         Card(
           child: Padding(
             padding: const EdgeInsets.all(16),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('Choose a Template', style: theme.textTheme.titleSmall?.copyWith(color: theme.colorScheme.primary, fontWeight: FontWeight.w600)),
+                Text(Strings.tr('Choose a Template'), style: theme.textTheme.titleSmall?.copyWith(color: theme.colorScheme.primary, fontWeight: FontWeight.w600)),
                 const SizedBox(height: 12),
                 if (_isLoading)
                   const Center(child: CircularProgressIndicator())
@@ -80,7 +97,7 @@ class _TemplateStepState extends State<TemplateStep> {
                       children: [
                         Icon(Icons.dashboard_customize, size: 64, color: theme.colorScheme.onSurfaceVariant),
                         const SizedBox(height: 12),
-                        Text('No templates available', style: theme.textTheme.bodyLarge),
+                        Text(Strings.tr('No templates available'), style: theme.textTheme.bodyLarge),
                       ],
                     ),
                   )
@@ -102,6 +119,7 @@ class _TemplateStepState extends State<TemplateStep> {
                       final secondary = _colorFromInt(template.secondaryColor);
                       final bg = _colorFromInt(template.backgroundColor);
                       return GestureDetector(
+                        key: ValueKey('templateCard-${template.id}'),
                         onTap: () => widget.onUpdate(widget.biodata.copyWith(templateId: template.id)),
                         child: AnimatedContainer(
                           duration: const Duration(milliseconds: 200),
@@ -200,6 +218,98 @@ class _TemplateStepState extends State<TemplateStep> {
         ),
         const SizedBox(height: 32),
       ],
+    );
+  }
+}
+
+/// Renders the actual biodata (with everything the user has filled in) using
+/// the selected template's real background, fonts and layout, so choosing a
+/// template shows exactly how the PDF will look.
+class _LiveTemplatePreview extends StatelessWidget {
+  final Biodata biodata;
+  final ThemeConfig template;
+
+  const _LiveTemplatePreview({
+    required this.biodata,
+    required this.template,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Icon(
+                  Icons.visibility_outlined,
+                  size: 18,
+                  color: theme.colorScheme.primary,
+                ),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    Strings.tr('Live Preview'),
+                    style: theme.textTheme.titleSmall
+                        ?.copyWith(color: theme.colorScheme.primary, fontWeight: FontWeight.w600),
+                  ),
+                ),
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                  decoration: BoxDecoration(
+                    color: Color(template.primaryColor),
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: Text(
+                    template.name,
+                    style: TextStyle(
+                      color: Color(template.backgroundColor),
+                      fontSize: 11,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 4),
+            Text(
+              Strings.tr('This is how your filled details will appear in the PDF'),
+              style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.onSurfaceVariant),
+            ),
+            const SizedBox(height: 12),
+            Container(
+              key: const ValueKey('templateLivePreview'),
+              height: 420,
+              width: double.infinity,
+              decoration: BoxDecoration(
+                color: Color(template.backgroundColor),
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: theme.colorScheme.outlineVariant),
+                boxShadow: [
+                  BoxShadow(
+                    color: theme.colorScheme.shadow.withValues(alpha: 0.08),
+                    blurRadius: 8,
+                    offset: const Offset(0, 2),
+                  ),
+                ],
+              ),
+              clipBehavior: Clip.antiAlias,
+              child: IgnorePointer(
+                child: SingleChildScrollView(
+                  child: BiodataRenderer(
+                    biodata: biodata,
+                    theme: template,
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

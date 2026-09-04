@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
+import 'package:biodata_maker/core/i18n/strings.dart';
 import 'package:biodata_maker/core/services/service_locator.dart';
 import 'package:biodata_maker/features/biodata/data/models/biodata.dart';
+import 'package:biodata_maker/features/biodata/presentation/bloc/form_bloc.dart';
 import 'package:biodata_maker/features/templates/data/models/theme_config.dart';
 import 'package:biodata_maker/features/templates/data/models/theme_engine.dart';
 import 'package:biodata_maker/features/templates/data/repositories/template_repository.dart';
@@ -19,6 +22,28 @@ class PreviewStep extends StatefulWidget {
 class _PreviewStepState extends State<PreviewStep> {
   ThemeConfig? _template;
   bool _isLoading = true;
+
+  /// Maps the renderer's section keys to the wizard step that edits them.
+  /// Note: the 'additional' heading only holds legacy orphan custom fields and
+  /// has no dedicated form step, so it deliberately gets no edit button.
+  static const Map<String, int> _sectionSteps = {
+    'photo': 0,
+    'about': 4, // About Me lives on the Lifestyle step
+    'personal': 1,
+    'education': 2,
+    'family': 3,
+    'lifestyle': 4,
+    'contact': 5,
+    'partner_preference': 5, // edited together with Contact on its step
+  };
+
+  void _editSection(BuildContext context, String sectionKey) {
+    final step = _sectionSteps[sectionKey];
+    if (step == null) return;
+    // All form data stays in bloc state, so jumping back and returning to
+    // Review preserves everything the user has entered.
+    context.read<BiodataFormBloc>().add(GoToStep(step));
+  }
 
   @override
   void initState() {
@@ -51,18 +76,19 @@ class _PreviewStepState extends State<PreviewStep> {
       padding: const EdgeInsets.all(16),
       children: [
         Text(
-          'Preview',
+          Strings.tr('Preview'),
           style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600),
         ),
         const SizedBox(height: 4),
         Text(
-          'Review your complete marriage biodata design before generating the final PDF',
+          Strings.tr('Review your complete marriage biodata design before generating the final PDF'),
           style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.onSurfaceVariant),
         ),
         const SizedBox(height: 16),
         BiodataRenderer(
           biodata: widget.biodata,
           theme: t,
+          onEditSection: (sectionKey) => _editSection(context, sectionKey),
         ),
         const SizedBox(height: 32),
       ],

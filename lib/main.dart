@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:uuid/uuid.dart';
+import 'package:biodata_maker/core/i18n/strings.dart';
 import 'package:biodata_maker/core/services/hive_service.dart';
 import 'package:biodata_maker/core/services/service_locator.dart';
 import 'package:biodata_maker/core/theme/app_theme.dart';
@@ -42,6 +44,9 @@ void main() async {
   // Seed default templates on initial startup if empty
   await _seedTemplates(hiveService);
   await _seedAdmin(hiveService);
+
+  // Restore the persisted UI language before the first frame.
+  Strings.set(hiveService.getSettings('default_settings')?.language ?? Strings.en);
 
   runApp(const BiodataMakerApp());
 }
@@ -108,13 +113,30 @@ class _AppContent extends StatelessWidget {
               break;
           }
         }
-        return MaterialApp.router(
-          title: 'Biodata Maker',
-          debugShowCheckedModeBanner: false,
-          theme: AppTheme.lightTheme,
-          darkTheme: AppTheme.darkTheme,
-          themeMode: themeMode,
-          routerConfig: AppRouter.router,
+        // Rebuild with the active language whenever it changes (e.g. the user
+        // picks Hindi in Settings) so the whole tree re-localizes instantly.
+        return ValueListenableBuilder<String>(
+          valueListenable: Strings.notifier,
+          builder: (context, language, _) {
+            return MaterialApp.router(
+              title: Strings.tr('Biodata Maker'),
+              debugShowCheckedModeBanner: false,
+              theme: AppTheme.lightTheme,
+              darkTheme: AppTheme.darkTheme,
+              themeMode: themeMode,
+              locale: Locale(language),
+              supportedLocales: const [
+                Locale('en'),
+                Locale('hi'),
+              ],
+              localizationsDelegates: const [
+                GlobalMaterialLocalizations.delegate,
+                GlobalWidgetsLocalizations.delegate,
+                GlobalCupertinoLocalizations.delegate,
+              ],
+              routerConfig: AppRouter.router,
+            );
+          },
         );
       },
     );

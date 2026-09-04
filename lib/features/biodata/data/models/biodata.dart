@@ -3,6 +3,7 @@ import 'package:hive/hive.dart';
 
 import 'photo_info.dart';
 import 'custom_field.dart';
+import 'sibling.dart';
 
 part 'biodata.freezed.dart';
 part 'biodata.g.dart';
@@ -81,6 +82,16 @@ class Biodata with _$Biodata {
     @HiveField(67) @Default(<PhotoInfo>[]) List<PhotoInfo> photos,
     @HiveField(68) @Default('') String profilePhotoPath,
     @HiveField(69) @Default(<CustomField>[]) List<CustomField> customFields,
+    @HiveField(70) @Default(<Sibling>[]) List<Sibling> siblings,
+    @HiveField(71) @Default('') String grandFatherName,
+    @HiveField(72) @Default('') String grandFatherOccupation,
+    @HiveField(73) @Default('') String grandMotherName,
+    @HiveField(74) @Default('') String familyStatus,
+    @HiveField(75) @Default('') String familyDescription,
+    @HiveField(76) @Default('') String contactPerson,
+    @HiveField(77) @Default('') String contactPersonRelation,
+    @HiveField(78) @Default('') String alternateNumber,
+    @HiveField(79) @Default('') String pinCode,
   }) = _Biodata;
 
   factory Biodata.fromJson(Map<String, dynamic> json) => _$BiodataFromJson(json);

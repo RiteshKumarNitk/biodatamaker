@@ -5,6 +5,7 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:lottie/lottie.dart';
 
 import 'package:biodata_maker/core/constants/asset_constants.dart';
+import 'package:biodata_maker/core/i18n/strings.dart';
 
 import 'package:biodata_maker/core/services/service_locator.dart';
 import 'package:biodata_maker/features/auth/data/repositories/auth_repository.dart';
@@ -102,7 +103,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Text(
-            'Hello, $name',
+            '${Strings.tr('Hello')}, $name',
             style: TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.w600,
@@ -110,7 +111,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
             ),
           ),
           Text(
-            'Welcome to Biodata Maker',
+            Strings.tr('Welcome to Biodata Maker'),
             style: TextStyle(
               fontSize: 12,
               color: colorScheme.onSurfaceVariant,
@@ -251,7 +252,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 ),
               ),
               icon: const Icon(Icons.add),
-              label: const Text('Get Started'),
+              label: Text(Strings.tr('Get Started')),
             ).animate().fadeIn(duration: 400.ms, delay: 400.ms).slideY(
                   begin: 0.2,
                   end: 0,
@@ -283,8 +284,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
             child: _buildSectionHeader(
               context,
               icon: Icons.edit_note,
-              title: 'Continue Draft',
-              subtitle: '${state.draftBiodatas.length} pending',
+              title: Strings.tr('Continue Draft'),
+              subtitle:
+                  '${state.draftBiodatas.length} ${Strings.tr('pending')}',
               colorScheme: colorScheme,
             ),
           ),
@@ -304,8 +306,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
             child: _buildSectionHeader(
               context,
               icon: Icons.history,
-              title: 'Recent Biodatas',
-              subtitle: 'Last updated',
+              title: Strings.tr('Recent Biodatas'),
+              subtitle: Strings.tr('Last updated'),
               colorScheme: colorScheme,
             ),
           ),
@@ -330,8 +332,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
           child: _buildSectionHeader(
             context,
             icon: Icons.bolt,
-            title: 'Quick Actions',
-            subtitle: 'Jump to',
+            title: Strings.tr('Quick Actions'),
+            subtitle: Strings.tr('Jump to'),
             colorScheme: colorScheme,
           ),
         ),
