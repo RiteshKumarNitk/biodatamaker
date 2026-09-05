@@ -136,7 +136,11 @@ class _TemplateStepState extends State<TemplateStep> {
                                     BoxShadow(color: theme.colorScheme.primary.withValues(alpha: 0.1), blurRadius: 24, offset: const Offset(0, 8)),
                                   ]
                                 : [BoxShadow(color: theme.colorScheme.shadow.withValues(alpha: 0.08), blurRadius: 6, offset: const Offset(0, 2))],
+                            image: template.backgroundImage.isNotEmpty
+                                ? DecorationImage(image: AssetImage(template.backgroundImage), fit: BoxFit.cover)
+                                : null,
                           ),
+                          clipBehavior: Clip.antiAlias,
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [

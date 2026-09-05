@@ -49,13 +49,25 @@ class ThemeConfigAdapter extends TypeAdapter<ThemeConfig> {
       watermarkImage: fields[29] as String,
       isPublished: fields[30] as bool,
       displayOrder: fields[31] as int,
+      // Fields 32+ were added later; tolerate records saved by older app
+      // versions that never wrote them (null -> default).
+      continuationBackgroundMode: fields[32] as String? ?? 'none',
+      continuationBackgroundImage: fields[33] as String? ?? '',
+      photoRectLeft: fields[34] as double? ?? 40.0,
+      photoRectTop: fields[35] as double? ?? 40.0,
+      photoRectWidth: fields[36] as double? ?? 100.0,
+      photoRectHeight: fields[37] as double? ?? 120.0,
+      contentAreaLeft: fields[38] as double? ?? 40.0,
+      contentAreaTop: fields[39] as double? ?? 160.0,
+      contentAreaRight: fields[40] as double? ?? 40.0,
+      contentAreaBottom: fields[41] as double? ?? 40.0,
     );
   }
 
   @override
   void write(BinaryWriter writer, ThemeConfig obj) {
     writer
-      ..writeByte(32)
+      ..writeByte(42)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
@@ -119,7 +131,27 @@ class ThemeConfigAdapter extends TypeAdapter<ThemeConfig> {
       ..writeByte(30)
       ..write(obj.isPublished)
       ..writeByte(31)
-      ..write(obj.displayOrder);
+      ..write(obj.displayOrder)
+      ..writeByte(32)
+      ..write(obj.continuationBackgroundMode)
+      ..writeByte(33)
+      ..write(obj.continuationBackgroundImage)
+      ..writeByte(34)
+      ..write(obj.photoRectLeft)
+      ..writeByte(35)
+      ..write(obj.photoRectTop)
+      ..writeByte(36)
+      ..write(obj.photoRectWidth)
+      ..writeByte(37)
+      ..write(obj.photoRectHeight)
+      ..writeByte(38)
+      ..write(obj.contentAreaLeft)
+      ..writeByte(39)
+      ..write(obj.contentAreaTop)
+      ..writeByte(40)
+      ..write(obj.contentAreaRight)
+      ..writeByte(41)
+      ..write(obj.contentAreaBottom);
   }
 
   @override
@@ -187,6 +219,19 @@ _$ThemeConfigImpl _$$ThemeConfigImplFromJson(Map<String, dynamic> json) =>
       watermarkImage: json['watermarkImage'] as String? ?? '',
       isPublished: json['isPublished'] as bool? ?? true,
       displayOrder: (json['displayOrder'] as num?)?.toInt() ?? 0,
+      continuationBackgroundMode:
+          json['continuationBackgroundMode'] as String? ?? 'none',
+      continuationBackgroundImage:
+          json['continuationBackgroundImage'] as String? ?? '',
+      photoRectLeft: (json['photoRectLeft'] as num?)?.toDouble() ?? 40.0,
+      photoRectTop: (json['photoRectTop'] as num?)?.toDouble() ?? 40.0,
+      photoRectWidth: (json['photoRectWidth'] as num?)?.toDouble() ?? 100.0,
+      photoRectHeight: (json['photoRectHeight'] as num?)?.toDouble() ?? 120.0,
+      contentAreaLeft: (json['contentAreaLeft'] as num?)?.toDouble() ?? 40.0,
+      contentAreaTop: (json['contentAreaTop'] as num?)?.toDouble() ?? 160.0,
+      contentAreaRight: (json['contentAreaRight'] as num?)?.toDouble() ?? 40.0,
+      contentAreaBottom:
+          (json['contentAreaBottom'] as num?)?.toDouble() ?? 40.0,
     );
 
 Map<String, dynamic> _$$ThemeConfigImplToJson(_$ThemeConfigImpl instance) =>
@@ -223,4 +268,14 @@ Map<String, dynamic> _$$ThemeConfigImplToJson(_$ThemeConfigImpl instance) =>
       'watermarkImage': instance.watermarkImage,
       'isPublished': instance.isPublished,
       'displayOrder': instance.displayOrder,
+      'continuationBackgroundMode': instance.continuationBackgroundMode,
+      'continuationBackgroundImage': instance.continuationBackgroundImage,
+      'photoRectLeft': instance.photoRectLeft,
+      'photoRectTop': instance.photoRectTop,
+      'photoRectWidth': instance.photoRectWidth,
+      'photoRectHeight': instance.photoRectHeight,
+      'contentAreaLeft': instance.contentAreaLeft,
+      'contentAreaTop': instance.contentAreaTop,
+      'contentAreaRight': instance.contentAreaRight,
+      'contentAreaBottom': instance.contentAreaBottom,
     };

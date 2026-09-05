@@ -11,6 +11,8 @@ import 'package:biodata_maker/features/templates/data/models/theme_config.dart';
 import 'package:biodata_maker/features/templates/presentation/bloc/template_bloc.dart';
 import 'package:biodata_maker/features/templates/presentation/bloc/template_event.dart';
 import 'package:biodata_maker/features/templates/presentation/bloc/template_state.dart';
+import 'package:biodata_maker/shared/widgets/biodata_renderer.dart';
+import 'package:biodata_maker/shared/widgets/sample_biodata.dart';
 
 class TemplatesScreen extends StatelessWidget {
   const TemplatesScreen({super.key});
@@ -206,7 +208,11 @@ class _TemplateCard extends StatelessWidget {
                   color: primaryColor.withValues(alpha: 0.1),
                   borderRadius:
                       const BorderRadius.vertical(top: Radius.circular(16)),
+                  image: template.backgroundImage.isNotEmpty
+                      ? DecorationImage(image: AssetImage(template.backgroundImage), fit: BoxFit.cover)
+                      : null,
                 ),
+                clipBehavior: Clip.antiAlias,
                 child: Stack(
                   children: [
                     Positioned(
@@ -330,23 +336,19 @@ class _TemplateCard extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 24),
-              Center(
+              ConstrainedBox(
+                constraints: const BoxConstraints(maxHeight: 420),
                 child: Container(
-                  width: 120,
-                  height: 120,
                   decoration: BoxDecoration(
-                    color: Color(template.primaryColor),
-                    borderRadius: BorderRadius.circular(16),
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(color: Theme.of(context).colorScheme.outlineVariant),
                   ),
-                  child: Center(
-                    child: Text(
-                      template.name.isNotEmpty
-                          ? template.name[0].toUpperCase()
-                          : '?',
-                      style: GoogleFonts.playfairDisplay(
-                        color: Colors.white,
-                        fontSize: 48,
-                        fontWeight: FontWeight.bold,
+                  clipBehavior: Clip.antiAlias,
+                  child: IgnorePointer(
+                    child: SingleChildScrollView(
+                      child: BiodataRenderer(
+                        biodata: sampleBiodataForPreview,
+                        theme: template,
                       ),
                     ),
                   ),

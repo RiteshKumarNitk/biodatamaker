@@ -1,0 +1,3 @@
+Drop image-based template assets here as assets/templates/<template_id>/background.png
+(+ optional continuation.png). This folder is already declared in pubspec.yaml,
+so no pubspec changes are needed when adding a new template's images.

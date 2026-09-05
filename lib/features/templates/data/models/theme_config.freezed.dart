@@ -83,7 +83,30 @@ mixin _$ThemeConfig {
   @HiveField(30)
   bool get isPublished => throw _privateConstructorUsedError;
   @HiveField(31)
-  int get displayOrder => throw _privateConstructorUsedError;
+  int get displayOrder =>
+      throw _privateConstructorUsedError; // --- Image-based background template layout (only consulted when
+// backgroundImage is non-empty; see lib/shared/widgets/biodata_renderer.dart) ---
+  @HiveField(32)
+  String get continuationBackgroundMode =>
+      throw _privateConstructorUsedError; // 'none' | 'reuse' | 'separate'
+  @HiveField(33)
+  String get continuationBackgroundImage => throw _privateConstructorUsedError;
+  @HiveField(34)
+  double get photoRectLeft => throw _privateConstructorUsedError;
+  @HiveField(35)
+  double get photoRectTop => throw _privateConstructorUsedError;
+  @HiveField(36)
+  double get photoRectWidth => throw _privateConstructorUsedError;
+  @HiveField(37)
+  double get photoRectHeight => throw _privateConstructorUsedError;
+  @HiveField(38)
+  double get contentAreaLeft => throw _privateConstructorUsedError;
+  @HiveField(39)
+  double get contentAreaTop => throw _privateConstructorUsedError;
+  @HiveField(40)
+  double get contentAreaRight => throw _privateConstructorUsedError;
+  @HiveField(41)
+  double get contentAreaBottom => throw _privateConstructorUsedError;
 
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
   @JsonKey(ignore: true)
@@ -129,7 +152,17 @@ abstract class $ThemeConfigCopyWith<$Res> {
       @HiveField(28) String borderImage,
       @HiveField(29) String watermarkImage,
       @HiveField(30) bool isPublished,
-      @HiveField(31) int displayOrder});
+      @HiveField(31) int displayOrder,
+      @HiveField(32) String continuationBackgroundMode,
+      @HiveField(33) String continuationBackgroundImage,
+      @HiveField(34) double photoRectLeft,
+      @HiveField(35) double photoRectTop,
+      @HiveField(36) double photoRectWidth,
+      @HiveField(37) double photoRectHeight,
+      @HiveField(38) double contentAreaLeft,
+      @HiveField(39) double contentAreaTop,
+      @HiveField(40) double contentAreaRight,
+      @HiveField(41) double contentAreaBottom});
 }
 
 /// @nodoc
@@ -177,6 +210,16 @@ class _$ThemeConfigCopyWithImpl<$Res, $Val extends ThemeConfig>
     Object? watermarkImage = null,
     Object? isPublished = null,
     Object? displayOrder = null,
+    Object? continuationBackgroundMode = null,
+    Object? continuationBackgroundImage = null,
+    Object? photoRectLeft = null,
+    Object? photoRectTop = null,
+    Object? photoRectWidth = null,
+    Object? photoRectHeight = null,
+    Object? contentAreaLeft = null,
+    Object? contentAreaTop = null,
+    Object? contentAreaRight = null,
+    Object? contentAreaBottom = null,
   }) {
     return _then(_value.copyWith(
       id: null == id
@@ -307,6 +350,46 @@ class _$ThemeConfigCopyWithImpl<$Res, $Val extends ThemeConfig>
           ? _value.displayOrder
           : displayOrder // ignore: cast_nullable_to_non_nullable
               as int,
+      continuationBackgroundMode: null == continuationBackgroundMode
+          ? _value.continuationBackgroundMode
+          : continuationBackgroundMode // ignore: cast_nullable_to_non_nullable
+              as String,
+      continuationBackgroundImage: null == continuationBackgroundImage
+          ? _value.continuationBackgroundImage
+          : continuationBackgroundImage // ignore: cast_nullable_to_non_nullable
+              as String,
+      photoRectLeft: null == photoRectLeft
+          ? _value.photoRectLeft
+          : photoRectLeft // ignore: cast_nullable_to_non_nullable
+              as double,
+      photoRectTop: null == photoRectTop
+          ? _value.photoRectTop
+          : photoRectTop // ignore: cast_nullable_to_non_nullable
+              as double,
+      photoRectWidth: null == photoRectWidth
+          ? _value.photoRectWidth
+          : photoRectWidth // ignore: cast_nullable_to_non_nullable
+              as double,
+      photoRectHeight: null == photoRectHeight
+          ? _value.photoRectHeight
+          : photoRectHeight // ignore: cast_nullable_to_non_nullable
+              as double,
+      contentAreaLeft: null == contentAreaLeft
+          ? _value.contentAreaLeft
+          : contentAreaLeft // ignore: cast_nullable_to_non_nullable
+              as double,
+      contentAreaTop: null == contentAreaTop
+          ? _value.contentAreaTop
+          : contentAreaTop // ignore: cast_nullable_to_non_nullable
+              as double,
+      contentAreaRight: null == contentAreaRight
+          ? _value.contentAreaRight
+          : contentAreaRight // ignore: cast_nullable_to_non_nullable
+              as double,
+      contentAreaBottom: null == contentAreaBottom
+          ? _value.contentAreaBottom
+          : contentAreaBottom // ignore: cast_nullable_to_non_nullable
+              as double,
     ) as $Val);
   }
 }
@@ -351,7 +434,17 @@ abstract class _$$ThemeConfigImplCopyWith<$Res>
       @HiveField(28) String borderImage,
       @HiveField(29) String watermarkImage,
       @HiveField(30) bool isPublished,
-      @HiveField(31) int displayOrder});
+      @HiveField(31) int displayOrder,
+      @HiveField(32) String continuationBackgroundMode,
+      @HiveField(33) String continuationBackgroundImage,
+      @HiveField(34) double photoRectLeft,
+      @HiveField(35) double photoRectTop,
+      @HiveField(36) double photoRectWidth,
+      @HiveField(37) double photoRectHeight,
+      @HiveField(38) double contentAreaLeft,
+      @HiveField(39) double contentAreaTop,
+      @HiveField(40) double contentAreaRight,
+      @HiveField(41) double contentAreaBottom});
 }
 
 /// @nodoc
@@ -397,6 +490,16 @@ class __$$ThemeConfigImplCopyWithImpl<$Res>
     Object? watermarkImage = null,
     Object? isPublished = null,
     Object? displayOrder = null,
+    Object? continuationBackgroundMode = null,
+    Object? continuationBackgroundImage = null,
+    Object? photoRectLeft = null,
+    Object? photoRectTop = null,
+    Object? photoRectWidth = null,
+    Object? photoRectHeight = null,
+    Object? contentAreaLeft = null,
+    Object? contentAreaTop = null,
+    Object? contentAreaRight = null,
+    Object? contentAreaBottom = null,
   }) {
     return _then(_$ThemeConfigImpl(
       id: null == id
@@ -527,6 +630,46 @@ class __$$ThemeConfigImplCopyWithImpl<$Res>
           ? _value.displayOrder
           : displayOrder // ignore: cast_nullable_to_non_nullable
               as int,
+      continuationBackgroundMode: null == continuationBackgroundMode
+          ? _value.continuationBackgroundMode
+          : continuationBackgroundMode // ignore: cast_nullable_to_non_nullable
+              as String,
+      continuationBackgroundImage: null == continuationBackgroundImage
+          ? _value.continuationBackgroundImage
+          : continuationBackgroundImage // ignore: cast_nullable_to_non_nullable
+              as String,
+      photoRectLeft: null == photoRectLeft
+          ? _value.photoRectLeft
+          : photoRectLeft // ignore: cast_nullable_to_non_nullable
+              as double,
+      photoRectTop: null == photoRectTop
+          ? _value.photoRectTop
+          : photoRectTop // ignore: cast_nullable_to_non_nullable
+              as double,
+      photoRectWidth: null == photoRectWidth
+          ? _value.photoRectWidth
+          : photoRectWidth // ignore: cast_nullable_to_non_nullable
+              as double,
+      photoRectHeight: null == photoRectHeight
+          ? _value.photoRectHeight
+          : photoRectHeight // ignore: cast_nullable_to_non_nullable
+              as double,
+      contentAreaLeft: null == contentAreaLeft
+          ? _value.contentAreaLeft
+          : contentAreaLeft // ignore: cast_nullable_to_non_nullable
+              as double,
+      contentAreaTop: null == contentAreaTop
+          ? _value.contentAreaTop
+          : contentAreaTop // ignore: cast_nullable_to_non_nullable
+              as double,
+      contentAreaRight: null == contentAreaRight
+          ? _value.contentAreaRight
+          : contentAreaRight // ignore: cast_nullable_to_non_nullable
+              as double,
+      contentAreaBottom: null == contentAreaBottom
+          ? _value.contentAreaBottom
+          : contentAreaBottom // ignore: cast_nullable_to_non_nullable
+              as double,
     ));
   }
 }
@@ -574,7 +717,17 @@ class _$ThemeConfigImpl implements _ThemeConfig {
       @HiveField(28) this.borderImage = '',
       @HiveField(29) this.watermarkImage = '',
       @HiveField(30) this.isPublished = true,
-      @HiveField(31) this.displayOrder = 0})
+      @HiveField(31) this.displayOrder = 0,
+      @HiveField(32) this.continuationBackgroundMode = 'none',
+      @HiveField(33) this.continuationBackgroundImage = '',
+      @HiveField(34) this.photoRectLeft = 40.0,
+      @HiveField(35) this.photoRectTop = 40.0,
+      @HiveField(36) this.photoRectWidth = 100.0,
+      @HiveField(37) this.photoRectHeight = 120.0,
+      @HiveField(38) this.contentAreaLeft = 40.0,
+      @HiveField(39) this.contentAreaTop = 160.0,
+      @HiveField(40) this.contentAreaRight = 40.0,
+      @HiveField(41) this.contentAreaBottom = 40.0})
       : _sectionOrder = sectionOrder,
         _hiddenFields = hiddenFields,
         _labelOverrides = labelOverrides;
@@ -725,10 +878,53 @@ class _$ThemeConfigImpl implements _ThemeConfig {
   @JsonKey()
   @HiveField(31)
   final int displayOrder;
+// --- Image-based background template layout (only consulted when
+// backgroundImage is non-empty; see lib/shared/widgets/biodata_renderer.dart) ---
+  @override
+  @JsonKey()
+  @HiveField(32)
+  final String continuationBackgroundMode;
+// 'none' | 'reuse' | 'separate'
+  @override
+  @JsonKey()
+  @HiveField(33)
+  final String continuationBackgroundImage;
+  @override
+  @JsonKey()
+  @HiveField(34)
+  final double photoRectLeft;
+  @override
+  @JsonKey()
+  @HiveField(35)
+  final double photoRectTop;
+  @override
+  @JsonKey()
+  @HiveField(36)
+  final double photoRectWidth;
+  @override
+  @JsonKey()
+  @HiveField(37)
+  final double photoRectHeight;
+  @override
+  @JsonKey()
+  @HiveField(38)
+  final double contentAreaLeft;
+  @override
+  @JsonKey()
+  @HiveField(39)
+  final double contentAreaTop;
+  @override
+  @JsonKey()
+  @HiveField(40)
+  final double contentAreaRight;
+  @override
+  @JsonKey()
+  @HiveField(41)
+  final double contentAreaBottom;
 
   @override
   String toString() {
-    return 'ThemeConfig(id: $id, name: $name, category: $category, isPremium: $isPremium, primaryColor: $primaryColor, secondaryColor: $secondaryColor, backgroundColor: $backgroundColor, textColor: $textColor, subtitleColor: $subtitleColor, headingFont: $headingFont, bodyFont: $bodyFont, headingFontSize: $headingFontSize, bodyFontSize: $bodyFontSize, photoShape: $photoShape, borderStyle: $borderStyle, sectionSpacing: $sectionSpacing, fieldSpacing: $fieldSpacing, margin: $margin, headerDecoration: $headerDecoration, footerDecoration: $footerDecoration, dividerStyle: $dividerStyle, showWatermark: $showWatermark, watermarkText: $watermarkText, sectionOrder: $sectionOrder, hiddenFields: $hiddenFields, labelOverrides: $labelOverrides, iconStyle: $iconStyle, backgroundImage: $backgroundImage, borderImage: $borderImage, watermarkImage: $watermarkImage, isPublished: $isPublished, displayOrder: $displayOrder)';
+    return 'ThemeConfig(id: $id, name: $name, category: $category, isPremium: $isPremium, primaryColor: $primaryColor, secondaryColor: $secondaryColor, backgroundColor: $backgroundColor, textColor: $textColor, subtitleColor: $subtitleColor, headingFont: $headingFont, bodyFont: $bodyFont, headingFontSize: $headingFontSize, bodyFontSize: $bodyFontSize, photoShape: $photoShape, borderStyle: $borderStyle, sectionSpacing: $sectionSpacing, fieldSpacing: $fieldSpacing, margin: $margin, headerDecoration: $headerDecoration, footerDecoration: $footerDecoration, dividerStyle: $dividerStyle, showWatermark: $showWatermark, watermarkText: $watermarkText, sectionOrder: $sectionOrder, hiddenFields: $hiddenFields, labelOverrides: $labelOverrides, iconStyle: $iconStyle, backgroundImage: $backgroundImage, borderImage: $borderImage, watermarkImage: $watermarkImage, isPublished: $isPublished, displayOrder: $displayOrder, continuationBackgroundMode: $continuationBackgroundMode, continuationBackgroundImage: $continuationBackgroundImage, photoRectLeft: $photoRectLeft, photoRectTop: $photoRectTop, photoRectWidth: $photoRectWidth, photoRectHeight: $photoRectHeight, contentAreaLeft: $contentAreaLeft, contentAreaTop: $contentAreaTop, contentAreaRight: $contentAreaRight, contentAreaBottom: $contentAreaBottom)';
   }
 
   @override
@@ -796,7 +992,29 @@ class _$ThemeConfigImpl implements _ThemeConfig {
             (identical(other.isPublished, isPublished) ||
                 other.isPublished == isPublished) &&
             (identical(other.displayOrder, displayOrder) ||
-                other.displayOrder == displayOrder));
+                other.displayOrder == displayOrder) &&
+            (identical(other.continuationBackgroundMode, continuationBackgroundMode) ||
+                other.continuationBackgroundMode ==
+                    continuationBackgroundMode) &&
+            (identical(other.continuationBackgroundImage, continuationBackgroundImage) ||
+                other.continuationBackgroundImage ==
+                    continuationBackgroundImage) &&
+            (identical(other.photoRectLeft, photoRectLeft) ||
+                other.photoRectLeft == photoRectLeft) &&
+            (identical(other.photoRectTop, photoRectTop) ||
+                other.photoRectTop == photoRectTop) &&
+            (identical(other.photoRectWidth, photoRectWidth) ||
+                other.photoRectWidth == photoRectWidth) &&
+            (identical(other.photoRectHeight, photoRectHeight) ||
+                other.photoRectHeight == photoRectHeight) &&
+            (identical(other.contentAreaLeft, contentAreaLeft) ||
+                other.contentAreaLeft == contentAreaLeft) &&
+            (identical(other.contentAreaTop, contentAreaTop) ||
+                other.contentAreaTop == contentAreaTop) &&
+            (identical(other.contentAreaRight, contentAreaRight) ||
+                other.contentAreaRight == contentAreaRight) &&
+            (identical(other.contentAreaBottom, contentAreaBottom) ||
+                other.contentAreaBottom == contentAreaBottom));
   }
 
   @JsonKey(ignore: true)
@@ -834,7 +1052,17 @@ class _$ThemeConfigImpl implements _ThemeConfig {
         borderImage,
         watermarkImage,
         isPublished,
-        displayOrder
+        displayOrder,
+        continuationBackgroundMode,
+        continuationBackgroundImage,
+        photoRectLeft,
+        photoRectTop,
+        photoRectWidth,
+        photoRectHeight,
+        contentAreaLeft,
+        contentAreaTop,
+        contentAreaRight,
+        contentAreaBottom
       ]);
 
   @JsonKey(ignore: true)
@@ -884,7 +1112,17 @@ abstract class _ThemeConfig implements ThemeConfig {
       @HiveField(28) final String borderImage,
       @HiveField(29) final String watermarkImage,
       @HiveField(30) final bool isPublished,
-      @HiveField(31) final int displayOrder}) = _$ThemeConfigImpl;
+      @HiveField(31) final int displayOrder,
+      @HiveField(32) final String continuationBackgroundMode,
+      @HiveField(33) final String continuationBackgroundImage,
+      @HiveField(34) final double photoRectLeft,
+      @HiveField(35) final double photoRectTop,
+      @HiveField(36) final double photoRectWidth,
+      @HiveField(37) final double photoRectHeight,
+      @HiveField(38) final double contentAreaLeft,
+      @HiveField(39) final double contentAreaTop,
+      @HiveField(40) final double contentAreaRight,
+      @HiveField(41) final double contentAreaBottom}) = _$ThemeConfigImpl;
 
   factory _ThemeConfig.fromJson(Map<String, dynamic> json) =
       _$ThemeConfigImpl.fromJson;
@@ -985,6 +1223,37 @@ abstract class _ThemeConfig implements ThemeConfig {
   @override
   @HiveField(31)
   int get displayOrder;
+  @override // --- Image-based background template layout (only consulted when
+// backgroundImage is non-empty; see lib/shared/widgets/biodata_renderer.dart) ---
+  @HiveField(32)
+  String get continuationBackgroundMode;
+  @override // 'none' | 'reuse' | 'separate'
+  @HiveField(33)
+  String get continuationBackgroundImage;
+  @override
+  @HiveField(34)
+  double get photoRectLeft;
+  @override
+  @HiveField(35)
+  double get photoRectTop;
+  @override
+  @HiveField(36)
+  double get photoRectWidth;
+  @override
+  @HiveField(37)
+  double get photoRectHeight;
+  @override
+  @HiveField(38)
+  double get contentAreaLeft;
+  @override
+  @HiveField(39)
+  double get contentAreaTop;
+  @override
+  @HiveField(40)
+  double get contentAreaRight;
+  @override
+  @HiveField(41)
+  double get contentAreaBottom;
   @override
   @JsonKey(ignore: true)
   _$$ThemeConfigImplCopyWith<_$ThemeConfigImpl> get copyWith =>

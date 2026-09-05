@@ -40,6 +40,18 @@ class ThemeConfig with _$ThemeConfig {
     @HiveField(29) @Default('') String watermarkImage,
     @HiveField(30) @Default(true) bool isPublished,
     @HiveField(31) @Default(0) int displayOrder,
+    // --- Image-based background template layout (only consulted when
+    // backgroundImage is non-empty; see lib/shared/widgets/biodata_renderer.dart) ---
+    @HiveField(32) @Default('none') String continuationBackgroundMode, // 'none' | 'reuse' | 'separate'
+    @HiveField(33) @Default('') String continuationBackgroundImage,
+    @HiveField(34) @Default(40.0) double photoRectLeft,
+    @HiveField(35) @Default(40.0) double photoRectTop,
+    @HiveField(36) @Default(100.0) double photoRectWidth,
+    @HiveField(37) @Default(120.0) double photoRectHeight,
+    @HiveField(38) @Default(40.0) double contentAreaLeft,
+    @HiveField(39) @Default(160.0) double contentAreaTop,
+    @HiveField(40) @Default(40.0) double contentAreaRight,
+    @HiveField(41) @Default(40.0) double contentAreaBottom,
   }) = _ThemeConfig;
 
   factory ThemeConfig.fromJson(Map<String, dynamic> json) => _$ThemeConfigFromJson(json);

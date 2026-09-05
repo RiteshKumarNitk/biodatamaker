@@ -2,6 +2,7 @@ import 'dart:io';
 import 'dart:typed_data';
 import 'dart:math' as math;
 
+import 'package:flutter/services.dart' show rootBundle;
 import 'package:path_provider/path_provider.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
@@ -24,23 +25,51 @@ class PdfService {
       profileImage = await _loadProfileImage(biodata.profilePhotoPath);
     }
 
+    // PageTheme's build callbacks are synchronous, so background-image
+    // assets must be loaded up front (same reason profileImage is above).
+    pw.MemoryImage? backgroundImage;
+    if (theme.backgroundImage.isNotEmpty) {
+      backgroundImage = await _loadAssetImage(theme.backgroundImage);
+    }
+    pw.MemoryImage? continuationBackgroundImage;
+    if (theme.continuationBackgroundMode == 'separate' && theme.continuationBackgroundImage.isNotEmpty) {
+      continuationBackgroundImage = await _loadAssetImage(theme.continuationBackgroundImage);
+    }
+
     final font = pw.Font.helvetica();
+    final displayName = biodata.fullName.isNotEmpty ? biodata.fullName : biodata.name;
+    final useImageLayout = theme.backgroundImage.isNotEmpty;
 
     // MultiPage splits content between the blocks returned by
     // BiodataRenderer.toPdfWidgets: each block is small and unbreakable, so
     // content longer than one page flows cleanly onto further pages instead of
     // being clipped. PageTheme keeps the themed background (and frame) painted
     // on every page, and the footer adds "Page X of Y".
+    //
+    // MultiPage margin is a single EdgeInsets for the whole document (it
+    // cannot vary per page), so an image template's continuation-page art
+    // must be designed to work within the same contentArea insets as page 1.
     pdf.addPage(
       pw.MultiPage(
         pageTheme: pw.PageTheme(
           pageFormat: PdfPageFormat.a4,
-          margin: pw.EdgeInsets.all(theme.margin),
+          margin: useImageLayout
+              ? pw.EdgeInsets.fromLTRB(theme.contentAreaLeft, theme.contentAreaTop, theme.contentAreaRight, theme.contentAreaBottom)
+              : pw.EdgeInsets.all(theme.margin),
           theme: pw.ThemeData.withFont(base: font),
-          buildBackground: (_) => _buildPageBackground(theme),
-          buildForeground: theme.showWatermark && theme.watermarkText.isNotEmpty
-              ? (_) => _buildWatermark(theme, font)
-              : null,
+          buildBackground: (context) => _buildPageBackground(
+            theme,
+            isFirstPage: context.pageNumber == 1,
+            backgroundImage: backgroundImage,
+            continuationBackgroundImage: continuationBackgroundImage,
+          ),
+          buildForeground: (context) => _buildPageForeground(
+            context,
+            theme,
+            font,
+            profileImage: profileImage,
+            displayName: displayName,
+          ),
         ),
         footer: (context) => _buildPageFooter(context, theme, font),
         build: (_) => BiodataRenderer.toPdfWidgets(biodata, theme, profileImage: profileImage),
@@ -50,18 +79,86 @@ class PdfService {
     return pdf.save();
   }
 
-  /// Fills the whole content area with the theme background on every page and,
-  /// unless the theme opts out, draws the subtle frame border around it.
-  static pw.Widget _buildPageBackground(ThemeConfig theme) {
+  /// Fills the whole content area with the theme background on every page.
+  /// Legacy (no backgroundImage) templates keep the exact solid-color +
+  /// frame-border look; image templates fill with the page-1 background
+  /// image, or, on page 2+, whichever continuation strategy the template
+  /// configures (reuse the main image, a separate continuation image, or
+  /// none at all).
+  static pw.Widget _buildPageBackground(
+    ThemeConfig theme, {
+    required bool isFirstPage,
+    pw.MemoryImage? backgroundImage,
+    pw.MemoryImage? continuationBackgroundImage,
+  }) {
+    pw.MemoryImage? pageImage;
+    if (isFirstPage) {
+      pageImage = backgroundImage;
+    } else {
+      switch (theme.continuationBackgroundMode) {
+        case 'separate':
+          pageImage = continuationBackgroundImage ?? backgroundImage;
+          break;
+        case 'reuse':
+          pageImage = backgroundImage;
+          break;
+        default:
+          pageImage = null;
+      }
+    }
+
     return pw.Container(
       decoration: pw.BoxDecoration(
         color: PdfColor.fromInt(theme.backgroundColor),
-        borderRadius: pw.BorderRadius.circular(10),
-        border: theme.borderStyle == 'none'
+        image: pageImage != null ? pw.DecorationImage(image: pageImage, fit: pw.BoxFit.cover) : null,
+        borderRadius: pageImage != null ? null : pw.BorderRadius.circular(10),
+        border: pageImage != null || theme.borderStyle == 'none'
             ? null
             : pw.Border.all(color: PdfColor.fromInt(theme.primaryColor), width: 1.2),
       ),
     );
+  }
+
+  /// Page overlay layer: the profile photo (image templates only, page 1
+  /// only — biodata photos aren't repeated on continuation pages) stacked
+  /// with the existing watermark.
+  static pw.Widget _buildPageForeground(
+    pw.Context context,
+    ThemeConfig theme,
+    pw.Font font, {
+    required pw.MemoryImage? profileImage,
+    required String displayName,
+  }) {
+    final showPhotoOverlay = theme.backgroundImage.isNotEmpty && context.pageNumber == 1;
+    final showWatermark = theme.showWatermark && theme.watermarkText.isNotEmpty;
+    if (!showPhotoOverlay && !showWatermark) return pw.SizedBox();
+
+    return pw.Stack(
+      children: [
+        if (showPhotoOverlay)
+          pw.Positioned(
+            left: theme.photoRectLeft,
+            top: theme.photoRectTop,
+            child: BiodataRenderer.pdfPhotoBox(
+              theme,
+              profileImage,
+              displayName,
+              width: theme.photoRectWidth,
+              height: theme.photoRectHeight,
+            ),
+          ),
+        if (showWatermark) _buildWatermark(theme, font),
+      ],
+    );
+  }
+
+  Future<pw.MemoryImage?> _loadAssetImage(String assetPath) async {
+    try {
+      final data = await rootBundle.load(assetPath);
+      return pw.MemoryImage(data.buffer.asUint8List());
+    } catch (_) {
+      return null;
+    }
   }
 
   /// A fixed-height slot at the bottom of every page showing "Page X of Y"

@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:pdf/widgets.dart' as pw;
@@ -146,6 +147,10 @@ class BiodataRenderer extends StatelessWidget {
     final text = Color(theme.textColor);
     final subtitle = Color(theme.subtitleColor);
 
+    if (theme.backgroundImage.isNotEmpty) {
+      return _buildImageModeLayout(context, primary, text, subtitle);
+    }
+
     return Card(
       margin: EdgeInsets.zero,
       child: Container(
@@ -159,6 +164,79 @@ class BiodataRenderer extends StatelessWidget {
     );
   }
 
+  /// Renders a background-image template: the image as a full-bleed page
+  /// layer (locked to A4 proportions), the profile photo positioned per
+  /// [ThemeConfig.photoRectLeft]/etc, and the dynamic biodata content
+  /// (reusing the same section-loop body as the legacy renderer) padded
+  /// inside [ThemeConfig.contentAreaLeft]/etc. All rect/inset values are
+  /// authored in PDF points on the real A4 page and scaled uniformly to
+  /// whatever size this widget is actually laid out at.
+  Widget _buildImageModeLayout(BuildContext context, Color primary, Color text, Color subtitle) {
+    final displayName = biodata.fullName.isNotEmpty ? biodata.fullName : biodata.name;
+    return Card(
+      margin: EdgeInsets.zero,
+      clipBehavior: Clip.antiAlias,
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          final scale = constraints.maxWidth / PdfPageFormat.a4.width;
+          return AspectRatio(
+            aspectRatio: PdfPageFormat.a4.width / PdfPageFormat.a4.height,
+            child: Stack(
+              children: [
+                Positioned.fill(
+                  child: Image.asset(
+                    theme.backgroundImage,
+                    fit: BoxFit.cover,
+                    errorBuilder: (_, __, ___) => Container(color: Color(theme.backgroundColor)),
+                  ),
+                ),
+                Positioned(
+                  left: theme.photoRectLeft * scale,
+                  top: theme.photoRectTop * scale,
+                  width: theme.photoRectWidth * scale,
+                  height: theme.photoRectHeight * scale,
+                  child: _flutterPhotoBox(theme, biodata, primary, displayName),
+                ),
+                Positioned(
+                  left: theme.contentAreaLeft * scale,
+                  top: theme.contentAreaTop * scale,
+                  right: theme.contentAreaRight * scale,
+                  bottom: theme.contentAreaBottom * scale,
+                  child: SingleChildScrollView(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: _buildFlutterSections(context, biodata, theme, primary, text, subtitle, onEditSection, includePhotoInHeader: false),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          );
+        },
+      ),
+    );
+  }
+
+  /// The profile-photo visual (image with shape clip, or an initials
+  /// fallback), shared by the legacy inline header and the image-mode photo
+  /// overlay.
+  static Widget _flutterPhotoBox(ThemeConfig theme, Biodata biodata, Color primary, String displayName) {
+    final borderRadius = theme.photoShape == 'circle' ? BorderRadius.circular(1000) : BorderRadius.circular(12);
+    return Container(
+      decoration: BoxDecoration(
+        color: biodata.profilePhotoPath.isNotEmpty ? null : primary,
+        borderRadius: borderRadius,
+        border: biodata.profilePhotoPath.isNotEmpty ? Border.all(color: primary, width: 2) : null,
+      ),
+      child: biodata.profilePhotoPath.isNotEmpty
+          ? ClipRRect(
+              borderRadius: borderRadius,
+              child: Image.file(File(biodata.profilePhotoPath), fit: BoxFit.cover, errorBuilder: (_, __, ___) => _initialsWidget(displayName, primary)),
+            )
+          : Center(child: _initialsWidget(displayName, Colors.white)),
+    );
+  }
+
   static List<Widget> _buildFlutterSections(
     BuildContext context,
     Biodata biodata,
@@ -166,13 +244,17 @@ class BiodataRenderer extends StatelessWidget {
     Color primary,
     Color text,
     Color subtitle,
-    void Function(String sectionKey)? onEditSection,
-  ) {
+    void Function(String sectionKey)? onEditSection, {
+    bool includePhotoInHeader = true,
+  }) {
     final widgets = <Widget>[];
     final displayName = biodata.fullName.isNotEmpty ? biodata.fullName : biodata.name;
 
-    // Header (photo + name block); gains an edit button in review mode
-    final header = _buildFlutterHeader(biodata, theme, primary, text, subtitle, displayName);
+    // Header (photo + name block, or text-only when the photo is positioned
+    // independently by the image-mode layout); gains an edit button in review mode.
+    final header = includePhotoInHeader
+        ? _buildFlutterHeader(biodata, theme, primary, text, subtitle, displayName)
+        : _buildFlutterHeaderTextOnly(biodata, theme, text, subtitle, displayName);
     widgets.add(onEditSection == null
         ? header
         : Row(
@@ -321,6 +403,27 @@ class BiodataRenderer extends StatelessWidget {
     );
   }
 
+  /// Header text block with no inline photo, used by image-mode templates
+  /// where the photo is positioned independently (see [_buildImageModeLayout]).
+  static Widget _buildFlutterHeaderTextOnly(
+    Biodata biodata, ThemeConfig theme, Color text, Color subtitle, String displayName,
+  ) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(displayName, style: GoogleFonts.playfairDisplay(fontSize: theme.headingFontSize, color: text, fontWeight: FontWeight.bold)),
+        if (biodata.age.isNotEmpty || biodata.gender.isNotEmpty) ...[
+          const SizedBox(height: 4),
+          Text([biodata.age, biodata.gender].where((s) => s.isNotEmpty).join(' | '), style: GoogleFonts.poppins(fontSize: theme.bodyFontSize, color: subtitle)),
+        ],
+        if (biodata.occupation.isNotEmpty) ...[
+          const SizedBox(height: 4),
+          Text(biodata.occupation, style: GoogleFonts.poppins(fontSize: theme.bodyFontSize, color: subtitle)),
+        ],
+      ],
+    );
+  }
+
   static Widget _initialsWidget(String name, Color color) {
     final initials = name.isEmpty ? '?' : name.trim().split(RegExp(r'\s+')).map((s) => s[0]).take(2).join().toUpperCase();
     return Text(initials, style: GoogleFonts.playfairDisplay(fontSize: 32, color: color, fontWeight: FontWeight.bold));
@@ -434,9 +537,46 @@ class BiodataRenderer extends StatelessWidget {
   // Chunk caps keep any single PDF block far below the usable page height:
   // wrapped lines plus explicit newlines mean a text of N characters can still
   // render ~N/30 lines, and a block between the usable height and the full
-  // page height makes MultiPage retry forever (TooManyPagesException).
+  // page height makes MultiPage retry forever (TooManyPagesException). These
+  // are tuned for the usable content *area* a normal 20pt margin leaves on an
+  // A4 page; _pdfChunkCharsFor scales them down (by area, not just height —
+  // a narrower content column needs more vertical space per character too)
+  // for templates whose margin (or, in image mode, contentArea insets)
+  // leaves substantially less.
   static const int _pdfRowChunkChars = 900;
   static const int _pdfParagraphChunkChars = 1100;
+  static const double _pdfLegacyMargin = 20;
+
+  /// Row/paragraph chunk-size caps scaled to this theme's actual usable page
+  /// area, so a template with a tall decorative header (large
+  /// contentAreaTop) or narrow safe area can't produce a single chunk taller
+  /// than one page (which would throw TooManyPagesException).
+  ///
+  /// MultiPage's "does this fit on a fresh page" pre-check compares a
+  /// block's height only against the raw margin-derived usable height — it
+  /// doesn't know about the footer (or a keep-together block's own heading)
+  /// eating into that space once the page is actually laid out. A block
+  /// sized right up to that raw boundary can therefore retry forever
+  /// (TooManyPagesException) instead of ever advancing. The row/paragraph
+  /// caps below are calibrated to land safely under that boundary for the
+  /// default 20pt-margin templates; scaling down *faster* than the area
+  /// itself shrinks (squaring the ratio) keeps that same safety cushion for
+  /// templates with a smaller usable area instead of eroding it.
+  static ({int row, int paragraph}) _pdfChunkCharsFor(ThemeConfig theme) {
+    final marginTop = theme.backgroundImage.isNotEmpty ? theme.contentAreaTop : theme.margin;
+    final marginBottom = theme.backgroundImage.isNotEmpty ? theme.contentAreaBottom : theme.margin;
+    final marginLeft = theme.backgroundImage.isNotEmpty ? theme.contentAreaLeft : theme.margin;
+    final marginRight = theme.backgroundImage.isNotEmpty ? theme.contentAreaRight : theme.margin;
+    final usableHeight = PdfPageFormat.a4.height - marginTop - marginBottom;
+    final usableWidth = PdfPageFormat.a4.width - marginLeft - marginRight;
+    final legacyArea = (PdfPageFormat.a4.height - 2 * _pdfLegacyMargin) * (PdfPageFormat.a4.width - 2 * _pdfLegacyMargin);
+    final areaRatio = (usableHeight * usableWidth / legacyArea).clamp(0.0, 1.0);
+    final scale = math.pow(areaRatio, 2).clamp(0.12, 1.0);
+    return (
+      row: (_pdfRowChunkChars * scale).round(),
+      paragraph: (_pdfParagraphChunkChars * scale).round(),
+    );
+  }
 
   /// Splits [text] into chunks of at most [maxChars] characters, breaking on
   /// word boundaries so the resulting blocks wrap naturally across pages.
@@ -486,10 +626,11 @@ class BiodataRenderer extends StatelessWidget {
     String value,
     PdfColor subtitle,
     PdfColor text,
-    ThemeConfig theme,
-  ) {
+    ThemeConfig theme, {
+    required int maxChars,
+  }) {
     return [
-      for (final chunk in _pdfChunkText(value, _pdfRowChunkChars))
+      for (final chunk in _pdfChunkText(value, maxChars))
         _pdfFieldRow(label, chunk, subtitle, text, theme),
     ];
   }
@@ -499,6 +640,7 @@ class BiodataRenderer extends StatelessWidget {
     final text = PdfColor.fromInt(theme.textColor);
     final subtitle = PdfColor.fromInt(theme.subtitleColor);
     final displayName = biodata.fullName.isNotEmpty ? biodata.fullName : biodata.name;
+    final chunkChars = _pdfChunkCharsFor(theme);
 
     final blocks = <pw.Widget>[];
     void add(pw.Widget block) => blocks.add(_pdfPageBlock(block));
@@ -509,7 +651,7 @@ class BiodataRenderer extends StatelessWidget {
 
     // ---- About Me (heading kept with the first paragraph block) ----
     if (biodata.aboutMe.isNotEmpty) {
-      final chunks = _pdfChunkText(biodata.aboutMe, _pdfParagraphChunkChars);
+      final chunks = _pdfChunkText(biodata.aboutMe, chunkChars.paragraph);
       add(_pdfKeepTogether([
         _pdfSectionTitle('About Me', primary, theme),
         pw.SizedBox(height: theme.fieldSpacing),
@@ -536,7 +678,7 @@ class BiodataRenderer extends StatelessWidget {
 
       final rows = <pw.Widget>[];
       for (final field in sectionFields) {
-        rows.addAll(_pdfValueRows(field.label, field.value(biodata), subtitle, text, theme));
+        rows.addAll(_pdfValueRows(field.label, field.value(biodata), subtitle, text, theme, maxChars: chunkChars.row));
       }
 
       // Dynamic sibling rows inside the Family Details section
@@ -544,12 +686,12 @@ class BiodataRenderer extends StatelessWidget {
         for (final sibling in biodata.siblings) {
           final display = _siblingDisplay(sibling, biodata.siblings);
           if (display.value.isEmpty) continue;
-          rows.addAll(_pdfValueRows(display.label, display.value, subtitle, text, theme));
+          rows.addAll(_pdfValueRows(display.label, display.value, subtitle, text, theme, maxChars: chunkChars.row));
         }
       }
 
       for (final cf in sectionCustom) {
-        rows.addAll(_pdfValueRows(cf.label, cf.value, subtitle, text, theme));
+        rows.addAll(_pdfValueRows(cf.label, cf.value, subtitle, text, theme, maxChars: chunkChars.row));
       }
 
       // Section heading + its first row are one unbreakable block, so a page
@@ -570,7 +712,7 @@ class BiodataRenderer extends StatelessWidget {
     if (orphanCustomFields.isNotEmpty) {
       final rows = <pw.Widget>[];
       for (final cf in orphanCustomFields) {
-        rows.addAll(_pdfValueRows(cf.label, cf.value, subtitle, text, theme));
+        rows.addAll(_pdfValueRows(cf.label, cf.value, subtitle, text, theme, maxChars: chunkChars.row));
       }
       add(_pdfKeepTogether([
         _pdfSectionTitle('Additional Details', primary, theme),
@@ -617,6 +759,24 @@ class BiodataRenderer extends StatelessWidget {
   static pw.Widget _buildPdfHeader(
     Biodata biodata, ThemeConfig theme, PdfColor primary, PdfColor text, PdfColor subtitle, String displayName, pw.MemoryImage? profileImage,
   ) {
+    // Image-mode templates position the photo as an independent page overlay
+    // (see PdfService/pdfPhotoBox), so the flowing header is text-only here.
+    if (theme.backgroundImage.isNotEmpty) {
+      return pw.Container(
+        padding: const pw.EdgeInsets.only(bottom: 16),
+        child: pw.Column(
+          crossAxisAlignment: pw.CrossAxisAlignment.start,
+          children: [
+            pw.Text(displayName, style: pw.TextStyle(font: _pdfFont(), fontSize: theme.headingFontSize, color: text, fontWeight: pw.FontWeight.bold)),
+            if (biodata.age.isNotEmpty || biodata.gender.isNotEmpty)
+              pw.Padding(padding: const pw.EdgeInsets.only(top: 4), child: pw.Text([biodata.age, biodata.gender].where((s) => s.isNotEmpty).join(' | '), style: pw.TextStyle(font: _pdfFont(), fontSize: theme.bodyFontSize, color: subtitle))),
+            if (biodata.occupation.isNotEmpty)
+              pw.Padding(padding: const pw.EdgeInsets.only(top: 4), child: pw.Text(biodata.occupation, style: pw.TextStyle(font: _pdfFont(), fontSize: theme.bodyFontSize, color: subtitle))),
+          ],
+        ),
+      );
+    }
+
     final radius = theme.photoShape == 'circle' ? 40.0 : 12.0;
     final borderRadius = pw.BorderRadius.circular(radius);
     return pw.Container(
@@ -663,6 +823,45 @@ class BiodataRenderer extends StatelessWidget {
           ),
         ],
       ),
+    );
+  }
+
+  /// The profile-photo visual (image with shape clip, or an initials
+  /// fallback) sized to [width]x[height]. Used both inline by the legacy
+  /// header above and, for image-mode templates, as an independently
+  /// positioned page overlay built by [PdfService].
+  static pw.Widget pdfPhotoBox(
+    ThemeConfig theme,
+    pw.MemoryImage? profileImage,
+    String displayName, {
+    required double width,
+    required double height,
+  }) {
+    final primary = PdfColor.fromInt(theme.primaryColor);
+    final radius = theme.photoShape == 'circle' ? width / 2 : 12.0;
+    final borderRadius = pw.BorderRadius.circular(radius);
+    return pw.Container(
+      width: width,
+      height: height,
+      decoration: pw.BoxDecoration(
+        color: profileImage != null ? null : primary,
+        borderRadius: borderRadius,
+        border: profileImage != null ? pw.Border.all(color: primary, width: 2) : null,
+      ),
+      child: profileImage != null
+          ? (theme.photoShape == 'circle'
+              ? pw.ClipOval(child: pw.Image(profileImage, fit: pw.BoxFit.cover, width: width, height: height))
+              : pw.ClipRRect(
+                  horizontalRadius: radius,
+                  verticalRadius: radius,
+                  child: pw.Image(profileImage, fit: pw.BoxFit.cover, width: width, height: height),
+                ))
+          : pw.Center(
+              child: pw.Text(
+                displayName.isNotEmpty ? displayName[0].toUpperCase() : '?',
+                style: pw.TextStyle(font: _pdfFont(), fontSize: width * 0.4, color: PdfColor.fromInt(0xFFFFFFFF), fontWeight: pw.FontWeight.bold),
+              ),
+            ),
     );
   }
 
