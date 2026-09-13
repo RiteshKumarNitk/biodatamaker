@@ -8,6 +8,7 @@ import 'package:biodata_maker/features/biodata/presentation/bloc/form_bloc.dart'
 import 'package:biodata_maker/features/templates/data/models/theme_config.dart';
 import 'package:biodata_maker/features/templates/data/models/theme_engine.dart';
 import 'package:biodata_maker/features/templates/data/repositories/template_repository.dart';
+import 'package:biodata_maker/features/preview/presentation/screens/final_preview_screen.dart';
 import 'package:biodata_maker/shared/widgets/biodata_renderer.dart';
 
 class PreviewStep extends StatefulWidget {
@@ -27,14 +28,14 @@ class _PreviewStepState extends State<PreviewStep> {
   /// Note: the 'additional' heading only holds legacy orphan custom fields and
   /// has no dedicated form step, so it deliberately gets no edit button.
   static const Map<String, int> _sectionSteps = {
-    'photo': 0,
-    'about': 4, // About Me lives on the Lifestyle step
-    'personal': 1,
-    'education': 2,
-    'family': 3,
-    'lifestyle': 4,
-    'contact': 5,
-    'partner_preference': 5, // edited together with Contact on its step
+    'photo': 1,
+    'about': 5, // About Me lives on the Lifestyle step
+    'personal': 2,
+    'education': 3,
+    'family': 4,
+    'lifestyle': 5,
+    'contact': 6,
+    'partner_preference': 6, // edited together with Contact on its step
   };
 
   void _editSection(BuildContext context, String sectionKey) {
@@ -89,6 +90,18 @@ class _PreviewStepState extends State<PreviewStep> {
           biodata: widget.biodata,
           theme: t,
           onEditSection: (sectionKey) => _editSection(context, sectionKey),
+        ),
+        const SizedBox(height: 16),
+        SizedBox(
+          width: double.infinity,
+          height: 48,
+          child: OutlinedButton.icon(
+            onPressed: () => Navigator.of(context).push(MaterialPageRoute(
+              builder: (_) => FinalPreviewScreen(biodata: widget.biodata, theme: t),
+            )),
+            icon: const Icon(Icons.picture_as_pdf_outlined),
+            label: Text(Strings.tr('Preview Final PDF')),
+          ),
         ),
         const SizedBox(height: 32),
       ],

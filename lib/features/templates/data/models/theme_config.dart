@@ -42,7 +42,7 @@ class ThemeConfig with _$ThemeConfig {
     @HiveField(31) @Default(0) int displayOrder,
     // --- Image-based background template layout (only consulted when
     // backgroundImage is non-empty; see lib/shared/widgets/biodata_renderer.dart) ---
-    @HiveField(32) @Default('none') String continuationBackgroundMode, // 'none' | 'reuse' | 'separate'
+    @HiveField(32) @Default('reuse') String continuationBackgroundMode, // 'none' | 'reuse' | 'separate'
     @HiveField(33) @Default('') String continuationBackgroundImage,
     @HiveField(34) @Default(40.0) double photoRectLeft,
     @HiveField(35) @Default(40.0) double photoRectTop,

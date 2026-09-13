@@ -396,6 +396,34 @@ void main() {
     }
   });
 
+  test('PDF favors fitting borderline content on one page via compact spacing', () async {
+    // A minimal biodata (only Personal/Family/Contact filled, matching the
+    // spec's own "should fit on one page" example) genuinely spills onto a
+    // second page at normal spacing on ivory_mandala (its large decorative
+    // header leaves less usable height) — confirmed empirically before
+    // writing this test. PdfService's compact retry should bring it back to
+    // one page rather than leaving it stranded on two.
+    final theme = ThemeEngine.getById('ivory_mandala') ?? ThemeEngine.defaultTemplates.first;
+    final now = DateTime.now();
+    final b = Biodata(
+      id: 'minimal', name: 'Test', fullName: 'Ritesh Sharma', createdAt: now, updatedAt: now,
+      gender: 'Male', dateOfBirth: '04/05/1997', age: '28', height: '5\'9"', religion: 'Hindu',
+      maritalStatus: 'Never Married',
+      fatherName: 'Rajendra Sharma', fatherOccupation: 'Business', motherName: 'Sunita Sharma',
+      motherOccupation: 'Homemaker', familyType: 'Nuclear Family',
+      mobile: '+91 9876543210', email: 'ritesh@example.com', city: 'Delhi', state: 'Delhi', country: 'India',
+    );
+
+    expect(pdfPageCount(await PdfService().generatePdf(b, theme)), 1);
+  });
+
+  test('PDF leaves genuinely long content unchanged (still paginates normally)', () async {
+    final b = longBiodata();
+    final theme = ThemeEngine.getById('modern_minimal') ?? ThemeEngine.defaultTemplates.first;
+    final bytes = await PdfService().generatePdf(b, theme);
+    expect(pdfPageCount(bytes), greaterThanOrEqualTo(2));
+  });
+
   test('Hive round-trip persists siblings and new family fields', () async {
     final dir = await Directory.systemTemp.createTemp('hive_test');
     Hive.init(dir.path);

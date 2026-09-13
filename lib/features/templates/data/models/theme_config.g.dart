@@ -51,7 +51,7 @@ class ThemeConfigAdapter extends TypeAdapter<ThemeConfig> {
       displayOrder: fields[31] as int,
       // Fields 32+ were added later; tolerate records saved by older app
       // versions that never wrote them (null -> default).
-      continuationBackgroundMode: fields[32] as String? ?? 'none',
+      continuationBackgroundMode: fields[32] as String? ?? 'reuse',
       continuationBackgroundImage: fields[33] as String? ?? '',
       photoRectLeft: fields[34] as double? ?? 40.0,
       photoRectTop: fields[35] as double? ?? 40.0,
@@ -220,7 +220,7 @@ _$ThemeConfigImpl _$$ThemeConfigImplFromJson(Map<String, dynamic> json) =>
       isPublished: json['isPublished'] as bool? ?? true,
       displayOrder: (json['displayOrder'] as num?)?.toInt() ?? 0,
       continuationBackgroundMode:
-          json['continuationBackgroundMode'] as String? ?? 'none',
+          json['continuationBackgroundMode'] as String? ?? 'reuse',
       continuationBackgroundImage:
           json['continuationBackgroundImage'] as String? ?? '',
       photoRectLeft: (json['photoRectLeft'] as num?)?.toDouble() ?? 40.0,

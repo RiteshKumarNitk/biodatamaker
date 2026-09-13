@@ -148,7 +148,7 @@ class BiodataRenderer extends StatelessWidget {
     final subtitle = Color(theme.subtitleColor);
 
     if (theme.backgroundImage.isNotEmpty) {
-      return _buildImageModeLayout(context, primary, text, subtitle);
+      return _buildImageModeLayout(context, primary, text, subtitle, theme);
     }
 
     return Card(
@@ -171,7 +171,7 @@ class BiodataRenderer extends StatelessWidget {
   /// inside [ThemeConfig.contentAreaLeft]/etc. All rect/inset values are
   /// authored in PDF points on the real A4 page and scaled uniformly to
   /// whatever size this widget is actually laid out at.
-  Widget _buildImageModeLayout(BuildContext context, Color primary, Color text, Color subtitle) {
+  Widget _buildImageModeLayout(BuildContext context, Color primary, Color text, Color subtitle, ThemeConfig theme) {
     final displayName = biodata.fullName.isNotEmpty ? biodata.fullName : biodata.name;
     return Card(
       margin: EdgeInsets.zero,

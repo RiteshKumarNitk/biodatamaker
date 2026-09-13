@@ -15,6 +15,7 @@ import 'package:biodata_maker/features/biodata/data/repositories/biodata_reposit
 import 'package:biodata_maker/features/templates/data/models/theme_config.dart';
 import 'package:biodata_maker/features/templates/data/models/theme_engine.dart';
 import 'package:biodata_maker/features/templates/data/repositories/template_repository.dart';
+import 'package:biodata_maker/features/preview/presentation/screens/final_preview_screen.dart';
 
 class DownloadStep extends StatefulWidget {
   final Biodata biodata;
@@ -95,6 +96,41 @@ class _DownloadStepState extends State<DownloadStep> {
     }
   }
 
+  void _previewFinalPdf() {
+    Navigator.of(context).push(MaterialPageRoute(
+      builder: (_) => FinalPreviewScreen(biodata: widget.biodata, theme: _template),
+    ));
+  }
+
+  Future<void> _saveImage() async {
+    try {
+      final path = await _pdfService.saveImage(widget.biodata, _template);
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('${Strings.tr('Image saved to')}: $path')),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('${Strings.tr('Failed to save image')}: $e')),
+        );
+      }
+    }
+  }
+
+  Future<void> _shareImage() async {
+    try {
+      await _pdfService.shareImage(widget.biodata, _template);
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('${Strings.tr('Failed to share')}: $e')),
+        );
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -104,6 +140,16 @@ class _DownloadStepState extends State<DownloadStep> {
         Text(Strings.tr('Generate & Download PDF'), style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600)),
         const SizedBox(height: 4),
         Text(Strings.tr('Export your biodata as a high quality PDF, print or share directly'), style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.onSurfaceVariant)),
+        const SizedBox(height: 16),
+        SizedBox(
+          width: double.infinity,
+          height: 48,
+          child: OutlinedButton.icon(
+            onPressed: _previewFinalPdf,
+            icon: const Icon(Icons.picture_as_pdf_outlined),
+            label: Text(Strings.tr('Preview Final PDF')),
+          ),
+        ),
         const SizedBox(height: 16),
         Card(
           child: Padding(
@@ -165,6 +211,26 @@ class _DownloadStepState extends State<DownloadStep> {
                           icon: const Icon(Icons.share),
                           label: Text(Strings.tr('Share PDF File')),
                         ),
+                      ),
+                      const SizedBox(height: 12),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: OutlinedButton.icon(
+                              onPressed: _saveImage,
+                              icon: const Icon(Icons.image_outlined),
+                              label: Text(Strings.tr('Save Image')),
+                            ),
+                          ),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: OutlinedButton.icon(
+                              onPressed: _shareImage,
+                              icon: const Icon(Icons.ios_share),
+                              label: Text(Strings.tr('Share Image')),
+                            ),
+                          ),
+                        ],
                       ),
                     ],
                   )

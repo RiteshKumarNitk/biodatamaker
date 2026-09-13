@@ -246,6 +246,161 @@ class ThemeEngine {
           isPublished: true,
           displayOrder: 16,
         ),
+        // --- Image-based background templates -------------------------------
+        // Real background artwork (design-only, no text baked in) supplied by
+        // the app owner. photoRect/contentArea below are tuned by eye against
+        // each image's actual decorative area (border thickness, corner
+        // flourishes, emblem placement) so dynamic text/photo never overlaps
+        // the art; adjust them if the artwork is ever swapped for a
+        // differently-laid-out version.
+        const ThemeConfig(
+          id: 'maroon_mandala',
+          name: 'Maroon Mandala',
+          category: 'Traditional',
+          isPremium: false,
+          primaryColor: 0xFFF3D9A4,
+          secondaryColor: 0xFFE8C05C,
+          backgroundColor: 0xFF7D3C34,
+          textColor: 0xFFFFF6E9,
+          subtitleColor: 0xFFE7CBA8,
+          photoShape: 'rounded',
+          backgroundImage: 'assets/templates/maroon_mandala_background.png',
+          continuationBackgroundMode: 'reuse',
+          photoRectLeft: 40,
+          photoRectTop: 40,
+          photoRectWidth: 110,
+          photoRectHeight: 140,
+          contentAreaLeft: 40,
+          contentAreaTop: 200,
+          contentAreaRight: 40,
+          contentAreaBottom: 110,
+          isPublished: true,
+          displayOrder: 17,
+        ),
+        const ThemeConfig(
+          id: 'royal_blue_mandala',
+          name: 'Royal Blue Mandala',
+          category: 'Traditional',
+          isPremium: false,
+          primaryColor: 0xFFF3D9A4,
+          secondaryColor: 0xFFE8C05C,
+          backgroundColor: 0xFF1D4E9B,
+          textColor: 0xFFFFFFFF,
+          subtitleColor: 0xFFD7E3F7,
+          photoShape: 'rounded',
+          backgroundImage: 'assets/templates/royal_blue_mandala_background.png',
+          continuationBackgroundMode: 'reuse',
+          photoRectLeft: 40,
+          photoRectTop: 40,
+          photoRectWidth: 110,
+          photoRectHeight: 140,
+          contentAreaLeft: 40,
+          contentAreaTop: 200,
+          contentAreaRight: 40,
+          contentAreaBottom: 110,
+          isPublished: true,
+          displayOrder: 18,
+        ),
+        const ThemeConfig(
+          id: 'ivory_mandala',
+          name: 'Ivory Mandala',
+          category: 'Modern',
+          isPremium: false,
+          primaryColor: 0xFF8A5A22,
+          secondaryColor: 0xFFC9A227,
+          backgroundColor: 0xFFFDF8F0,
+          textColor: 0xFF3A2E1E,
+          subtitleColor: 0xFF7A6A55,
+          borderStyle: 'none',
+          photoShape: 'rounded',
+          backgroundImage: 'assets/templates/ivory_mandala_background.png',
+          continuationBackgroundMode: 'reuse',
+          photoRectLeft: 50,
+          photoRectTop: 50,
+          photoRectWidth: 110,
+          photoRectHeight: 140,
+          contentAreaLeft: 55,
+          contentAreaTop: 210,
+          contentAreaRight: 55,
+          contentAreaBottom: 55,
+          isPublished: true,
+          displayOrder: 19,
+        ),
+        const ThemeConfig(
+          id: 'ivory_ganesh_floral',
+          name: 'Ivory Ganesh Floral',
+          category: 'Traditional',
+          isPremium: true,
+          primaryColor: 0xFF8A6D10,
+          secondaryColor: 0xFFC9A227,
+          backgroundColor: 0xFFFDF8F0,
+          textColor: 0xFF3A2E1E,
+          subtitleColor: 0xFF7A6A55,
+          borderStyle: 'none',
+          photoShape: 'rounded',
+          backgroundImage: 'assets/templates/ivory_ganesh_floral_background.png',
+          continuationBackgroundMode: 'reuse',
+          photoRectLeft: 45,
+          photoRectTop: 140,
+          photoRectWidth: 100,
+          photoRectHeight: 120,
+          contentAreaLeft: 50,
+          contentAreaTop: 280,
+          contentAreaRight: 50,
+          contentAreaBottom: 110,
+          isPublished: true,
+          displayOrder: 20,
+        ),
+        const ThemeConfig(
+          id: 'ivory_ganesh_ornate',
+          name: 'Ivory Ganesh Ornate',
+          category: 'Traditional',
+          isPremium: true,
+          primaryColor: 0xFF8A5A22,
+          secondaryColor: 0xFFC9A227,
+          backgroundColor: 0xFFFFFFFF,
+          textColor: 0xFF3A2E1E,
+          subtitleColor: 0xFF7A6A55,
+          borderStyle: 'none',
+          photoShape: 'rounded',
+          backgroundImage: 'assets/templates/ivory_ganesh_ornate_background.png',
+          continuationBackgroundMode: 'reuse',
+          photoRectLeft: 100,
+          photoRectTop: 150,
+          photoRectWidth: 100,
+          photoRectHeight: 120,
+          contentAreaLeft: 90,
+          contentAreaTop: 290,
+          contentAreaRight: 90,
+          contentAreaBottom: 120,
+          isPublished: true,
+          displayOrder: 21,
+        ),
+        const ThemeConfig(
+          id: 'white_ganesh_geometric',
+          name: 'White Ganesh Geometric',
+          category: 'Traditional',
+          isPremium: true,
+          primaryColor: 0xFF8B1E1E,
+          secondaryColor: 0xFFB44A4A,
+          backgroundColor: 0xFFFFFFFF,
+          textColor: 0xFF2A2A2A,
+          subtitleColor: 0xFF6B6B6B,
+          borderStyle: 'none',
+          photoShape: 'rounded',
+          backgroundImage: 'assets/templates/white_ganesh_geometric_background.png',
+          continuationBackgroundMode: 'reuse',
+          photoRectLeft: 80,
+          photoRectTop: 140,
+          photoRectWidth: 100,
+          photoRectHeight: 120,
+          contentAreaLeft: 70,
+          contentAreaTop: 280,
+          contentAreaRight: 70,
+          contentAreaBottom: 100,
+          isPublished: true,
+          displayOrder: 22,
+        ),
       ];
 
   static ThemeConfig? getById(String id) {
@@ -254,6 +409,19 @@ class ThemeEngine {
     } catch (_) {
       return null;
     }
+  }
+
+  /// Resolves the template a [Biodata] should render with: the persisted
+  /// template matching its `templateId` (looked up via [lookup], typically
+  /// `TemplateRepository.getById`), falling back to the first built-in
+  /// template if unset or not found. Centralizes the same fallback rule
+  /// every preview/PDF/download call site needs.
+  static ThemeConfig resolveById(String templateId, ThemeConfig? Function(String id) lookup) {
+    if (templateId.isNotEmpty) {
+      final t = lookup(templateId);
+      if (t != null) return t;
+    }
+    return defaultTemplates.first;
   }
 
   static List<ThemeConfig> getByCategory(String category) =>

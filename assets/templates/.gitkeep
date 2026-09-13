@@ -1,3 +1,9 @@
-Drop image-based template assets here as assets/templates/<template_id>/background.png
-(+ optional continuation.png). This folder is already declared in pubspec.yaml,
-so no pubspec changes are needed when adding a new template's images.
+Drop image-based template assets here as flat files, e.g.
+assets/templates/<template_id>_background.png (+ optional
+assets/templates/<template_id>_continuation.png).
+
+This folder is declared in pubspec.yaml as a wildcard ("assets/templates/"),
+but Flutter's folder-wildcard asset declaration only picks up files placed
+directly inside the folder -- NOT nested subfolders -- so keep file names
+flat (no assets/templates/<id>/background.png subfolders) to avoid needing
+a pubspec.yaml edit for every new template.

@@ -17,7 +17,35 @@ class PdfService {
   factory PdfService() => _instance;
   PdfService._internal();
 
+  /// Renders [biodata] on [theme], favoring fitting it on one page: if
+  /// normal spacing spills onto a second page, retries once with a ~15%
+  /// more compact spacing/font preset and uses that instead when it actually
+  /// gets it down to one page. Genuinely long content (still needs 2+ pages
+  /// even compact) keeps the normal, more readable spacing and paginates as
+  /// usual. This only affects the PDF — position/margin fields never change,
+  /// and it's driven by the real render (page count of the actual output),
+  /// not an estimate, since only the PDF has a "page" for content to spill
+  /// off of (the on-screen preview is one continuous scroll either way).
   Future<Uint8List> generatePdf(Biodata biodata, ThemeConfig theme) async {
+    final normal = await _renderPdf(biodata, theme);
+    if (_pageCount(normal) <= 1) return normal;
+
+    final compact = await _renderPdf(biodata, theme.copyWith(
+      sectionSpacing: theme.sectionSpacing * 0.85,
+      fieldSpacing: theme.fieldSpacing * 0.85,
+      bodyFontSize: theme.bodyFontSize * 0.85,
+      headingFontSize: theme.headingFontSize * 0.85,
+    ));
+    return _pageCount(compact) <= 1 ? compact : normal;
+  }
+
+  static int _pageCount(Uint8List bytes) {
+    final ascii = String.fromCharCodes(bytes);
+    final counts = RegExp(r'/Count\s+(\d+)').allMatches(ascii).map((m) => int.parse(m.group(1)!));
+    return counts.isEmpty ? 1 : counts.reduce(math.max);
+  }
+
+  Future<Uint8List> _renderPdf(Biodata biodata, ThemeConfig theme) async {
     final pdf = pw.Document();
 
     pw.MemoryImage? profileImage;
@@ -107,7 +135,7 @@ class PdfService {
       }
     }
 
-    return pw.Container(
+    final container = pw.Container(
       decoration: pw.BoxDecoration(
         color: PdfColor.fromInt(theme.backgroundColor),
         image: pageImage != null ? pw.DecorationImage(image: pageImage, fit: pw.BoxFit.cover) : null,
@@ -117,6 +145,14 @@ class PdfService {
             : pw.Border.all(color: PdfColor.fromInt(theme.primaryColor), width: 1.2),
       ),
     );
+
+    // pw.PageTheme.buildBackground is otherwise sized to (and offset by) the
+    // margin-derived content box, not the physical page — fine for the
+    // legacy inset color+border "framed box" look, but a background image
+    // must cover the page edge-to-edge. FullPage(ignoreMargins: true)
+    // escapes that box to the true page bounds (see the pdf package's own
+    // watermark example, which uses the same pattern for full-bleed content).
+    return pageImage != null ? pw.FullPage(ignoreMargins: true, child: container) : container;
   }
 
   /// Page overlay layer: the profile photo (image templates only, page 1
@@ -133,7 +169,7 @@ class PdfService {
     final showWatermark = theme.showWatermark && theme.watermarkText.isNotEmpty;
     if (!showPhotoOverlay && !showWatermark) return pw.SizedBox();
 
-    return pw.Stack(
+    final stack = pw.Stack(
       children: [
         if (showPhotoOverlay)
           pw.Positioned(
@@ -150,6 +186,12 @@ class PdfService {
         if (showWatermark) _buildWatermark(theme, font),
       ],
     );
+
+    // photoRect is defined in true page-absolute coordinates, so it needs to
+    // escape the margin-derived content box the same way the background
+    // image does (see _buildPageBackground) — otherwise it lands offset by
+    // the margin instead of at the configured position.
+    return showPhotoOverlay ? pw.FullPage(ignoreMargins: true, child: stack) : stack;
   }
 
   Future<pw.MemoryImage?> _loadAssetImage(String assetPath) async {
@@ -229,5 +271,37 @@ class PdfService {
     final file = File('${dir.path}/$fileName');
     await file.writeAsBytes(pdf);
     return file.path;
+  }
+
+  /// Rasterizes one page of the generated PDF to a PNG, so the exported
+  /// image is pixel-identical to that PDF page (same template, same layout,
+  /// same data) rather than a separately-rendered approximation.
+  Future<Uint8List> renderPageImage(
+    Biodata biodata,
+    ThemeConfig theme, {
+    int page = 0,
+    double dpi = 200,
+  }) async {
+    final pdf = await generatePdf(biodata, theme);
+    final raster = await Printing.raster(pdf, pages: [page], dpi: dpi).first;
+    return raster.toPng();
+  }
+
+  Future<String> saveImage(Biodata biodata, ThemeConfig theme, {int page = 0}) async {
+    final png = await renderPageImage(biodata, theme, page: page);
+    final dir = await getApplicationDocumentsDirectory();
+    final suffix = page > 0 ? '_page${page + 1}' : '';
+    final fileName = '${biodata.fullName.replaceAll(' ', '_')}_biodata$suffix.png';
+    final file = File('${dir.path}/$fileName');
+    await file.writeAsBytes(png);
+    return file.path;
+  }
+
+  Future<void> shareImage(Biodata biodata, ThemeConfig theme, {int page = 0}) async {
+    final png = await renderPageImage(biodata, theme, page: page);
+    final dir = await getTemporaryDirectory();
+    final file = File('${dir.path}/${biodata.fullName.replaceAll(' ', '_')}_biodata.png');
+    await file.writeAsBytes(png);
+    await Share.shareXFiles([XFile(file.path)], text: '${biodata.fullName} - Biodata');
   }
 }

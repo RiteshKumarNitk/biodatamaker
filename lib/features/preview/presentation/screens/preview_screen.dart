@@ -10,6 +10,7 @@ import 'package:biodata_maker/features/settings/data/repositories/settings_repos
 import 'package:biodata_maker/features/templates/data/models/theme_config.dart';
 import 'package:biodata_maker/features/templates/data/models/theme_engine.dart';
 import 'package:biodata_maker/features/templates/data/repositories/template_repository.dart';
+import 'package:biodata_maker/features/preview/presentation/screens/final_preview_screen.dart';
 import 'package:biodata_maker/shared/widgets/biodata_renderer.dart';
 
 class PreviewScreen extends StatefulWidget {
@@ -80,6 +81,11 @@ class _PreviewScreenState extends State<PreviewScreen> {
       appBar: AppBar(
         title: const Text('Preview'),
         actions: [
+          IconButton(
+            icon: const Icon(Icons.picture_as_pdf_outlined),
+            tooltip: 'Preview Final PDF',
+            onPressed: () => _previewFinalPdf(context),
+          ),
           IconButton(
             icon: const Icon(Icons.print_outlined),
             tooltip: 'Print / Save as PDF',
@@ -216,11 +222,59 @@ class _PreviewScreenState extends State<PreviewScreen> {
                 icon: const Icon(Icons.share),
                 label: const Text('Share'),
               ),
+              const SizedBox(width: 4),
+              PopupMenuButton<String>(
+                icon: const Icon(Icons.more_vert),
+                tooltip: 'More options',
+                onSelected: (value) {
+                  if (value == 'save_image') _saveImage(context);
+                  if (value == 'share_image') _shareImage(context);
+                },
+                itemBuilder: (context) => const [
+                  PopupMenuItem(value: 'save_image', child: Text('Save Image')),
+                  PopupMenuItem(value: 'share_image', child: Text('Share Image')),
+                ],
+              ),
             ],
           ),
         ),
       ),
     );
+  }
+
+  void _previewFinalPdf(BuildContext context) {
+    Navigator.of(context).push(MaterialPageRoute(
+      builder: (_) => FinalPreviewScreen(biodata: _biodata!, theme: _currentTheme),
+    ));
+  }
+
+  Future<void> _saveImage(BuildContext context) async {
+    try {
+      final path = await _pdfService.saveImage(_biodata!, _currentTheme);
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Image saved to: $path')),
+        );
+      }
+    } catch (e) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error saving image: $e')),
+        );
+      }
+    }
+  }
+
+  Future<void> _shareImage(BuildContext context) async {
+    try {
+      await _pdfService.shareImage(_biodata!, _currentTheme);
+    } catch (e) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error sharing image: $e')),
+        );
+      }
+    }
   }
 
   Future<void> _downloadPdf(BuildContext context) async {

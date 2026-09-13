@@ -718,7 +718,7 @@ class _$ThemeConfigImpl implements _ThemeConfig {
       @HiveField(29) this.watermarkImage = '',
       @HiveField(30) this.isPublished = true,
       @HiveField(31) this.displayOrder = 0,
-      @HiveField(32) this.continuationBackgroundMode = 'none',
+      @HiveField(32) this.continuationBackgroundMode = 'reuse',
       @HiveField(33) this.continuationBackgroundImage = '',
       @HiveField(34) this.photoRectLeft = 40.0,
       @HiveField(35) this.photoRectTop = 40.0,

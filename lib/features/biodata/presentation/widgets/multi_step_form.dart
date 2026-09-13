@@ -13,8 +13,15 @@ import 'package:biodata_maker/features/biodata/presentation/widgets/steps/contac
 import 'package:biodata_maker/features/biodata/presentation/widgets/steps/template_step.dart';
 import 'package:biodata_maker/features/biodata/presentation/widgets/steps/preview_step.dart';
 import 'package:biodata_maker/features/biodata/presentation/widgets/steps/download_step.dart';
+import 'package:biodata_maker/features/biodata/presentation/widgets/live_preview_panel.dart';
 import 'package:biodata_maker/core/services/service_locator.dart';
 import 'package:biodata_maker/features/settings/data/repositories/settings_repository.dart';
+
+/// Minimum width at which the live preview shows side by side with the form
+/// (see [_MultiStepFormState.build]) instead of behind the app bar's
+/// "Preview" toggle (`wizard_preview_action.dart`). Shared so both stay in
+/// sync about where the layout switches over.
+const double kSplitPreviewBreakpoint = 900;
 
 class MultiStepForm extends StatefulWidget {
   const MultiStepForm({super.key});
@@ -28,25 +35,25 @@ class _MultiStepFormState extends State<MultiStepForm> {
   int _previousStep = 0;
 
   static const _stepLabels = [
+    'Template',
     'Photo',
     'Personal',
     'Education',
     'Family',
     'Lifestyle',
     'Contact',
-    'Template',
     'Review',
     'Download',
   ];
 
   static const _stepIcons = [
+    Icons.dashboard_customize,
     Icons.camera_alt,
     Icons.person,
     Icons.school,
     Icons.family_restroom,
     Icons.spa,
     Icons.contact_phone,
-    Icons.dashboard_customize,
     Icons.preview,
     Icons.download,
   ];
@@ -86,30 +93,51 @@ class _MultiStepFormState extends State<MultiStepForm> {
               },
             ).animate().fadeIn(duration: 300.ms),
             Expanded(
-              child: AnimatedSwitcher(
-                duration: const Duration(milliseconds: 300),
-                transitionBuilder: (child, animation) {
-                  final beginOffset = isForward
-                      ? const Offset(0.5, 0)
-                      : const Offset(-0.5, 0);
-                  return SlideTransition(
-                    position: Tween<Offset>(
-                      begin: beginOffset,
-                      end: Offset.zero,
-                    ).animate(CurvedAnimation(
-                      parent: animation,
-                      curve: Curves.easeInOut,
-                    )),
-                    child: FadeTransition(
-                      opacity: animation,
-                      child: child,
+              child: LayoutBuilder(
+                builder: (context, constraints) {
+                  final stepContent = AnimatedSwitcher(
+                    duration: const Duration(milliseconds: 300),
+                    transitionBuilder: (child, animation) {
+                      final beginOffset = isForward
+                          ? const Offset(0.5, 0)
+                          : const Offset(-0.5, 0);
+                      return SlideTransition(
+                        position: Tween<Offset>(
+                          begin: beginOffset,
+                          end: Offset.zero,
+                        ).animate(CurvedAnimation(
+                          parent: animation,
+                          curve: Curves.easeInOut,
+                        )),
+                        child: FadeTransition(
+                          opacity: animation,
+                          child: child,
+                        ),
+                      );
+                    },
+                    child: KeyedSubtree(
+                      key: ValueKey(state.currentStep),
+                      child: _buildStepContent(context, state.currentStep, biodata),
                     ),
                   );
+
+                  // On wide/tablet screens, show the live template preview
+                  // side by side with every data-entry step (Template
+                  // through Contact); Review/Download already dedicate their
+                  // own screen to reviewing the result. Narrower screens get
+                  // a toggle action in the app bar instead (see
+                  // wizard_preview_action.dart).
+                  final showSplitPreview = constraints.maxWidth >= kSplitPreviewBreakpoint && state.currentStep <= 6;
+                  if (!showSplitPreview) return stepContent;
+
+                  return Row(
+                    children: [
+                      Expanded(flex: 3, child: stepContent),
+                      VerticalDivider(width: 1, color: Theme.of(context).colorScheme.outlineVariant),
+                      Expanded(flex: 2, child: LivePreviewPanel(biodata: biodata)),
+                    ],
+                  );
                 },
-                child: KeyedSubtree(
-                  key: ValueKey(state.currentStep),
-                  child: _buildStepContent(context, state.currentStep, biodata),
-                ),
               ),
             ),
             _BottomNav(
@@ -120,7 +148,7 @@ class _MultiStepFormState extends State<MultiStepForm> {
               onNext: () {
                 final name = (state.biodata?.fullName ?? '').trim();
                 final isLast = state.currentStep == BiodataFormState.totalSteps - 1;
-                if (name.isEmpty && (state.currentStep == 1 || isLast)) {
+                if (name.isEmpty && (state.currentStep == 2 || isLast)) {
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
                       content: Text(
@@ -151,19 +179,19 @@ class _MultiStepFormState extends State<MultiStepForm> {
 
     switch (step) {
       case 0:
-        return PhotoStep(biodata: biodata, onUpdate: onUpdate);
-      case 1:
-        return BasicDetailsStep(biodata: biodata, onUpdate: onUpdate);
-      case 2:
-        return EducationCareerStep(biodata: biodata, onUpdate: onUpdate);
-      case 3:
-        return FamilyStep(biodata: biodata, onUpdate: onUpdate);
-      case 4:
-        return AdditionalDetailsStep(biodata: biodata, onUpdate: onUpdate);
-      case 5:
-        return ContactPartnerStep(biodata: biodata, onUpdate: onUpdate);
-      case 6:
         return TemplateStep(biodata: biodata, onUpdate: onUpdate);
+      case 1:
+        return PhotoStep(biodata: biodata, onUpdate: onUpdate);
+      case 2:
+        return BasicDetailsStep(biodata: biodata, onUpdate: onUpdate);
+      case 3:
+        return EducationCareerStep(biodata: biodata, onUpdate: onUpdate);
+      case 4:
+        return FamilyStep(biodata: biodata, onUpdate: onUpdate);
+      case 5:
+        return AdditionalDetailsStep(biodata: biodata, onUpdate: onUpdate);
+      case 6:
+        return ContactPartnerStep(biodata: biodata, onUpdate: onUpdate);
       case 7:
         return PreviewStep(biodata: biodata);
       case 8:
