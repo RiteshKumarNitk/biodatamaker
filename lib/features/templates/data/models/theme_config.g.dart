@@ -59,13 +59,18 @@ class ThemeConfigAdapter extends TypeAdapter<ThemeConfig> {
       contentAreaTop: fields[39] as double,
       contentAreaRight: fields[40] as double,
       contentAreaBottom: fields[41] as double,
+      layoutStyle: fields[42] as String,
+      headingAlignment: fields[43] as String,
+      continuationContentAreaTop: fields[44] as double,
+      minFontSize: fields[45] as double,
+      maxFontSize: fields[46] as double,
     );
   }
 
   @override
   void write(BinaryWriter writer, ThemeConfig obj) {
     writer
-      ..writeByte(42)
+      ..writeByte(47)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
@@ -149,7 +154,17 @@ class ThemeConfigAdapter extends TypeAdapter<ThemeConfig> {
       ..writeByte(40)
       ..write(obj.contentAreaRight)
       ..writeByte(41)
-      ..write(obj.contentAreaBottom);
+      ..write(obj.contentAreaBottom)
+      ..writeByte(42)
+      ..write(obj.layoutStyle)
+      ..writeByte(43)
+      ..write(obj.headingAlignment)
+      ..writeByte(44)
+      ..write(obj.continuationContentAreaTop)
+      ..writeByte(45)
+      ..write(obj.minFontSize)
+      ..writeByte(46)
+      ..write(obj.maxFontSize);
   }
 
   @override
@@ -230,6 +245,12 @@ _$ThemeConfigImpl _$$ThemeConfigImplFromJson(Map<String, dynamic> json) =>
       contentAreaRight: (json['contentAreaRight'] as num?)?.toDouble() ?? 40.0,
       contentAreaBottom:
           (json['contentAreaBottom'] as num?)?.toDouble() ?? 40.0,
+      layoutStyle: json['layoutStyle'] as String? ?? 'traditional_row',
+      headingAlignment: json['headingAlignment'] as String? ?? 'left',
+      continuationContentAreaTop:
+          (json['continuationContentAreaTop'] as num?)?.toDouble() ?? 40.0,
+      minFontSize: (json['minFontSize'] as num?)?.toDouble() ?? 10.0,
+      maxFontSize: (json['maxFontSize'] as num?)?.toDouble() ?? 24.0,
     );
 
 Map<String, dynamic> _$$ThemeConfigImplToJson(_$ThemeConfigImpl instance) =>
@@ -276,4 +297,9 @@ Map<String, dynamic> _$$ThemeConfigImplToJson(_$ThemeConfigImpl instance) =>
       'contentAreaTop': instance.contentAreaTop,
       'contentAreaRight': instance.contentAreaRight,
       'contentAreaBottom': instance.contentAreaBottom,
+      'layoutStyle': instance.layoutStyle,
+      'headingAlignment': instance.headingAlignment,
+      'continuationContentAreaTop': instance.continuationContentAreaTop,
+      'minFontSize': instance.minFontSize,
+      'maxFontSize': instance.maxFontSize,
     };

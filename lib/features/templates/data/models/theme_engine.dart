@@ -19,6 +19,9 @@ class ThemeEngine {
           backgroundImage: '',
           isPublished: true,
           displayOrder: 0,
+          layoutStyle: 'traditional_row',
+          headingAlignment: 'left',
+          continuationContentAreaTop: 40.0,
         ),
         const ThemeConfig(
           id: 'classic_red',
@@ -32,6 +35,9 @@ class ThemeEngine {
           backgroundImage: '',
           isPublished: true,
           displayOrder: 1,
+          layoutStyle: 'centered_block',
+          headingAlignment: 'center',
+          continuationContentAreaTop: 40.0,
         ),
         const ThemeConfig(
           id: 'royal_gold',
@@ -45,6 +51,9 @@ class ThemeEngine {
           backgroundImage: '',
           isPublished: true,
           displayOrder: 2,
+          layoutStyle: 'traditional_row',
+          headingAlignment: 'center',
+          continuationContentAreaTop: 40.0,
         ),
         const ThemeConfig(
           id: 'mandala_green',
@@ -58,6 +67,9 @@ class ThemeEngine {
           backgroundImage: '',
           isPublished: true,
           displayOrder: 3,
+          layoutStyle: 'traditional_row',
+          headingAlignment: 'left',
+          continuationContentAreaTop: 40.0,
         ),
         const ThemeConfig(
           id: 'temple_cream',
@@ -71,6 +83,9 @@ class ThemeEngine {
           backgroundImage: '',
           isPublished: true,
           displayOrder: 4,
+          layoutStyle: 'traditional_row',
+          headingAlignment: 'left',
+          continuationContentAreaTop: 60.0,
         ),
         const ThemeConfig(
           id: 'lotus_pink',

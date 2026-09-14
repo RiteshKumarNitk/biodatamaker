@@ -106,7 +106,21 @@ mixin _$ThemeConfig {
   @HiveField(40)
   double get contentAreaRight => throw _privateConstructorUsedError;
   @HiveField(41)
-  double get contentAreaBottom => throw _privateConstructorUsedError;
+  double get contentAreaBottom =>
+      throw _privateConstructorUsedError; // --- Phase 1 Layout Engine Configs ---
+  @HiveField(42)
+  String get layoutStyle =>
+      throw _privateConstructorUsedError; // 'traditional_row' | 'centered_block' | 'split_columns'
+  @HiveField(43)
+  String get headingAlignment =>
+      throw _privateConstructorUsedError; // 'left' | 'center' | 'right'
+  @HiveField(44)
+  double get continuationContentAreaTop =>
+      throw _privateConstructorUsedError; // Prevents page 2 overlap
+  @HiveField(45)
+  double get minFontSize => throw _privateConstructorUsedError;
+  @HiveField(46)
+  double get maxFontSize => throw _privateConstructorUsedError;
 
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
   @JsonKey(ignore: true)
@@ -162,7 +176,12 @@ abstract class $ThemeConfigCopyWith<$Res> {
       @HiveField(38) double contentAreaLeft,
       @HiveField(39) double contentAreaTop,
       @HiveField(40) double contentAreaRight,
-      @HiveField(41) double contentAreaBottom});
+      @HiveField(41) double contentAreaBottom,
+      @HiveField(42) String layoutStyle,
+      @HiveField(43) String headingAlignment,
+      @HiveField(44) double continuationContentAreaTop,
+      @HiveField(45) double minFontSize,
+      @HiveField(46) double maxFontSize});
 }
 
 /// @nodoc
@@ -220,6 +239,11 @@ class _$ThemeConfigCopyWithImpl<$Res, $Val extends ThemeConfig>
     Object? contentAreaTop = null,
     Object? contentAreaRight = null,
     Object? contentAreaBottom = null,
+    Object? layoutStyle = null,
+    Object? headingAlignment = null,
+    Object? continuationContentAreaTop = null,
+    Object? minFontSize = null,
+    Object? maxFontSize = null,
   }) {
     return _then(_value.copyWith(
       id: null == id
@@ -390,6 +414,26 @@ class _$ThemeConfigCopyWithImpl<$Res, $Val extends ThemeConfig>
           ? _value.contentAreaBottom
           : contentAreaBottom // ignore: cast_nullable_to_non_nullable
               as double,
+      layoutStyle: null == layoutStyle
+          ? _value.layoutStyle
+          : layoutStyle // ignore: cast_nullable_to_non_nullable
+              as String,
+      headingAlignment: null == headingAlignment
+          ? _value.headingAlignment
+          : headingAlignment // ignore: cast_nullable_to_non_nullable
+              as String,
+      continuationContentAreaTop: null == continuationContentAreaTop
+          ? _value.continuationContentAreaTop
+          : continuationContentAreaTop // ignore: cast_nullable_to_non_nullable
+              as double,
+      minFontSize: null == minFontSize
+          ? _value.minFontSize
+          : minFontSize // ignore: cast_nullable_to_non_nullable
+              as double,
+      maxFontSize: null == maxFontSize
+          ? _value.maxFontSize
+          : maxFontSize // ignore: cast_nullable_to_non_nullable
+              as double,
     ) as $Val);
   }
 }
@@ -444,7 +488,12 @@ abstract class _$$ThemeConfigImplCopyWith<$Res>
       @HiveField(38) double contentAreaLeft,
       @HiveField(39) double contentAreaTop,
       @HiveField(40) double contentAreaRight,
-      @HiveField(41) double contentAreaBottom});
+      @HiveField(41) double contentAreaBottom,
+      @HiveField(42) String layoutStyle,
+      @HiveField(43) String headingAlignment,
+      @HiveField(44) double continuationContentAreaTop,
+      @HiveField(45) double minFontSize,
+      @HiveField(46) double maxFontSize});
 }
 
 /// @nodoc
@@ -500,6 +549,11 @@ class __$$ThemeConfigImplCopyWithImpl<$Res>
     Object? contentAreaTop = null,
     Object? contentAreaRight = null,
     Object? contentAreaBottom = null,
+    Object? layoutStyle = null,
+    Object? headingAlignment = null,
+    Object? continuationContentAreaTop = null,
+    Object? minFontSize = null,
+    Object? maxFontSize = null,
   }) {
     return _then(_$ThemeConfigImpl(
       id: null == id
@@ -670,6 +724,26 @@ class __$$ThemeConfigImplCopyWithImpl<$Res>
           ? _value.contentAreaBottom
           : contentAreaBottom // ignore: cast_nullable_to_non_nullable
               as double,
+      layoutStyle: null == layoutStyle
+          ? _value.layoutStyle
+          : layoutStyle // ignore: cast_nullable_to_non_nullable
+              as String,
+      headingAlignment: null == headingAlignment
+          ? _value.headingAlignment
+          : headingAlignment // ignore: cast_nullable_to_non_nullable
+              as String,
+      continuationContentAreaTop: null == continuationContentAreaTop
+          ? _value.continuationContentAreaTop
+          : continuationContentAreaTop // ignore: cast_nullable_to_non_nullable
+              as double,
+      minFontSize: null == minFontSize
+          ? _value.minFontSize
+          : minFontSize // ignore: cast_nullable_to_non_nullable
+              as double,
+      maxFontSize: null == maxFontSize
+          ? _value.maxFontSize
+          : maxFontSize // ignore: cast_nullable_to_non_nullable
+              as double,
     ));
   }
 }
@@ -727,7 +801,12 @@ class _$ThemeConfigImpl implements _ThemeConfig {
       @HiveField(38) this.contentAreaLeft = 40.0,
       @HiveField(39) this.contentAreaTop = 160.0,
       @HiveField(40) this.contentAreaRight = 40.0,
-      @HiveField(41) this.contentAreaBottom = 40.0})
+      @HiveField(41) this.contentAreaBottom = 40.0,
+      @HiveField(42) this.layoutStyle = 'traditional_row',
+      @HiveField(43) this.headingAlignment = 'left',
+      @HiveField(44) this.continuationContentAreaTop = 40.0,
+      @HiveField(45) this.minFontSize = 10.0,
+      @HiveField(46) this.maxFontSize = 24.0})
       : _sectionOrder = sectionOrder,
         _hiddenFields = hiddenFields,
         _labelOverrides = labelOverrides;
@@ -921,10 +1000,34 @@ class _$ThemeConfigImpl implements _ThemeConfig {
   @JsonKey()
   @HiveField(41)
   final double contentAreaBottom;
+// --- Phase 1 Layout Engine Configs ---
+  @override
+  @JsonKey()
+  @HiveField(42)
+  final String layoutStyle;
+// 'traditional_row' | 'centered_block' | 'split_columns'
+  @override
+  @JsonKey()
+  @HiveField(43)
+  final String headingAlignment;
+// 'left' | 'center' | 'right'
+  @override
+  @JsonKey()
+  @HiveField(44)
+  final double continuationContentAreaTop;
+// Prevents page 2 overlap
+  @override
+  @JsonKey()
+  @HiveField(45)
+  final double minFontSize;
+  @override
+  @JsonKey()
+  @HiveField(46)
+  final double maxFontSize;
 
   @override
   String toString() {
-    return 'ThemeConfig(id: $id, name: $name, category: $category, isPremium: $isPremium, primaryColor: $primaryColor, secondaryColor: $secondaryColor, backgroundColor: $backgroundColor, textColor: $textColor, subtitleColor: $subtitleColor, headingFont: $headingFont, bodyFont: $bodyFont, headingFontSize: $headingFontSize, bodyFontSize: $bodyFontSize, photoShape: $photoShape, borderStyle: $borderStyle, sectionSpacing: $sectionSpacing, fieldSpacing: $fieldSpacing, margin: $margin, headerDecoration: $headerDecoration, footerDecoration: $footerDecoration, dividerStyle: $dividerStyle, showWatermark: $showWatermark, watermarkText: $watermarkText, sectionOrder: $sectionOrder, hiddenFields: $hiddenFields, labelOverrides: $labelOverrides, iconStyle: $iconStyle, backgroundImage: $backgroundImage, borderImage: $borderImage, watermarkImage: $watermarkImage, isPublished: $isPublished, displayOrder: $displayOrder, continuationBackgroundMode: $continuationBackgroundMode, continuationBackgroundImage: $continuationBackgroundImage, photoRectLeft: $photoRectLeft, photoRectTop: $photoRectTop, photoRectWidth: $photoRectWidth, photoRectHeight: $photoRectHeight, contentAreaLeft: $contentAreaLeft, contentAreaTop: $contentAreaTop, contentAreaRight: $contentAreaRight, contentAreaBottom: $contentAreaBottom)';
+    return 'ThemeConfig(id: $id, name: $name, category: $category, isPremium: $isPremium, primaryColor: $primaryColor, secondaryColor: $secondaryColor, backgroundColor: $backgroundColor, textColor: $textColor, subtitleColor: $subtitleColor, headingFont: $headingFont, bodyFont: $bodyFont, headingFontSize: $headingFontSize, bodyFontSize: $bodyFontSize, photoShape: $photoShape, borderStyle: $borderStyle, sectionSpacing: $sectionSpacing, fieldSpacing: $fieldSpacing, margin: $margin, headerDecoration: $headerDecoration, footerDecoration: $footerDecoration, dividerStyle: $dividerStyle, showWatermark: $showWatermark, watermarkText: $watermarkText, sectionOrder: $sectionOrder, hiddenFields: $hiddenFields, labelOverrides: $labelOverrides, iconStyle: $iconStyle, backgroundImage: $backgroundImage, borderImage: $borderImage, watermarkImage: $watermarkImage, isPublished: $isPublished, displayOrder: $displayOrder, continuationBackgroundMode: $continuationBackgroundMode, continuationBackgroundImage: $continuationBackgroundImage, photoRectLeft: $photoRectLeft, photoRectTop: $photoRectTop, photoRectWidth: $photoRectWidth, photoRectHeight: $photoRectHeight, contentAreaLeft: $contentAreaLeft, contentAreaTop: $contentAreaTop, contentAreaRight: $contentAreaRight, contentAreaBottom: $contentAreaBottom, layoutStyle: $layoutStyle, headingAlignment: $headingAlignment, continuationContentAreaTop: $continuationContentAreaTop, minFontSize: $minFontSize, maxFontSize: $maxFontSize)';
   }
 
   @override
@@ -1014,7 +1117,13 @@ class _$ThemeConfigImpl implements _ThemeConfig {
             (identical(other.contentAreaRight, contentAreaRight) ||
                 other.contentAreaRight == contentAreaRight) &&
             (identical(other.contentAreaBottom, contentAreaBottom) ||
-                other.contentAreaBottom == contentAreaBottom));
+                other.contentAreaBottom == contentAreaBottom) &&
+            (identical(other.layoutStyle, layoutStyle) ||
+                other.layoutStyle == layoutStyle) &&
+            (identical(other.headingAlignment, headingAlignment) || other.headingAlignment == headingAlignment) &&
+            (identical(other.continuationContentAreaTop, continuationContentAreaTop) || other.continuationContentAreaTop == continuationContentAreaTop) &&
+            (identical(other.minFontSize, minFontSize) || other.minFontSize == minFontSize) &&
+            (identical(other.maxFontSize, maxFontSize) || other.maxFontSize == maxFontSize));
   }
 
   @JsonKey(ignore: true)
@@ -1062,7 +1171,12 @@ class _$ThemeConfigImpl implements _ThemeConfig {
         contentAreaLeft,
         contentAreaTop,
         contentAreaRight,
-        contentAreaBottom
+        contentAreaBottom,
+        layoutStyle,
+        headingAlignment,
+        continuationContentAreaTop,
+        minFontSize,
+        maxFontSize
       ]);
 
   @JsonKey(ignore: true)
@@ -1122,7 +1236,12 @@ abstract class _ThemeConfig implements ThemeConfig {
       @HiveField(38) final double contentAreaLeft,
       @HiveField(39) final double contentAreaTop,
       @HiveField(40) final double contentAreaRight,
-      @HiveField(41) final double contentAreaBottom}) = _$ThemeConfigImpl;
+      @HiveField(41) final double contentAreaBottom,
+      @HiveField(42) final String layoutStyle,
+      @HiveField(43) final String headingAlignment,
+      @HiveField(44) final double continuationContentAreaTop,
+      @HiveField(45) final double minFontSize,
+      @HiveField(46) final double maxFontSize}) = _$ThemeConfigImpl;
 
   factory _ThemeConfig.fromJson(Map<String, dynamic> json) =
       _$ThemeConfigImpl.fromJson;
@@ -1254,6 +1373,21 @@ abstract class _ThemeConfig implements ThemeConfig {
   @override
   @HiveField(41)
   double get contentAreaBottom;
+  @override // --- Phase 1 Layout Engine Configs ---
+  @HiveField(42)
+  String get layoutStyle;
+  @override // 'traditional_row' | 'centered_block' | 'split_columns'
+  @HiveField(43)
+  String get headingAlignment;
+  @override // 'left' | 'center' | 'right'
+  @HiveField(44)
+  double get continuationContentAreaTop;
+  @override // Prevents page 2 overlap
+  @HiveField(45)
+  double get minFontSize;
+  @override
+  @HiveField(46)
+  double get maxFontSize;
   @override
   @JsonKey(ignore: true)
   _$$ThemeConfigImplCopyWith<_$ThemeConfigImpl> get copyWith =>

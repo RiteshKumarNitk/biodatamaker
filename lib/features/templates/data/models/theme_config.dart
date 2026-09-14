@@ -52,6 +52,13 @@ class ThemeConfig with _$ThemeConfig {
     @HiveField(39) @Default(160.0) double contentAreaTop,
     @HiveField(40) @Default(40.0) double contentAreaRight,
     @HiveField(41) @Default(40.0) double contentAreaBottom,
+    
+    // --- Phase 1 Layout Engine Configs ---
+    @HiveField(42) @Default('traditional_row') String layoutStyle, // 'traditional_row' | 'centered_block' | 'split_columns'
+    @HiveField(43) @Default('left') String headingAlignment, // 'left' | 'center' | 'right'
+    @HiveField(44) @Default(40.0) double continuationContentAreaTop, // Prevents page 2 overlap
+    @HiveField(45) @Default(10.0) double minFontSize,
+    @HiveField(46) @Default(24.0) double maxFontSize,
   }) = _ThemeConfig;
 
   factory ThemeConfig.fromJson(Map<String, dynamic> json) => _$ThemeConfigFromJson(json);

@@ -32,6 +32,16 @@ class _PreviewScreenState extends State<PreviewScreen> {
   late ThemeConfig _currentTheme;
   List<ThemeConfig> _allThemes = [];
   bool _isLoading = true;
+  double _fontScale = 1.0;
+
+  ThemeConfig get _scaledTheme {
+    return _currentTheme.copyWith(
+      bodyFontSize: (_currentTheme.bodyFontSize * _fontScale).clamp(_currentTheme.minFontSize, _currentTheme.maxFontSize),
+      headingFontSize: (_currentTheme.headingFontSize * _fontScale).clamp(_currentTheme.minFontSize, _currentTheme.maxFontSize),
+      fieldSpacing: _currentTheme.fieldSpacing * _fontScale,
+      sectionSpacing: _currentTheme.sectionSpacing * _fontScale,
+    );
+  }
 
   @override
   void initState() {
@@ -176,12 +186,38 @@ class _PreviewScreenState extends State<PreviewScreen> {
               },
             ),
           ),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: Row(
+              children: [
+                Text('Text Size:', style: GoogleFonts.poppins(fontSize: 12, fontWeight: FontWeight.bold)),
+                IconButton(
+                  icon: const Icon(Icons.remove_circle_outline, size: 20),
+                  onPressed: () => setState(() => _fontScale = (_fontScale - 0.1).clamp(0.6, 1.4)),
+                ),
+                Expanded(
+                  child: Slider(
+                    value: _fontScale,
+                    min: 0.6,
+                    max: 1.4,
+                    divisions: 8,
+                    label: '${(_fontScale * 100).round()}%',
+                    onChanged: (val) => setState(() => _fontScale = val),
+                  ),
+                ),
+                IconButton(
+                  icon: const Icon(Icons.add_circle_outline, size: 20),
+                  onPressed: () => setState(() => _fontScale = (_fontScale + 0.1).clamp(0.6, 1.4)),
+                ),
+              ],
+            ),
+          ),
           Expanded(
             child: SingleChildScrollView(
               padding: const EdgeInsets.symmetric(horizontal: 16),
               child: BiodataRenderer(
                 biodata: _biodata!,
-                theme: _currentTheme,
+                theme: _scaledTheme,
               ),
             ),
           ),
@@ -250,13 +286,13 @@ class _PreviewScreenState extends State<PreviewScreen> {
 
   void _previewFinalPdf(BuildContext context) {
     Navigator.of(context).push(MaterialPageRoute(
-      builder: (_) => FinalPreviewScreen(biodata: _biodata!, theme: _currentTheme),
+      builder: (_) => FinalPreviewScreen(biodata: _biodata!, theme: _scaledTheme),
     ));
   }
 
   Future<void> _saveImage(BuildContext context) async {
     try {
-      final path = await _pdfService.saveImage(_biodata!, _currentTheme);
+      final path = await _pdfService.saveImage(_biodata!, _scaledTheme);
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Image saved to: $path')),
@@ -273,7 +309,7 @@ class _PreviewScreenState extends State<PreviewScreen> {
 
   Future<void> _shareImage(BuildContext context) async {
     try {
-      await _pdfService.shareImage(_biodata!, _currentTheme);
+      await _pdfService.shareImage(_biodata!, _scaledTheme);
     } catch (e) {
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -290,7 +326,7 @@ class _PreviewScreenState extends State<PreviewScreen> {
       return;
     }
     try {
-      final path = await _pdfService.savePdf(_biodata!, _currentTheme);
+      final path = await _pdfService.savePdf(_biodata!, _scaledTheme);
       _biodataRepo.incrementDownloadCount(widget.biodataId);
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -313,7 +349,7 @@ class _PreviewScreenState extends State<PreviewScreen> {
       return;
     }
     try {
-      await _pdfService.previewPdf(_biodata!, _currentTheme);
+      await _pdfService.previewPdf(_biodata!, _scaledTheme);
     } catch (e) {
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -330,7 +366,7 @@ class _PreviewScreenState extends State<PreviewScreen> {
       return;
     }
     try {
-      await _pdfService.sharePdf(_biodata!, _currentTheme);
+      await _pdfService.sharePdf(_biodata!, _scaledTheme);
     } catch (e) {
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(

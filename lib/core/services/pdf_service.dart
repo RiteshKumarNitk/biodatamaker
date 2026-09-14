@@ -17,10 +17,6 @@ class PdfService {
   factory PdfService() => _instance;
   PdfService._internal();
 
-  /// Top margin for continuation pages (page 2+) in image-mode templates.
-  /// This is smaller than page 1's contentAreaTop so that continuation pages
-  /// don't start with a large blank area.
-  static const double _continuationPageMargin = 40.0;
 
   /// Renders [biodata] on [theme], favoring fitting it on one page: if
   /// normal spacing spills onto a second page, retries once with a ~15%
@@ -35,13 +31,19 @@ class PdfService {
     final normal = await _renderPdf(biodata, theme);
     if (_pageCount(normal) <= 1) return normal;
 
+    // Only apply a mild compact if it spills to 2 pages and we want to try fitting it on 1
     final compact = await _renderPdf(biodata, theme.copyWith(
       sectionSpacing: theme.sectionSpacing * 0.85,
       fieldSpacing: theme.fieldSpacing * 0.85,
-      bodyFontSize: theme.bodyFontSize * 0.85,
-      headingFontSize: theme.headingFontSize * 0.85,
+      bodyFontSize: (theme.bodyFontSize * 0.9).clamp(theme.minFontSize, theme.maxFontSize),
+      headingFontSize: (theme.headingFontSize * 0.9).clamp(theme.minFontSize, theme.maxFontSize),
     ));
-    return _pageCount(compact) <= 1 ? compact : normal;
+    final countCompact = _pageCount(compact);
+    if (countCompact <= 1) return compact;
+
+    // If it still takes 2 pages or more, return the normal readable version.
+    // The user has explicit font size controls if they want to shrink it further.
+    return normal;
   }
 
   static int _pageCount(Uint8List bytes) {
@@ -84,12 +86,12 @@ class PdfService {
     // contentAreaTop from page 1. A spacer block at the start of the content
     // pushes page 1's content down to the correct position.
     final firstPageSpacer = useImageLayout
-        ? pw.SizedBox(height: (theme.contentAreaTop - _continuationPageMargin).clamp(0.0, double.infinity))
+        ? pw.SizedBox(height: (theme.contentAreaTop - theme.continuationContentAreaTop).clamp(0.0, double.infinity))
         : null;
     final pageMargin = useImageLayout
         ? pw.EdgeInsets.fromLTRB(
             theme.contentAreaLeft,
-            _continuationPageMargin,
+            theme.continuationContentAreaTop,
             theme.contentAreaRight,
             theme.contentAreaBottom,
           )
