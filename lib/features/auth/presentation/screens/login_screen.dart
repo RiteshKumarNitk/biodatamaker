@@ -50,26 +50,33 @@ class LoginScreen extends StatelessWidget {
                       color: theme.colorScheme.primary.withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(22),
                     ),
-                    child: Icon(
-                      Icons.favorite,
-                      size: 48,
-                      color: theme.colorScheme.primary,
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(22),
+                      child: Image.asset('assets/icon.png', width: 70, height: 70),
                     ),
                   ),
                 ),
                 const SizedBox(height: 16),
                 Text(
-                  AppConfig.appName,
-                  style: theme.textTheme.headlineMedium?.copyWith(
-                    fontWeight: FontWeight.bold,
-                    color: theme.colorScheme.onSurface,
+                  'Welcome to',
+                  style: theme.textTheme.titleMedium?.copyWith(
+                    color: theme.colorScheme.onSurface.withValues(alpha: 0.7),
                   ),
                 ),
-                const SizedBox(height: 6),
                 Text(
-                  'Create beautiful marriage biodatas',
+                  AppConfig.appName,
+                  style: theme.textTheme.headlineLarge?.copyWith(
+                    fontWeight: FontWeight.bold,
+                    color: theme.colorScheme.primary,
+                  ),
+                ),
+                const SizedBox(height: 12),
+                Text(
+                  'Create beautiful biodata\nin minutes',
+                  textAlign: TextAlign.center,
                   style: theme.textTheme.bodyLarge?.copyWith(
                     color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
+                    height: 1.4,
                   ),
                 ),
                 const Spacer(flex: 2),

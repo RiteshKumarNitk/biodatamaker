@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 import 'package:biodata_maker/core/constants/asset_constants.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import 'package:biodata_maker/core/config/app_config.dart';
 import 'package:biodata_maker/features/auth/presentation/bloc/auth_bloc.dart';
 
@@ -18,7 +19,7 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
     super.initState();
-    Future.delayed(const Duration(seconds: 2), () {
+    Future.delayed(const Duration(milliseconds: 1500), () {
       if (mounted) {
         context.read<AuthBloc>().add(CheckAuth());
       }
@@ -70,14 +71,13 @@ class _SplashScreenState extends State<SplashScreen> {
                     ],
                   ),
                   child: Center(
-                    child: Icon(
-                      Icons.favorite,
-                      size: 60,
-                      color: Theme.of(context).colorScheme.primary,
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(22),
+                      child: Image.asset('assets/icon.png', width: 90, height: 90),
                     ),
                   ),
                 ),
-              ),
+              ).animate().fade(duration: 600.ms).scale(begin: const Offset(0.8, 0.8)),
               const SizedBox(height: 24),
               Text(
                 AppConfig.appName,
@@ -86,23 +86,23 @@ class _SplashScreenState extends State<SplashScreen> {
                       fontWeight: FontWeight.bold,
                       letterSpacing: 1.2,
                     ),
-              ),
+              ).animate().fade(delay: 300.ms, duration: 500.ms).slideY(begin: 0.2),
               const SizedBox(height: 8),
               Text(
-                'Beautiful Biodata in Minutes',
+                'Create. Preview. Share.',
                 style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                       color: Colors.white.withValues(alpha: 0.85),
+                      letterSpacing: 1.5,
+                      fontWeight: FontWeight.w500,
                     ),
-              ),
+              ).animate().fade(delay: 500.ms, duration: 500.ms),
               const SizedBox(height: 60),
-              SizedBox(
-                width: 100,
-                height: 100,
-                child: Lottie.asset(
-                  AssetConstants.loading,
-                  fit: BoxFit.contain,
-                ),
-              ),
+              Text(
+                'Loading...',
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      color: Colors.white.withValues(alpha: 0.7),
+                    ),
+              ).animate().fade(delay: 800.ms).shimmer(duration: 1500.ms),
             ],
           ),
         ),
