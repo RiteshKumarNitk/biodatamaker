@@ -16,8 +16,9 @@ class EditBiodataScreen extends StatelessWidget {
     return BlocProvider(
       create: (_) => BiodataFormBloc()..add(InitEditForm(biodataId)),
       child: BlocListener<BiodataFormBloc, BiodataFormState>(
+        listenWhen: (prev, curr) => !prev.isSaved && curr.isSaved,
         listener: (context, state) {
-          if (state.isSaved && state.biodata != null) {
+          if (state.biodata != null) {
             context.go('/preview/${state.biodata!.id}');
           }
         },

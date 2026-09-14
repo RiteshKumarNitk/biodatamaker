@@ -84,7 +84,7 @@ class PdfService {
     // contentAreaTop from page 1. A spacer block at the start of the content
     // pushes page 1's content down to the correct position.
     final firstPageSpacer = useImageLayout
-        ? pw.SizedBox(height: theme.contentAreaTop - _continuationPageMargin)
+        ? pw.SizedBox(height: (theme.contentAreaTop - _continuationPageMargin).clamp(0.0, double.infinity))
         : null;
     final pageMargin = useImageLayout
         ? pw.EdgeInsets.fromLTRB(

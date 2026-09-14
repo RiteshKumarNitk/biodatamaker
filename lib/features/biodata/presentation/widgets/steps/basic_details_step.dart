@@ -352,14 +352,6 @@ class _BasicDetailsStepState extends State<BasicDetailsStep> {
                         onChanged: (v) => _update(complexion: v),
                       ),
                     ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: TextFormField(
-                        controller: _weightCtrl,
-                        decoration: deco('Weight', hint: 'e.g. 65 kg', prefixIcon: const Icon(Icons.monitor_weight_outlined)),
-                        onChanged: (v) => _update(weight: v),
-                      ),
-                    ),
                   ],
                 ),
                 const SizedBox(height: 12),

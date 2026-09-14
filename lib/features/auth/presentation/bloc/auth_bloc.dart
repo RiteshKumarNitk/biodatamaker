@@ -105,9 +105,9 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   Future<void> _onCheckAuth(CheckAuth event, Emitter<AuthState> emit) async {
     emit(AuthLoading());
     try {
-      final isLoggedIn = _authRepo.isLoggedIn();
-      if (isLoggedIn) {
-        final user = _authRepo.getCurrentUser();
+      final loggedIn = await _authRepo.isLoggedIn();
+      if (loggedIn) {
+        final user = await _authRepo.getCurrentUser();
         if (user != null) {
           if (user.isGuest) {
             emit(AuthGuest(user));

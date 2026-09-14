@@ -66,13 +66,13 @@ class BiodataRepository {
     await _hiveService.duplicateBiodata(id);
   }
 
-  void incrementDownloadCount(String id) {
+  Future<void> incrementDownloadCount(String id) async {
     final biodata = _hiveService.getBiodata(id);
     if (biodata == null) return;
     final updated = biodata.copyWith(
       downloadCount: biodata.downloadCount + 1,
     );
-    _hiveService.saveBiodata(updated);
+    await _hiveService.saveBiodata(updated);
   }
 
   Map<String, int> getStats() {

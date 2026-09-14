@@ -44,6 +44,7 @@ class _DownloadStepState extends State<DownloadStep> {
   }
 
   Future<void> _generatePdf() async {
+    if (!mounted) return;
     setState(() => _isGenerating = true);
     try {
       final template = _template;
@@ -53,14 +54,16 @@ class _DownloadStepState extends State<DownloadStep> {
       final file = File('${dir.path}/$fileName');
       await file.writeAsBytes(bytes);
       _biodataRepo.incrementDownloadCount(widget.biodata.id);
-      setState(() {
-        _pdfBytes = bytes;
-        _filePath = file.path;
-        _isGenerating = false;
-      });
-    } catch (e) {
-      setState(() => _isGenerating = false);
       if (mounted) {
+        setState(() {
+          _pdfBytes = bytes;
+          _filePath = file.path;
+          _isGenerating = false;
+        });
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() => _isGenerating = false);
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('${Strings.tr('Failed to generate PDF')}: $e')),
         );

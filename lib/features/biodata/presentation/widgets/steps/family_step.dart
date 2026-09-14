@@ -133,6 +133,33 @@ class FamilyStep extends StatelessWidget {
     onUpdate(_syncSiblingCounts(list));
   }
 
+  void _confirmRemoveSibling(BuildContext context, int index) {
+    final theme = Theme.of(context);
+    final sibling = biodata.siblings[index];
+    final name = sibling.name.isNotEmpty ? sibling.name : sibling.relationship;
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text(Strings.tr('Remove Sibling')),
+        content: Text(Strings.tr('Remove $name from your biodata? This cannot be undone.')),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(),
+            child: Text(Strings.tr('Cancel')),
+          ),
+          FilledButton(
+            onPressed: () {
+              Navigator.of(ctx).pop();
+              _removeSibling(index);
+            },
+            style: FilledButton.styleFrom(backgroundColor: theme.colorScheme.error),
+            child: Text(Strings.tr('Remove')),
+          ),
+        ],
+      ),
+    );
+  }
+
   void _removeSibling(int index) {
     final list = [...biodata.siblings]..removeAt(index);
     onUpdate(_syncSiblingCounts(list));
@@ -312,7 +339,7 @@ class FamilyStep extends StatelessWidget {
                             IconButton(
                               tooltip: Strings.tr('Delete'),
                               icon: Icon(Icons.delete_outline, size: 20, color: theme.colorScheme.error),
-                              onPressed: () => _removeSibling(index),
+                              onPressed: () => _confirmRemoveSibling(context, index),
                             ),
                           ],
                         ),

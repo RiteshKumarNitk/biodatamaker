@@ -71,9 +71,9 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
         actions: [
           IconButton(
             icon: const Icon(Icons.logout),
-            onPressed: () {
-              sl<AuthRepository>().signOut();
-              context.go('/admin/login');
+            onPressed: () async {
+              await sl<AuthRepository>().signOut();
+              if (context.mounted) context.go('/admin/login');
             },
             tooltip: 'Logout',
           ),

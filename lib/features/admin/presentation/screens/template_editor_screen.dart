@@ -163,32 +163,63 @@ class _TemplateEditorScreenState extends State<TemplateEditorScreen> {
       _sectionOrder = List.from(_availableSections);
     } else {
       final existing = _templateRepo.getById(widget.templateId!);
-      if (existing != null) {
-        _id = existing.id;
-        _name = existing.name;
-        _category = existing.category;
-        _isPremium = existing.isPremium;
-        _displayOrder = existing.displayOrder;
-        _primaryColor = existing.primaryColor;
-        _secondaryColor = existing.secondaryColor;
-        _backgroundColor = existing.backgroundColor;
-        _textColor = existing.textColor;
-        _subtitleColor = existing.subtitleColor;
-        _headingFont = existing.headingFont;
-        _bodyFont = existing.bodyFont;
-        _headingFontSize = existing.headingFontSize;
-        _bodyFontSize = existing.bodyFontSize;
-        _photoShape = existing.photoShape;
-        _margin = existing.margin;
-        _sectionSpacing = existing.sectionSpacing;
-        _fieldSpacing = existing.fieldSpacing;
-        _headerDecoration = existing.headerDecoration;
-        _footerDecoration = existing.footerDecoration;
-        _dividerStyle = existing.dividerStyle;
-        _backgroundImage = existing.backgroundImage;
-        _isPublished = existing.isPublished;
-        _sectionOrder = List.from(existing.sectionOrder);
+      if (existing == null) {
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text('Template not found')),
+            );
+            Navigator.of(context).pop();
+          }
+        });
+        _id = widget.templateId!;
+        _name = '';
+        _category = 'General';
+        _primaryColor = 0xFFC62828;
+        _secondaryColor = 0xFFB8860B;
+        _backgroundColor = 0xFFFFFFFF;
+        _textColor = 0xFF000000;
+        _subtitleColor = 0xFF666666;
+        _headingFont = 'Playfair Display';
+        _bodyFont = 'Poppins';
+        _headingFontSize = 24.0;
+        _bodyFontSize = 14.0;
+        _photoShape = 'circle';
+        _margin = 20.0;
+        _sectionSpacing = 16.0;
+        _fieldSpacing = 8.0;
+        _headerDecoration = 'mandala';
+        _footerDecoration = 'floral';
+        _dividerStyle = 'minimal';
+        _backgroundImage = '';
+        _isPublished = true;
+        _sectionOrder = List.from(_availableSections);
+        return;
       }
+      _id = existing.id;
+      _name = existing.name;
+      _category = existing.category;
+      _isPremium = existing.isPremium;
+      _displayOrder = existing.displayOrder;
+      _primaryColor = existing.primaryColor;
+      _secondaryColor = existing.secondaryColor;
+      _backgroundColor = existing.backgroundColor;
+      _textColor = existing.textColor;
+      _subtitleColor = existing.subtitleColor;
+      _headingFont = existing.headingFont;
+      _bodyFont = existing.bodyFont;
+      _headingFontSize = existing.headingFontSize;
+      _bodyFontSize = existing.bodyFontSize;
+      _photoShape = existing.photoShape;
+      _margin = existing.margin;
+      _sectionSpacing = existing.sectionSpacing;
+      _fieldSpacing = existing.fieldSpacing;
+      _headerDecoration = existing.headerDecoration;
+      _footerDecoration = existing.footerDecoration;
+      _dividerStyle = existing.dividerStyle;
+      _backgroundImage = existing.backgroundImage;
+      _isPublished = existing.isPublished;
+      _sectionOrder = List.from(existing.sectionOrder);
     }
   }
 

@@ -50,22 +50,27 @@ class HiveService {
   }
 
   Biodata? getBiodata(String id) {
+    if (!_initialized) return null;
     return _biodataBox.get(id);
   }
 
   List<Biodata> getAllBiodata() {
+    if (!_initialized) return [];
     return _biodataBox.values.toList();
   }
 
   List<Biodata> getActiveBiodata() {
+    if (!_initialized) return [];
     return _biodataBox.values.where((b) => !b.isArchived).toList();
   }
 
   List<Biodata> getFavoriteBiodata() {
+    if (!_initialized) return [];
     return _biodataBox.values.where((b) => b.isFavorite && !b.isArchived).toList();
   }
 
   List<Biodata> getArchivedBiodata() {
+    if (!_initialized) return [];
     return _biodataBox.values.where((b) => b.isArchived).toList();
   }
 
@@ -117,6 +122,7 @@ class HiveService {
   }
 
   List<Biodata> searchBiodata(String query) {
+    if (!_initialized) return [];
     if (query.isEmpty) return getAllBiodata();
     final lower = query.toLowerCase();
     return _biodataBox.values.where((b) {
@@ -135,6 +141,7 @@ class HiveService {
   }
 
   UserSettings? getSettings(String id) {
+    if (!_initialized) return null;
     return _settingsBox.get(id);
   }
 
@@ -145,14 +152,17 @@ class HiveService {
   }
 
   ThemeConfig? getTemplate(String id) {
+    if (!_initialized) return null;
     return _templatesBox.get(id);
   }
 
   List<ThemeConfig> getAllTemplates() {
+    if (!_initialized) return [];
     return _templatesBox.values.toList();
   }
 
   List<ThemeConfig> getPublishedTemplates() {
+    if (!_initialized) return [];
     return _templatesBox.values.where((t) => t.isPublished).toList()
       ..sort((a, b) => a.displayOrder.compareTo(b.displayOrder));
   }
@@ -169,6 +179,7 @@ class HiveService {
   }
 
   User? getUser(String id) {
+    if (!_initialized) return null;
     return _authBox.get(id);
   }
 
@@ -178,26 +189,32 @@ class HiveService {
   }
 
   bool isLoggedIn() {
+    if (!_initialized) return false;
     return _authBox.isNotEmpty;
   }
 
   List<User> getAllUsers() {
+    if (!_initialized) return [];
     return _authBox.values.toList();
   }
 
   Future<void> deleteAllUsers() async {
+    if (!_initialized) return;
     await _authBox.clear();
   }
 
   int totalBiodatas() {
+    if (!_initialized) return 0;
     return _biodataBox.length;
   }
 
   int totalFavorites() {
+    if (!_initialized) return 0;
     return _biodataBox.values.where((b) => b.isFavorite).length;
   }
 
   int totalArchived() {
+    if (!_initialized) return 0;
     return _biodataBox.values.where((b) => b.isArchived).length;
   }
 

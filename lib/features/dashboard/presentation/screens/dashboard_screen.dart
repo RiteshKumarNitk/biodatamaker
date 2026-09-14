@@ -23,11 +23,18 @@ class DashboardScreen extends StatefulWidget {
 class _DashboardScreenState extends State<DashboardScreen> {
   final _bloc = DashboardBloc();
   int? _pressedActionIndex;
+  User? _user;
 
   @override
   void initState() {
     super.initState();
+    _loadUser();
     _bloc.add(const LoadDashboard());
+  }
+
+  Future<void> _loadUser() async {
+    final user = await sl<AuthRepository>().getCurrentUser();
+    if (mounted) setState(() => _user = user);
   }
 
   @override
@@ -46,7 +53,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final user = sl<AuthRepository>().getCurrentUser();
+    final user = _user;
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
 

@@ -40,18 +40,24 @@ class _PreviewScreenState extends State<PreviewScreen> {
   }
 
   void _loadData() {
-    final biodata = _biodataRepo.getById(widget.biodataId);
-    if (biodata == null) {
-      setState(() => _isLoading = false);
-      return;
-    }
-    _biodata = biodata;
-    _allThemes = _templateRepo.getAll();
-    if (_allThemes.isEmpty) {
+    try {
+      final biodata = _biodataRepo.getById(widget.biodataId);
+      if (biodata == null) {
+        setState(() => _isLoading = false);
+        return;
+      }
+      _biodata = biodata;
+      _allThemes = _templateRepo.getAll();
+      if (_allThemes.isEmpty) {
+        _allThemes = ThemeEngine.defaultTemplates;
+      }
+      final savedTheme = _templateRepo.getById(biodata.templateId);
+      _currentTheme = savedTheme ?? ThemeEngine.defaultTemplates.first;
+    } catch (_) {
+      _biodata = null;
       _allThemes = ThemeEngine.defaultTemplates;
+      _currentTheme = ThemeEngine.defaultTemplates.first;
     }
-    final savedTheme = _templateRepo.getById(biodata.templateId);
-    _currentTheme = savedTheme ?? ThemeEngine.defaultTemplates.first;
     setState(() => _isLoading = false);
   }
 

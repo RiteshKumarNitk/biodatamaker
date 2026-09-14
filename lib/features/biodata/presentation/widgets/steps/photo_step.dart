@@ -120,6 +120,7 @@ class PhotoStep extends StatelessWidget {
       );
     }
     final profilePhoto = biodata.photos.firstWhere((p) => p.isProfilePhoto, orElse: () => biodata.photos.first);
+    final photoExists = File(profilePhoto.path).existsSync();
     return Stack(
       children: [
         Container(
@@ -127,12 +128,16 @@ class PhotoStep extends StatelessWidget {
           height: 120,
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(16),
-            image: DecorationImage(
-              image: FileImage(File(profilePhoto.path)),
-              fit: BoxFit.cover,
-            ),
             border: Border.all(color: theme.colorScheme.primary, width: 2),
           ),
+          clipBehavior: Clip.antiAlias,
+          child: photoExists
+              ? Image.file(
+                  File(profilePhoto.path),
+                  fit: BoxFit.cover,
+                  errorBuilder: (_, __, ___) => _photoFallback(theme),
+                )
+              : _photoFallback(theme),
         ),
         Positioned(
           top: 4,
@@ -156,6 +161,15 @@ class PhotoStep extends StatelessWidget {
           ),
         ),
       ],
+    );
+  }
+
+  Widget _photoFallback(ThemeData theme) {
+    return Container(
+      color: theme.colorScheme.surfaceContainerHighest,
+      child: Center(
+        child: Icon(Icons.person, size: 48, color: theme.colorScheme.onSurfaceVariant),
+      ),
     );
   }
 

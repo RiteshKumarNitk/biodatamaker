@@ -1,3 +1,4 @@
+import 'package:hive_flutter/hive_flutter.dart';
 import 'package:uuid/uuid.dart';
 
 import 'package:biodata_maker/core/services/hive_service.dart';
@@ -7,9 +8,28 @@ import 'package:biodata_maker/features/auth/data/models/user.dart';
 class AuthRepository {
   final HiveService _hiveService;
   String? _currentUserId;
+  static const _currentUserIdKey = 'current_user_id';
 
   AuthRepository({HiveService? hiveService})
       : _hiveService = hiveService ?? sl<HiveService>();
+
+  Future<void> _persistUserId() async {
+    final box = await Hive.openBox('auth_session');
+    if (_currentUserId != null) {
+      await box.put(_currentUserIdKey, _currentUserId);
+    } else {
+      await box.delete(_currentUserIdKey);
+    }
+  }
+
+  Future<void> _restoreUserId() async {
+    if (_currentUserId != null) return;
+    final box = await Hive.openBox('auth_session');
+    final savedId = box.get(_currentUserIdKey) as String?;
+    if (savedId != null && _hiveService.getUser(savedId) != null) {
+      _currentUserId = savedId;
+    }
+  }
 
   Future<User> signUp(String name, String email, String phone) async {
     final now = DateTime.now();
@@ -23,6 +43,7 @@ class AuthRepository {
     );
     await _hiveService.saveUser(user);
     _currentUserId = user.id;
+    await _persistUserId();
     return user;
   }
 
@@ -37,6 +58,7 @@ class AuthRepository {
       );
       await _hiveService.saveUser(updated);
       _currentUserId = updated.id;
+      await _persistUserId();
       return updated;
     }
     final now = DateTime.now();
@@ -49,6 +71,7 @@ class AuthRepository {
     );
     await _hiveService.saveUser(user);
     _currentUserId = user.id;
+    await _persistUserId();
     return user;
   }
 
@@ -63,6 +86,7 @@ class AuthRepository {
     );
     await _hiveService.saveUser(user);
     _currentUserId = user.id;
+    await _persistUserId();
     return user;
   }
 
@@ -77,14 +101,17 @@ class AuthRepository {
     );
     await _hiveService.saveUser(user);
     _currentUserId = user.id;
+    await _persistUserId();
     return user;
   }
 
   Future<void> signOut() async {
     _currentUserId = null;
+    await _persistUserId();
   }
 
-  User? getCurrentUser() {
+  Future<User?> getCurrentUser() async {
+    await _restoreUserId();
     if (_currentUserId != null) {
       final user = _hiveService.getUser(_currentUserId!);
       if (user != null) return user;
@@ -92,12 +119,14 @@ class AuthRepository {
     return null;
   }
 
-  bool isLoggedIn() {
+  Future<bool> isLoggedIn() async {
+    await _restoreUserId();
     return _currentUserId != null && _hiveService.getUser(_currentUserId!) != null;
   }
 
   Future<void> updateProfile(User user) async {
     await _hiveService.saveUser(user);
     _currentUserId = user.id;
+    await _persistUserId();
   }
 }

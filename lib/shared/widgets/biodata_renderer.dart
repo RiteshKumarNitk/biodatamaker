@@ -707,15 +707,22 @@ class BiodataRenderer extends StatelessWidget {
         }
       }
 
-      // Section heading + its first row are one unbreakable block, so a page
-      // break can never leave a heading stranded at the bottom of a page.
-      add(_pdfKeepTogether([
-        _pdfSectionTitle(section.title, primary, theme, font),
-        pw.SizedBox(height: theme.fieldSpacing),
-        rows.removeAt(0),
-      ]));
-      for (final row in rows) {
-        add(row);
+      if (rows.isNotEmpty) {
+        // Section heading + its first row are one unbreakable block, so a page
+        // break can never leave a heading stranded at the bottom of a page.
+        add(_pdfKeepTogether([
+          _pdfSectionTitle(section.title, primary, theme, font),
+          pw.SizedBox(height: theme.fieldSpacing),
+          rows.removeAt(0),
+        ]));
+        for (final row in rows) {
+          add(row);
+        }
+      } else {
+        // Section heading only (no rows, e.g. aboutMe-only sections)
+        add(_pdfKeepTogether([
+          _pdfSectionTitle(section.title, primary, theme, font),
+        ]));
       }
       blocks.add(pw.SizedBox(height: theme.sectionSpacing));
     }

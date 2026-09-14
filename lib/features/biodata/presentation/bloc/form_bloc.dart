@@ -1,3 +1,6 @@
+import 'dart:async';
+
+import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:uuid/uuid.dart';
@@ -206,12 +209,25 @@ class BiodataFormBloc extends Bloc<BiodataFormEvent, BiodataFormState> {
     }
   }
 
+  Timer? _autoSaveTimer;
+
+  @override
+  Future<void> close() {
+    _autoSaveTimer?.cancel();
+    return super.close();
+  }
+
   Future<void> _onAutoSave(AutoSaveForm event, Emitter<BiodataFormState> emit) async {
-    if (state.biodata == null) return;
-    try {
-      final biodata = state.biodata!.copyWith(updatedAt: DateTime.now());
-      await _repo.save(biodata);
-    } catch (_) {}
+    _autoSaveTimer?.cancel();
+    _autoSaveTimer = Timer(const Duration(milliseconds: 500), () async {
+      if (state.biodata == null) return;
+      try {
+        final biodata = state.biodata!.copyWith(updatedAt: DateTime.now());
+        await _repo.save(biodata);
+      } catch (e) {
+        debugPrint('Autosave failed: $e');
+      }
+    });
   }
 
   void _onClear(ClearForm event, Emitter<BiodataFormState> emit) {

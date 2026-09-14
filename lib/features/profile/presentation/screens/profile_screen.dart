@@ -31,13 +31,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
     _loadProfile();
   }
 
-  void _loadProfile() {
-    final user = _authRepo.getCurrentUser();
+  Future<void> _loadProfile() async {
+    final user = await _authRepo.getCurrentUser();
     final biodatas = _biodataRepo.getAll();
     _totalBiodatas = biodatas.length;
     _totalDownloads =
         biodatas.fold<int>(0, (sum, b) => sum + b.downloadCount);
-    setState(() => _user = user);
+    if (mounted) setState(() => _user = user);
   }
 
   String _getInitials(String name) {

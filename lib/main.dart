@@ -28,7 +28,11 @@ void main() async {
   final hiveService = HiveService();
   await hiveService.init();
 
-  await MobileAds.instance.initialize();
+  try {
+    await MobileAds.instance.initialize();
+  } catch (_) {
+    // Ads may fail on some devices; app must still work offline
+  }
 
   await SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,

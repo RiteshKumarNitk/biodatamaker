@@ -18,38 +18,38 @@ class SettingsRepository {
     await _hiveService.saveSettings(settings);
   }
 
-  void setThemeMode(String mode) {
+  Future<void> setThemeMode(String mode) async {
     final settings = getSettings();
-    _hiveService.saveSettings(settings.copyWith(themeMode: mode));
+    await _hiveService.saveSettings(settings.copyWith(themeMode: mode));
   }
 
-  void setLanguage(String lang) {
+  Future<void> setLanguage(String lang) async {
     final settings = getSettings();
-    _hiveService.saveSettings(settings.copyWith(language: lang));
+    await _hiveService.saveSettings(settings.copyWith(language: lang));
   }
 
-  void setPdfQuality(String q) {
+  Future<void> setPdfQuality(String q) async {
     final settings = getSettings();
-    _hiveService.saveSettings(settings.copyWith(pdfQuality: q));
+    await _hiveService.saveSettings(settings.copyWith(pdfQuality: q));
   }
 
-  void setPdfPageSize(String s) {
+  Future<void> setPdfPageSize(String s) async {
     final settings = getSettings();
-    _hiveService.saveSettings(settings.copyWith(pdfPageSize: s));
+    await _hiveService.saveSettings(settings.copyWith(pdfPageSize: s));
   }
 
-  void incrementBiodataCount() {
+  Future<void> incrementBiodataCount() async {
     final settings = getSettings();
-    _hiveService.saveSettings(
+    await _hiveService.saveSettings(
       settings.copyWith(
         totalBiodatasCreated: settings.totalBiodatasCreated + 1,
       ),
     );
   }
 
-  void setSubscriptionTier(String tier, {DateTime? expiresAt}) {
+  Future<void> setSubscriptionTier(String tier, {DateTime? expiresAt}) async {
     final settings = getSettings();
-    _hiveService.saveSettings(
+    await _hiveService.saveSettings(
       settings.copyWith(
         subscriptionTier: tier,
         subscriptionExpiresAt: expiresAt,
