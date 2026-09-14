@@ -49,18 +49,16 @@ class ThemeConfigAdapter extends TypeAdapter<ThemeConfig> {
       watermarkImage: fields[29] as String,
       isPublished: fields[30] as bool,
       displayOrder: fields[31] as int,
-      // Fields 32+ were added later; tolerate records saved by older app
-      // versions that never wrote them (null -> default).
-      continuationBackgroundMode: fields[32] as String? ?? 'reuse',
-      continuationBackgroundImage: fields[33] as String? ?? '',
-      photoRectLeft: fields[34] as double? ?? 40.0,
-      photoRectTop: fields[35] as double? ?? 40.0,
-      photoRectWidth: fields[36] as double? ?? 100.0,
-      photoRectHeight: fields[37] as double? ?? 120.0,
-      contentAreaLeft: fields[38] as double? ?? 40.0,
-      contentAreaTop: fields[39] as double? ?? 160.0,
-      contentAreaRight: fields[40] as double? ?? 40.0,
-      contentAreaBottom: fields[41] as double? ?? 40.0,
+      continuationBackgroundMode: fields[32] as String,
+      continuationBackgroundImage: fields[33] as String,
+      photoRectLeft: fields[34] as double,
+      photoRectTop: fields[35] as double,
+      photoRectWidth: fields[36] as double,
+      photoRectHeight: fields[37] as double,
+      contentAreaLeft: fields[38] as double,
+      contentAreaTop: fields[39] as double,
+      contentAreaRight: fields[40] as double,
+      contentAreaBottom: fields[41] as double,
     );
   }
 

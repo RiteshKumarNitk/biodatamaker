@@ -17,6 +17,11 @@ class PdfService {
   factory PdfService() => _instance;
   PdfService._internal();
 
+  /// Top margin for continuation pages (page 2+) in image-mode templates.
+  /// This is smaller than page 1's contentAreaTop so that continuation pages
+  /// don't start with a large blank area.
+  static const double _continuationPageMargin = 40.0;
+
   /// Renders [biodata] on [theme], favoring fitting it on one page: if
   /// normal spacing spills onto a second page, retries once with a ~15%
   /// more compact spacing/font preset and uses that instead when it actually
@@ -64,7 +69,7 @@ class PdfService {
       continuationBackgroundImage = await _loadAssetImage(theme.continuationBackgroundImage);
     }
 
-    final font = pw.Font.helvetica();
+    final font = await BiodataRenderer.loadPdfFont(biodata.selectedFontId);
     final displayName = biodata.fullName.isNotEmpty ? biodata.fullName : biodata.name;
     final useImageLayout = theme.backgroundImage.isNotEmpty;
 
@@ -74,16 +79,27 @@ class PdfService {
     // being clipped. PageTheme keeps the themed background (and frame) painted
     // on every page, and the footer adds "Page X of Y".
     //
-    // MultiPage margin is a single EdgeInsets for the whole document (it
-    // cannot vary per page), so an image template's continuation-page art
-    // must be designed to work within the same contentArea insets as page 1.
+    // For image-mode templates, we use a smaller page margin so continuation
+    // pages (page 2+) start closer to the top instead of inheriting the large
+    // contentAreaTop from page 1. A spacer block at the start of the content
+    // pushes page 1's content down to the correct position.
+    final firstPageSpacer = useImageLayout
+        ? pw.SizedBox(height: theme.contentAreaTop - _continuationPageMargin)
+        : null;
+    final pageMargin = useImageLayout
+        ? pw.EdgeInsets.fromLTRB(
+            theme.contentAreaLeft,
+            _continuationPageMargin,
+            theme.contentAreaRight,
+            theme.contentAreaBottom,
+          )
+        : pw.EdgeInsets.all(theme.margin);
+
     pdf.addPage(
       pw.MultiPage(
         pageTheme: pw.PageTheme(
           pageFormat: PdfPageFormat.a4,
-          margin: useImageLayout
-              ? pw.EdgeInsets.fromLTRB(theme.contentAreaLeft, theme.contentAreaTop, theme.contentAreaRight, theme.contentAreaBottom)
-              : pw.EdgeInsets.all(theme.margin),
+          margin: pageMargin,
           theme: pw.ThemeData.withFont(base: font),
           buildBackground: (context) => _buildPageBackground(
             theme,
@@ -100,7 +116,13 @@ class PdfService {
           ),
         ),
         footer: (context) => _buildPageFooter(context, theme, font),
-        build: (_) => BiodataRenderer.toPdfWidgets(biodata, theme, profileImage: profileImage),
+        build: (_) {
+          final blocks = BiodataRenderer.toPdfWidgets(biodata, theme, profileImage: profileImage, customFont: font);
+          if (firstPageSpacer != null) {
+            return [firstPageSpacer, ...blocks];
+          }
+          return blocks;
+        },
       ),
     );
 
@@ -181,6 +203,7 @@ class PdfService {
               displayName,
               width: theme.photoRectWidth,
               height: theme.photoRectHeight,
+              customFont: font,
             ),
           ),
         if (showWatermark) _buildWatermark(theme, font),

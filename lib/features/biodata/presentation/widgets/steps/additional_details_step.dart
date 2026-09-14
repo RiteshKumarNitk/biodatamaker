@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:biodata_maker/core/constants/app_constants.dart';
 import 'package:biodata_maker/core/i18n/strings.dart';
 import 'package:biodata_maker/features/biodata/data/models/biodata.dart';
+import 'package:biodata_maker/shared/widgets/custom_fields_editor.dart';
 
 class AdditionalDetailsStep extends StatefulWidget {
   final Biodata biodata;
@@ -199,6 +200,14 @@ class _AdditionalDetailsStepState extends State<AdditionalDetailsStep> {
               ],
             ),
           ),
+        ),
+        const SizedBox(height: 16),
+        CustomFieldsEditor(
+          section: 'lifestyle',
+          sectionLabel: 'Lifestyle & Interests',
+          fields: widget.biodata.customFields,
+          onChanged: (fields) =>
+              widget.onUpdate(widget.biodata.copyWith(customFields: fields)),
         ),
         const SizedBox(height: 32),
       ],

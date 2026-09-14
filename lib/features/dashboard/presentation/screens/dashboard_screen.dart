@@ -6,12 +6,12 @@ import 'package:lottie/lottie.dart';
 
 import 'package:biodata_maker/core/constants/asset_constants.dart';
 import 'package:biodata_maker/core/i18n/strings.dart';
-
 import 'package:biodata_maker/core/services/service_locator.dart';
 import 'package:biodata_maker/features/auth/data/repositories/auth_repository.dart';
 import 'package:biodata_maker/features/auth/data/models/user.dart';
 import 'package:biodata_maker/features/dashboard/presentation/bloc/dashboard_bloc.dart';
 import 'package:biodata_maker/features/biodata/data/models/biodata.dart';
+import 'package:biodata_maker/shared/widgets/app_banner_ad.dart';
 
 class DashboardScreen extends StatefulWidget {
   const DashboardScreen({super.key});
@@ -342,6 +342,12 @@ class _DashboardScreenState extends State<DashboardScreen> {
         padding: const EdgeInsets.fromLTRB(20, 12, 20, 32),
         sliver: SliverToBoxAdapter(
           child: _buildQuickActions(context, colorScheme),
+        ),
+      ),
+      SliverToBoxAdapter(
+        child: Padding(
+          padding: const EdgeInsets.only(bottom: 16),
+          child: Center(child: AppBannerAd()),
         ),
       ),
     ];

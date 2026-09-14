@@ -11,6 +11,7 @@ import 'package:biodata_maker/features/biodata/presentation/widgets/steps/family
 import 'package:biodata_maker/features/biodata/presentation/widgets/steps/additional_details_step.dart';
 import 'package:biodata_maker/features/biodata/presentation/widgets/steps/contact_partner_step.dart';
 import 'package:biodata_maker/features/biodata/presentation/widgets/steps/template_step.dart';
+import 'package:biodata_maker/features/biodata/presentation/widgets/steps/font_selection_step.dart';
 import 'package:biodata_maker/features/biodata/presentation/widgets/steps/preview_step.dart';
 import 'package:biodata_maker/features/biodata/presentation/widgets/steps/download_step.dart';
 import 'package:biodata_maker/features/biodata/presentation/widgets/live_preview_panel.dart';
@@ -35,7 +36,6 @@ class _MultiStepFormState extends State<MultiStepForm> {
   int _previousStep = 0;
 
   static const _stepLabels = [
-    'Template',
     'Photo',
     'Personal',
     'Education',
@@ -43,11 +43,12 @@ class _MultiStepFormState extends State<MultiStepForm> {
     'Lifestyle',
     'Contact',
     'Review',
+    'Template',
+    'Font',
     'Download',
   ];
 
   static const _stepIcons = [
-    Icons.dashboard_customize,
     Icons.camera_alt,
     Icons.person,
     Icons.school,
@@ -55,6 +56,8 @@ class _MultiStepFormState extends State<MultiStepForm> {
     Icons.spa,
     Icons.contact_phone,
     Icons.preview,
+    Icons.dashboard_customize,
+    Icons.font_download,
     Icons.download,
   ];
 
@@ -127,7 +130,7 @@ class _MultiStepFormState extends State<MultiStepForm> {
                   // own screen to reviewing the result. Narrower screens get
                   // a toggle action in the app bar instead (see
                   // wizard_preview_action.dart).
-                  final showSplitPreview = constraints.maxWidth >= kSplitPreviewBreakpoint && state.currentStep <= 6;
+                  final showSplitPreview = constraints.maxWidth >= kSplitPreviewBreakpoint && state.currentStep <= 5;
                   if (!showSplitPreview) return stepContent;
 
                   return Row(
@@ -148,7 +151,7 @@ class _MultiStepFormState extends State<MultiStepForm> {
               onNext: () {
                 final name = (state.biodata?.fullName ?? '').trim();
                 final isLast = state.currentStep == BiodataFormState.totalSteps - 1;
-                if (name.isEmpty && (state.currentStep == 2 || isLast)) {
+                if (name.isEmpty && (state.currentStep == 1 || isLast)) {
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
                       content: Text(
@@ -179,22 +182,24 @@ class _MultiStepFormState extends State<MultiStepForm> {
 
     switch (step) {
       case 0:
-        return TemplateStep(biodata: biodata, onUpdate: onUpdate);
-      case 1:
         return PhotoStep(biodata: biodata, onUpdate: onUpdate);
-      case 2:
+      case 1:
         return BasicDetailsStep(biodata: biodata, onUpdate: onUpdate);
-      case 3:
+      case 2:
         return EducationCareerStep(biodata: biodata, onUpdate: onUpdate);
-      case 4:
+      case 3:
         return FamilyStep(biodata: biodata, onUpdate: onUpdate);
-      case 5:
+      case 4:
         return AdditionalDetailsStep(biodata: biodata, onUpdate: onUpdate);
-      case 6:
+      case 5:
         return ContactPartnerStep(biodata: biodata, onUpdate: onUpdate);
-      case 7:
+      case 6:
         return PreviewStep(biodata: biodata);
+      case 7:
+        return TemplateStep(biodata: biodata, onUpdate: onUpdate);
       case 8:
+        return FontSelectionStep(biodata: biodata, onUpdate: onUpdate);
+      case 9:
         return DownloadStep(biodata: biodata);
       default:
         return const SizedBox();

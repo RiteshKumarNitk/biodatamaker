@@ -18,7 +18,6 @@ class BasicDetailsStep extends StatefulWidget {
 
 class _BasicDetailsStepState extends State<BasicDetailsStep> {
   late TextEditingController _fullNameCtrl;
-  late TextEditingController _ageCtrl;
   late TextEditingController _heightCtrl;
   late TextEditingController _weightCtrl;
   late TextEditingController _dateOfBirthCtrl;
@@ -34,7 +33,6 @@ class _BasicDetailsStepState extends State<BasicDetailsStep> {
   void initState() {
     super.initState();
     _fullNameCtrl = TextEditingController(text: widget.biodata.fullName);
-    _ageCtrl = TextEditingController(text: widget.biodata.age);
     _heightCtrl = TextEditingController(text: widget.biodata.height);
     _weightCtrl = TextEditingController(text: widget.biodata.weight);
     _dateOfBirthCtrl = TextEditingController(text: widget.biodata.dateOfBirth);
@@ -50,7 +48,6 @@ class _BasicDetailsStepState extends State<BasicDetailsStep> {
   @override
   void dispose() {
     _fullNameCtrl.dispose();
-    _ageCtrl.dispose();
     _heightCtrl.dispose();
     _weightCtrl.dispose();
     _dateOfBirthCtrl.dispose();
@@ -68,7 +65,6 @@ class _BasicDetailsStepState extends State<BasicDetailsStep> {
     String? fullName,
     String? gender,
     String? dateOfBirth,
-    String? age,
     String? height,
     String? weight,
     String? religion,
@@ -90,7 +86,6 @@ class _BasicDetailsStepState extends State<BasicDetailsStep> {
       fullName: fullName ?? _fullNameCtrl.text,
       gender: gender ?? widget.biodata.gender,
       dateOfBirth: dateOfBirth ?? _dateOfBirthCtrl.text,
-      age: age ?? _ageCtrl.text,
       height: height ?? _heightCtrl.text,
       weight: weight ?? _weightCtrl.text,
       religion: religion ?? widget.biodata.religion,
@@ -139,15 +134,7 @@ class _BasicDetailsStepState extends State<BasicDetailsStep> {
     if (picked != null) {
       final formatted = DateFormat('dd/MM/yyyy').format(picked);
       _dateOfBirthCtrl.text = formatted;
-
-      final now = DateTime.now();
-      int calculatedAge = now.year - picked.year;
-      if (now.month < picked.month || (now.month == picked.month && now.day < picked.day)) {
-        calculatedAge--;
-      }
-      _ageCtrl.text = calculatedAge.toString();
-
-      _update(dateOfBirth: formatted, age: calculatedAge.toString());
+      _update(dateOfBirth: formatted);
     }
   }
 
@@ -337,20 +324,19 @@ class _BasicDetailsStepState extends State<BasicDetailsStep> {
                 Row(
                   children: [
                     Expanded(
-                      child: TextFormField(
-                        controller: _ageCtrl,
-                        decoration: deco('Age', hint: 'e.g. 28', prefixIcon: const Icon(Icons.numbers)),
-                        keyboardType: TextInputType.number,
-                        onChanged: (v) => _update(age: v),
-                      ),
-                    ),
-                    const SizedBox(width: 12),
-                    Expanded(
                       child: DropdownButtonFormField<String>(
                         initialValue: _validOption(b.height, AppConstants.heights),
                         decoration: deco('Height', hint: "e.g. 5'9\"", prefixIcon: const Icon(Icons.height)),
                         items: AppConstants.heights.map((h) => DropdownMenuItem(value: h, child: Text(h))).toList(),
                         onChanged: (v) => _update(height: v),
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: TextFormField(
+                        controller: _weightCtrl,
+                        decoration: deco('Weight', hint: 'e.g. 65 kg', prefixIcon: const Icon(Icons.monitor_weight_outlined)),
+                        onChanged: (v) => _update(weight: v),
                       ),
                     ),
                   ],

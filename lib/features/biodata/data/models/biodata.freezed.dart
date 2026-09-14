@@ -180,6 +180,8 @@ mixin _$Biodata {
   String get alternateNumber => throw _privateConstructorUsedError;
   @HiveField(79)
   String get pinCode => throw _privateConstructorUsedError;
+  @HiveField(80)
+  String get selectedFontId => throw _privateConstructorUsedError;
 
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
   @JsonKey(ignore: true)
@@ -271,7 +273,8 @@ abstract class $BiodataCopyWith<$Res> {
       @HiveField(76) String contactPerson,
       @HiveField(77) String contactPersonRelation,
       @HiveField(78) String alternateNumber,
-      @HiveField(79) String pinCode});
+      @HiveField(79) String pinCode,
+      @HiveField(80) String selectedFontId});
 }
 
 /// @nodoc
@@ -367,6 +370,7 @@ class _$BiodataCopyWithImpl<$Res, $Val extends Biodata>
     Object? contactPersonRelation = null,
     Object? alternateNumber = null,
     Object? pinCode = null,
+    Object? selectedFontId = null,
   }) {
     return _then(_value.copyWith(
       id: null == id
@@ -689,6 +693,10 @@ class _$BiodataCopyWithImpl<$Res, $Val extends Biodata>
           ? _value.pinCode
           : pinCode // ignore: cast_nullable_to_non_nullable
               as String,
+      selectedFontId: null == selectedFontId
+          ? _value.selectedFontId
+          : selectedFontId // ignore: cast_nullable_to_non_nullable
+              as String,
     ) as $Val);
   }
 }
@@ -780,7 +788,8 @@ abstract class _$$BiodataImplCopyWith<$Res> implements $BiodataCopyWith<$Res> {
       @HiveField(76) String contactPerson,
       @HiveField(77) String contactPersonRelation,
       @HiveField(78) String alternateNumber,
-      @HiveField(79) String pinCode});
+      @HiveField(79) String pinCode,
+      @HiveField(80) String selectedFontId});
 }
 
 /// @nodoc
@@ -874,6 +883,7 @@ class __$$BiodataImplCopyWithImpl<$Res>
     Object? contactPersonRelation = null,
     Object? alternateNumber = null,
     Object? pinCode = null,
+    Object? selectedFontId = null,
   }) {
     return _then(_$BiodataImpl(
       id: null == id
@@ -1196,6 +1206,10 @@ class __$$BiodataImplCopyWithImpl<$Res>
           ? _value.pinCode
           : pinCode // ignore: cast_nullable_to_non_nullable
               as String,
+      selectedFontId: null == selectedFontId
+          ? _value.selectedFontId
+          : selectedFontId // ignore: cast_nullable_to_non_nullable
+              as String,
     ));
   }
 }
@@ -1284,7 +1298,8 @@ class _$BiodataImpl implements _Biodata {
       @HiveField(76) this.contactPerson = '',
       @HiveField(77) this.contactPersonRelation = '',
       @HiveField(78) this.alternateNumber = '',
-      @HiveField(79) this.pinCode = ''})
+      @HiveField(79) this.pinCode = '',
+      @HiveField(80) this.selectedFontId = ''})
       : _photos = photos,
         _customFields = customFields,
         _siblings = siblings;
@@ -1626,10 +1641,14 @@ class _$BiodataImpl implements _Biodata {
   @JsonKey()
   @HiveField(79)
   final String pinCode;
+  @override
+  @JsonKey()
+  @HiveField(80)
+  final String selectedFontId;
 
   @override
   String toString() {
-    return 'Biodata(id: $id, name: $name, createdAt: $createdAt, updatedAt: $updatedAt, templateId: $templateId, isFavorite: $isFavorite, isArchived: $isArchived, isDraft: $isDraft, downloadCount: $downloadCount, fullName: $fullName, gender: $gender, dateOfBirth: $dateOfBirth, age: $age, height: $height, weight: $weight, religion: $religion, caste: $caste, subCaste: $subCaste, motherTongue: $motherTongue, maritalStatus: $maritalStatus, bloodGroup: $bloodGroup, complexion: $complexion, manglik: $manglik, horoscope: $horoscope, rashi: $rashi, nakshatra: $nakshatra, gotra: $gotra, birthPlace: $birthPlace, birthTime: $birthTime, aboutMe: $aboutMe, qualification: $qualification, college: $college, university: $university, occupation: $occupation, company: $company, business: $business, designation: $designation, annualIncome: $annualIncome, fatherName: $fatherName, fatherOccupation: $fatherOccupation, motherName: $motherName, motherOccupation: $motherOccupation, brothers: $brothers, sisters: $sisters, familyType: $familyType, familyValues: $familyValues, nativePlace: $nativePlace, diet: $diet, smoking: $smoking, drinking: $drinking, languages: $languages, hobbies: $hobbies, personality: $personality, mobile: $mobile, whatsapp: $whatsapp, email: $email, address: $address, city: $city, state: $state, country: $country, preferredAge: $preferredAge, preferredHeight: $preferredHeight, preferredEducation: $preferredEducation, preferredOccupation: $preferredOccupation, preferredReligion: $preferredReligion, preferredLocation: $preferredLocation, expectations: $expectations, photos: $photos, profilePhotoPath: $profilePhotoPath, customFields: $customFields, siblings: $siblings, grandFatherName: $grandFatherName, grandFatherOccupation: $grandFatherOccupation, grandMotherName: $grandMotherName, familyStatus: $familyStatus, familyDescription: $familyDescription, contactPerson: $contactPerson, contactPersonRelation: $contactPersonRelation, alternateNumber: $alternateNumber, pinCode: $pinCode)';
+    return 'Biodata(id: $id, name: $name, createdAt: $createdAt, updatedAt: $updatedAt, templateId: $templateId, isFavorite: $isFavorite, isArchived: $isArchived, isDraft: $isDraft, downloadCount: $downloadCount, fullName: $fullName, gender: $gender, dateOfBirth: $dateOfBirth, age: $age, height: $height, weight: $weight, religion: $religion, caste: $caste, subCaste: $subCaste, motherTongue: $motherTongue, maritalStatus: $maritalStatus, bloodGroup: $bloodGroup, complexion: $complexion, manglik: $manglik, horoscope: $horoscope, rashi: $rashi, nakshatra: $nakshatra, gotra: $gotra, birthPlace: $birthPlace, birthTime: $birthTime, aboutMe: $aboutMe, qualification: $qualification, college: $college, university: $university, occupation: $occupation, company: $company, business: $business, designation: $designation, annualIncome: $annualIncome, fatherName: $fatherName, fatherOccupation: $fatherOccupation, motherName: $motherName, motherOccupation: $motherOccupation, brothers: $brothers, sisters: $sisters, familyType: $familyType, familyValues: $familyValues, nativePlace: $nativePlace, diet: $diet, smoking: $smoking, drinking: $drinking, languages: $languages, hobbies: $hobbies, personality: $personality, mobile: $mobile, whatsapp: $whatsapp, email: $email, address: $address, city: $city, state: $state, country: $country, preferredAge: $preferredAge, preferredHeight: $preferredHeight, preferredEducation: $preferredEducation, preferredOccupation: $preferredOccupation, preferredReligion: $preferredReligion, preferredLocation: $preferredLocation, expectations: $expectations, photos: $photos, profilePhotoPath: $profilePhotoPath, customFields: $customFields, siblings: $siblings, grandFatherName: $grandFatherName, grandFatherOccupation: $grandFatherOccupation, grandMotherName: $grandMotherName, familyStatus: $familyStatus, familyDescription: $familyDescription, contactPerson: $contactPerson, contactPersonRelation: $contactPersonRelation, alternateNumber: $alternateNumber, pinCode: $pinCode, selectedFontId: $selectedFontId)';
   }
 
   @override
@@ -1759,7 +1778,8 @@ class _$BiodataImpl implements _Biodata {
             (identical(other.contactPerson, contactPerson) || other.contactPerson == contactPerson) &&
             (identical(other.contactPersonRelation, contactPersonRelation) || other.contactPersonRelation == contactPersonRelation) &&
             (identical(other.alternateNumber, alternateNumber) || other.alternateNumber == alternateNumber) &&
-            (identical(other.pinCode, pinCode) || other.pinCode == pinCode));
+            (identical(other.pinCode, pinCode) || other.pinCode == pinCode) &&
+            (identical(other.selectedFontId, selectedFontId) || other.selectedFontId == selectedFontId));
   }
 
   @JsonKey(ignore: true)
@@ -1845,7 +1865,8 @@ class _$BiodataImpl implements _Biodata {
         contactPerson,
         contactPersonRelation,
         alternateNumber,
-        pinCode
+        pinCode,
+        selectedFontId
       ]);
 
   @JsonKey(ignore: true)
@@ -1943,7 +1964,8 @@ abstract class _Biodata implements Biodata {
       @HiveField(76) final String contactPerson,
       @HiveField(77) final String contactPersonRelation,
       @HiveField(78) final String alternateNumber,
-      @HiveField(79) final String pinCode}) = _$BiodataImpl;
+      @HiveField(79) final String pinCode,
+      @HiveField(80) final String selectedFontId}) = _$BiodataImpl;
 
   factory _Biodata.fromJson(Map<String, dynamic> json) = _$BiodataImpl.fromJson;
 
@@ -2187,6 +2209,9 @@ abstract class _Biodata implements Biodata {
   @override
   @HiveField(79)
   String get pinCode;
+  @override
+  @HiveField(80)
+  String get selectedFontId;
   @override
   @JsonKey(ignore: true)
   _$$BiodataImplCopyWith<_$BiodataImpl> get copyWith =>

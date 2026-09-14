@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:uuid/uuid.dart';
 import 'package:biodata_maker/core/i18n/strings.dart';
 import 'package:biodata_maker/core/services/hive_service.dart';
@@ -26,6 +27,8 @@ void main() async {
 
   final hiveService = HiveService();
   await hiveService.init();
+
+  await MobileAds.instance.initialize();
 
   await SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,

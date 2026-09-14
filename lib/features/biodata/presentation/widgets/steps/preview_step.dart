@@ -30,10 +30,10 @@ class _PreviewStepState extends State<PreviewStep> {
   /// so its edit button jumps to the Personal step; the other wizard steps
   /// that feed it are still reachable via Next/Back from there.
   static const Map<String, int> _sectionSteps = {
-    'photo': 1,
-    'personal': 2,
-    'family': 4,
-    'contact': 6,
+    'photo': 0,
+    'personal': 1,
+    'family': 3,
+    'contact': 5,
   };
 
   void _editSection(BuildContext context, String sectionKey) {

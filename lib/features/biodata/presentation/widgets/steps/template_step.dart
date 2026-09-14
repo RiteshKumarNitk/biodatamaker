@@ -8,6 +8,7 @@ import 'package:biodata_maker/features/templates/data/repositories/template_repo
 
 import 'package:biodata_maker/features/templates/data/models/theme_engine.dart';
 import 'package:biodata_maker/shared/widgets/biodata_renderer.dart';
+import 'package:biodata_maker/shared/widgets/app_banner_ad.dart';
 
 class TemplateStep extends StatefulWidget {
   final Biodata biodata;
@@ -144,17 +145,7 @@ class _TemplateStepState extends State<TemplateStep> {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              if (template.isPremium)
-                                Container(
-                                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-                                  decoration: BoxDecoration(
-                                    color: theme.colorScheme.tertiary,
-                                    borderRadius: const BorderRadius.vertical(top: Radius.circular(11)),
-                                  ),
-                                  child: Text('PREMIUM', style: TextStyle(fontSize: 9, fontWeight: FontWeight.bold, color: theme.colorScheme.onTertiary)),
-                                )
-                              else
-                                const SizedBox(height: 18),
+                              const SizedBox(height: 18),
                               Expanded(
                                 child: Padding(
                                   padding: const EdgeInsets.symmetric(horizontal: 8),
@@ -221,6 +212,7 @@ class _TemplateStepState extends State<TemplateStep> {
           ),
         ),
         const SizedBox(height: 32),
+        const Center(child: AppBannerAd()),
       ],
     );
   }

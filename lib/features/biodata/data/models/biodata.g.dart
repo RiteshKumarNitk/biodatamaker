@@ -87,25 +87,24 @@ class BiodataAdapter extends TypeAdapter<Biodata> {
       photos: (fields[67] as List).cast<PhotoInfo>(),
       profilePhotoPath: fields[68] as String,
       customFields: (fields[69] as List).cast<CustomField>(),
-      // Fields 70+ were added later; tolerate records saved by older app
-      // versions that never wrote them (null -> default).
-      siblings: (fields[70] as List?)?.cast<Sibling>() ?? const <Sibling>[],
-      grandFatherName: fields[71] as String? ?? '',
-      grandFatherOccupation: fields[72] as String? ?? '',
-      grandMotherName: fields[73] as String? ?? '',
-      familyStatus: fields[74] as String? ?? '',
-      familyDescription: fields[75] as String? ?? '',
-      contactPerson: fields[76] as String? ?? '',
-      contactPersonRelation: fields[77] as String? ?? '',
-      alternateNumber: fields[78] as String? ?? '',
-      pinCode: fields[79] as String? ?? '',
+      siblings: (fields[70] as List).cast<Sibling>(),
+      grandFatherName: fields[71] as String,
+      grandFatherOccupation: fields[72] as String,
+      grandMotherName: fields[73] as String,
+      familyStatus: fields[74] as String,
+      familyDescription: fields[75] as String,
+      contactPerson: fields[76] as String,
+      contactPersonRelation: fields[77] as String,
+      alternateNumber: fields[78] as String,
+      pinCode: fields[79] as String,
+      selectedFontId: fields[80] as String,
     );
   }
 
   @override
   void write(BinaryWriter writer, Biodata obj) {
     writer
-      ..writeByte(80)
+      ..writeByte(81)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
@@ -265,7 +264,9 @@ class BiodataAdapter extends TypeAdapter<Biodata> {
       ..writeByte(78)
       ..write(obj.alternateNumber)
       ..writeByte(79)
-      ..write(obj.pinCode);
+      ..write(obj.pinCode)
+      ..writeByte(80)
+      ..write(obj.selectedFontId);
   }
 
   @override
@@ -374,6 +375,7 @@ _$BiodataImpl _$$BiodataImplFromJson(Map<String, dynamic> json) =>
       contactPersonRelation: json['contactPersonRelation'] as String? ?? '',
       alternateNumber: json['alternateNumber'] as String? ?? '',
       pinCode: json['pinCode'] as String? ?? '',
+      selectedFontId: json['selectedFontId'] as String? ?? '',
     );
 
 Map<String, dynamic> _$$BiodataImplToJson(_$BiodataImpl instance) =>
@@ -458,4 +460,5 @@ Map<String, dynamic> _$$BiodataImplToJson(_$BiodataImpl instance) =>
       'contactPersonRelation': instance.contactPersonRelation,
       'alternateNumber': instance.alternateNumber,
       'pinCode': instance.pinCode,
+      'selectedFontId': instance.selectedFontId,
     };

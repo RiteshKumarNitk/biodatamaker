@@ -92,6 +92,7 @@ class Biodata with _$Biodata {
     @HiveField(77) @Default('') String contactPersonRelation,
     @HiveField(78) @Default('') String alternateNumber,
     @HiveField(79) @Default('') String pinCode,
+    @HiveField(80) @Default('') String selectedFontId,
   }) = _Biodata;
 
   factory Biodata.fromJson(Map<String, dynamic> json) => _$BiodataFromJson(json);
