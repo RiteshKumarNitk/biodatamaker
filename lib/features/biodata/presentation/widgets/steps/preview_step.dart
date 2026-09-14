@@ -25,17 +25,15 @@ class _PreviewStepState extends State<PreviewStep> {
   bool _isLoading = true;
 
   /// Maps the renderer's section keys to the wizard step that edits them.
-  /// Note: the 'additional' heading only holds legacy orphan custom fields and
-  /// has no dedicated form step, so it deliberately gets no edit button.
+  /// Personal Information now also holds Education/Lifestyle/Partner
+  /// Preference fields (see biodata_renderer.dart's 3-title consolidation),
+  /// so its edit button jumps to the Personal step; the other wizard steps
+  /// that feed it are still reachable via Next/Back from there.
   static const Map<String, int> _sectionSteps = {
     'photo': 1,
-    'about': 5, // About Me lives on the Lifestyle step
     'personal': 2,
-    'education': 3,
     'family': 4,
-    'lifestyle': 5,
     'contact': 6,
-    'partner_preference': 6, // edited together with Contact on its step
   };
 
   void _editSection(BuildContext context, String sectionKey) {

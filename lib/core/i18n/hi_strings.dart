@@ -40,15 +40,20 @@ const Map<String, String> kHiStrings = {
   'Template': 'टेम्पलेट',
   'Review': 'समीक्षा',
 
-  // ---- Sections ----
+  // ---- Wizard step headings (still shown per-step in the form; the
+  // rendered biodata document itself now only ever shows 3 section
+  // headings, translated just below) ----
   'Personal Details': 'व्यक्तिगत विवरण',
   'Education & Career': 'शिक्षा और करियर',
-  'Family Details': 'पारिवारिक विवरण',
   'Lifestyle & Interests': 'जीवनशैली और रुचियाँ',
-  'Contact Information': 'संपर्क जानकारी',
-  'Partner Preference': 'जीवनसाथी की पसंद',
   'About Me': 'मेरे बारे में',
-  'Additional Details': 'अतिरिक्त विवरण',
+
+  // ---- Rendered document section headings (exactly 3: Education/
+  // Lifestyle/Partner Preference/About Me all fold into Personal
+  // Information — see biodata_renderer.dart). 'Contact Details' is already
+  // defined below under the Contact/Partner step. ----
+  'Personal Information': 'व्यक्तिगत जानकारी',
+  'Family Details': 'पारिवारिक विवरण',
 
   // ---- Settings ----
   'Appearance': 'रूप-रंग',

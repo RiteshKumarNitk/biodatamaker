@@ -22,39 +22,71 @@ class SectionConfig {
   const SectionConfig({required this.key, required this.title, required this.fields});
 }
 
+/// Whether a custom field tagged [customFieldSection] belongs under [section].
+/// Personal Information is the catch-all: anything not specifically tagged
+/// 'family' or 'contact' — including the old 'education'/'lifestyle'/
+/// 'partner_preference' tags from before the 3-title consolidation, and any
+/// other/unknown tag — lands there, so there's never a 4th heading.
+bool _customFieldBelongsTo(SectionConfig section, String customFieldSection) {
+  if (customFieldSection == section.key) return true;
+  return section.key == 'personal' && customFieldSection != 'family' && customFieldSection != 'contact';
+}
+
+// Consolidated to exactly 3 section headings: Personal Information, Family
+// Details, Contact Details. Education & Career, Lifestyle & Interests and
+// Partner Preference no longer get their own heading — their fields render
+// under Personal Information instead (matching how traditional biodata
+// layouts list qualification/occupation alongside personal attributes).
 final List<SectionConfig> kSections = [
-  SectionConfig(key: 'personal', title: 'Personal Details', fields: [
-    FieldConfig(label: 'Full Name', value: (b) => b.fullName),
-    FieldConfig(label: 'Gender', value: (b) => b.gender),
-    FieldConfig(label: 'Date of Birth', value: (b) => b.dateOfBirth),
-    FieldConfig(label: 'Age', value: (b) => b.age),
-    FieldConfig(label: 'Height', value: (b) => b.height),
-    FieldConfig(label: 'Weight', value: (b) => b.weight),
-    FieldConfig(label: 'Religion', value: (b) => b.religion),
-    FieldConfig(label: 'Caste', value: (b) => b.caste),
-    FieldConfig(label: 'Sub Caste', value: (b) => b.subCaste),
-    FieldConfig(label: 'Mother Tongue', value: (b) => b.motherTongue),
-    FieldConfig(label: 'Languages Known', value: (b) => b.languages),
-    FieldConfig(label: 'Marital Status', value: (b) => b.maritalStatus),
-    FieldConfig(label: 'Blood Group', value: (b) => b.bloodGroup),
-    FieldConfig(label: 'Complexion', value: (b) => b.complexion),
-    FieldConfig(label: 'Manglik', value: (b) => b.manglik),
-    FieldConfig(label: 'Horoscope', value: (b) => b.horoscope),
-    FieldConfig(label: 'Rashi', value: (b) => b.rashi),
-    FieldConfig(label: 'Nakshatra', value: (b) => b.nakshatra),
-    FieldConfig(label: 'Gotra', value: (b) => b.gotra),
-    FieldConfig(label: 'Birth Place', value: (b) => b.birthPlace),
-    FieldConfig(label: 'Birth Time', value: (b) => b.birthTime),
-  ]),
-  SectionConfig(key: 'education', title: 'Education & Career', fields: [
-    FieldConfig(label: 'Qualification', value: (b) => b.qualification),
-    FieldConfig(label: 'College', value: (b) => b.college),
-    FieldConfig(label: 'University', value: (b) => b.university),
-    FieldConfig(label: 'Occupation', value: (b) => b.occupation),
-    FieldConfig(label: 'Company', value: (b) => b.company),
-    FieldConfig(label: 'Designation', value: (b) => b.designation),
-    FieldConfig(label: 'Annual Income', value: (b) => b.annualIncome),
-  ]),
+  SectionConfig(
+    key: 'personal',
+    title: 'Personal Information',
+    fields: [
+      FieldConfig(label: 'Full Name', value: (b) => b.fullName),
+      FieldConfig(label: 'Gender', value: (b) => b.gender),
+      FieldConfig(label: 'Date of Birth', value: (b) => b.dateOfBirth),
+      FieldConfig(label: 'Age', value: (b) => b.age),
+      FieldConfig(label: 'Height', value: (b) => b.height),
+      FieldConfig(label: 'Weight', value: (b) => b.weight),
+      FieldConfig(label: 'Religion', value: (b) => b.religion),
+      FieldConfig(label: 'Caste', value: (b) => b.caste),
+      FieldConfig(label: 'Sub Caste', value: (b) => b.subCaste),
+      FieldConfig(label: 'Mother Tongue', value: (b) => b.motherTongue),
+      FieldConfig(label: 'Languages Known', value: (b) => b.languages),
+      FieldConfig(label: 'Marital Status', value: (b) => b.maritalStatus),
+      FieldConfig(label: 'Blood Group', value: (b) => b.bloodGroup),
+      FieldConfig(label: 'Complexion', value: (b) => b.complexion),
+      FieldConfig(label: 'Manglik', value: (b) => b.manglik),
+      FieldConfig(label: 'Horoscope', value: (b) => b.horoscope),
+      FieldConfig(label: 'Rashi', value: (b) => b.rashi),
+      FieldConfig(label: 'Nakshatra', value: (b) => b.nakshatra),
+      FieldConfig(label: 'Gotra', value: (b) => b.gotra),
+      FieldConfig(label: 'Birth Place', value: (b) => b.birthPlace),
+      FieldConfig(label: 'Birth Time', value: (b) => b.birthTime),
+      // -- Education & Career --
+      FieldConfig(label: 'Qualification', value: (b) => b.qualification),
+      FieldConfig(label: 'College', value: (b) => b.college),
+      FieldConfig(label: 'University', value: (b) => b.university),
+      FieldConfig(label: 'Occupation', value: (b) => b.occupation),
+      FieldConfig(label: 'Company', value: (b) => b.company),
+      FieldConfig(label: 'Designation', value: (b) => b.designation),
+      FieldConfig(label: 'Annual Income', value: (b) => b.annualIncome),
+      // -- Lifestyle & Interests --
+      FieldConfig(label: 'Diet', value: (b) => b.diet),
+      FieldConfig(label: 'Smoking', value: (b) => b.smoking),
+      FieldConfig(label: 'Drinking', value: (b) => b.drinking),
+      FieldConfig(label: 'Hobbies', value: (b) => b.hobbies),
+      FieldConfig(label: 'Personality', value: (b) => b.personality),
+      // -- Partner Preference --
+      FieldConfig(label: 'Preferred Age', value: (b) => b.preferredAge),
+      FieldConfig(label: 'Preferred Height', value: (b) => b.preferredHeight),
+      FieldConfig(label: 'Preferred Education', value: (b) => b.preferredEducation),
+      FieldConfig(label: 'Preferred Occupation', value: (b) => b.preferredOccupation),
+      FieldConfig(label: 'Preferred Religion', value: (b) => b.preferredReligion),
+      FieldConfig(label: 'Preferred Location', value: (b) => b.preferredLocation),
+      FieldConfig(label: 'Expectations', value: (b) => b.expectations),
+    ],
+  ),
   SectionConfig(key: 'family', title: 'Family Details', fields: [
     FieldConfig(label: "Grandfather's Name", value: (b) => b.grandFatherName),
     FieldConfig(label: "Grandfather's Occupation", value: (b) => b.grandFatherOccupation),
@@ -71,14 +103,7 @@ final List<SectionConfig> kSections = [
     FieldConfig(label: 'Native Place', value: (b) => b.nativePlace),
     FieldConfig(label: 'Family Description', value: (b) => b.familyDescription),
   ]),
-  SectionConfig(key: 'lifestyle', title: 'Lifestyle & Interests', fields: [
-    FieldConfig(label: 'Diet', value: (b) => b.diet),
-    FieldConfig(label: 'Smoking', value: (b) => b.smoking),
-    FieldConfig(label: 'Drinking', value: (b) => b.drinking),
-    FieldConfig(label: 'Hobbies', value: (b) => b.hobbies),
-    FieldConfig(label: 'Personality', value: (b) => b.personality),
-  ]),
-  SectionConfig(key: 'contact', title: 'Contact Information', fields: [
+  SectionConfig(key: 'contact', title: 'Contact Details', fields: [
     FieldConfig(label: 'Contact Person', value: (b) => b.contactPerson),
     FieldConfig(label: 'Relationship', value: (b) => b.contactPersonRelation),
     FieldConfig(label: 'Mobile', value: (b) => b.mobile),
@@ -90,15 +115,6 @@ final List<SectionConfig> kSections = [
     FieldConfig(label: 'State', value: (b) => b.state),
     FieldConfig(label: 'Country', value: (b) => b.country),
     FieldConfig(label: 'PIN Code', value: (b) => b.pinCode),
-  ]),
-  SectionConfig(key: 'partner_preference', title: 'Partner Preference', fields: [
-    FieldConfig(label: 'Preferred Age', value: (b) => b.preferredAge),
-    FieldConfig(label: 'Preferred Height', value: (b) => b.preferredHeight),
-    FieldConfig(label: 'Preferred Education', value: (b) => b.preferredEducation),
-    FieldConfig(label: 'Preferred Occupation', value: (b) => b.preferredOccupation),
-    FieldConfig(label: 'Preferred Religion', value: (b) => b.preferredReligion),
-    FieldConfig(label: 'Preferred Location', value: (b) => b.preferredLocation),
-    FieldConfig(label: 'Expectations', value: (b) => b.expectations),
   ]),
 ];
 
@@ -270,23 +286,16 @@ class BiodataRenderer extends StatelessWidget {
           ));
     widgets.add(SizedBox(height: theme.sectionSpacing));
 
-    // About Me
-    if (biodata.aboutMe.isNotEmpty) {
-      widgets.add(_flutterSectionHeading(context, 'about', 'About Me', primary, theme, onEditSection));
-      widgets.add(SizedBox(height: theme.fieldSpacing));
-      widgets.add(Padding(
-        padding: EdgeInsets.only(bottom: theme.sectionSpacing),
-        child: Text(biodata.aboutMe, style: GoogleFonts.poppins(fontSize: theme.bodyFontSize, color: text)),
-      ));
-    }
-
-    // Sections from config
+    // Sections from config. About Me and any custom field not specifically
+    // tagged 'family'/'contact' render inside Personal Information (see
+    // _customFieldBelongsTo), so there are always exactly 3 headings.
     for (final section in kSections) {
       final sectionFields = section.fields.where((f) => f.value(biodata).isNotEmpty).toList();
-      final sectionCustom = biodata.customFields.where((c) => c.section == section.key && c.value.isNotEmpty).toList();
+      final sectionCustom = biodata.customFields.where((c) => _customFieldBelongsTo(section, c.section) && c.value.isNotEmpty).toList();
       final showSiblings = section.key == 'family' &&
           biodata.siblings.any((s) => s.name.trim().isNotEmpty || s.occupation.trim().isNotEmpty || s.maritalStatus.trim().isNotEmpty);
-      if (sectionFields.isEmpty && sectionCustom.isEmpty && !showSiblings) continue;
+      final showAboutMe = section.key == 'personal' && biodata.aboutMe.isNotEmpty;
+      if (sectionFields.isEmpty && sectionCustom.isEmpty && !showSiblings && !showAboutMe) continue;
 
       widgets.add(_flutterSectionHeading(context, section.key, section.title, primary, theme, onEditSection));
       widgets.add(SizedBox(height: theme.fieldSpacing));
@@ -308,17 +317,13 @@ class BiodataRenderer extends StatelessWidget {
         widgets.add(_flutterFieldRow(cf.label, cf.value, subtitle, text, theme, translateLabel: false));
       }
 
-      widgets.add(SizedBox(height: theme.sectionSpacing));
-    }
-
-    // Additional Details section for orphan custom fields
-    final orphanCustomFields = biodata.customFields.where((c) => c.value.isNotEmpty && !kSections.any((s) => s.key == c.section)).toList();
-    if (orphanCustomFields.isNotEmpty) {
-      widgets.add(_flutterSectionHeading(context, 'additional', 'Additional Details', primary, theme, onEditSection));
-      widgets.add(SizedBox(height: theme.fieldSpacing));
-      for (final cf in orphanCustomFields) {
-        widgets.add(_flutterFieldRow(cf.label, cf.value, subtitle, text, theme, translateLabel: false));
+      if (showAboutMe) {
+        widgets.add(Padding(
+          padding: EdgeInsets.only(top: theme.fieldSpacing / 2),
+          child: Text(biodata.aboutMe, style: GoogleFonts.poppins(fontSize: theme.bodyFontSize, color: text)),
+        ));
       }
+
       widgets.add(SizedBox(height: theme.sectionSpacing));
     }
 
@@ -405,6 +410,9 @@ class BiodataRenderer extends StatelessWidget {
 
   /// Header text block with no inline photo, used by image-mode templates
   /// where the photo is positioned independently (see [_buildImageModeLayout]).
+  /// Shows Name, then Date of Birth / Place of Birth as "Label : value" lines
+  /// (each skipped if empty) rather than the legacy header's age|gender and
+  /// occupation line.
   static Widget _buildFlutterHeaderTextOnly(
     Biodata biodata, ThemeConfig theme, Color text, Color subtitle, String displayName,
   ) {
@@ -412,13 +420,13 @@ class BiodataRenderer extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(displayName, style: GoogleFonts.playfairDisplay(fontSize: theme.headingFontSize, color: text, fontWeight: FontWeight.bold)),
-        if (biodata.age.isNotEmpty || biodata.gender.isNotEmpty) ...[
-          const SizedBox(height: 4),
-          Text([biodata.age, biodata.gender].where((s) => s.isNotEmpty).join(' | '), style: GoogleFonts.poppins(fontSize: theme.bodyFontSize, color: subtitle)),
+        if (biodata.dateOfBirth.isNotEmpty) ...[
+          const SizedBox(height: 6),
+          Text('${Strings.tr('Date of Birth')} : ${biodata.dateOfBirth}', style: GoogleFonts.poppins(fontSize: theme.bodyFontSize, color: subtitle)),
         ],
-        if (biodata.occupation.isNotEmpty) ...[
+        if (biodata.birthPlace.isNotEmpty) ...[
           const SizedBox(height: 4),
-          Text(biodata.occupation, style: GoogleFonts.poppins(fontSize: theme.bodyFontSize, color: subtitle)),
+          Text('${Strings.tr('Place of Birth')} : ${biodata.birthPlace}', style: GoogleFonts.poppins(fontSize: theme.bodyFontSize, color: subtitle)),
         ],
       ],
     );
@@ -478,6 +486,10 @@ class BiodataRenderer extends StatelessWidget {
 
   static Widget _flutterSectionTitle(String title, Color primary, ThemeConfig theme) {
     if (theme.headerDecoration == 'pill') {
+      // The page background is chosen to contrast with the primary color
+      // everywhere else in the renderer, so it doubles as a readable pill
+      // text color regardless of whether primary ends up light (e.g. gold)
+      // or dark for a given template.
       return Container(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         decoration: BoxDecoration(
@@ -486,7 +498,7 @@ class BiodataRenderer extends StatelessWidget {
         ),
         child: Text(
           title.toUpperCase(),
-          style: GoogleFonts.poppins(fontSize: theme.headingFontSize - 6, color: Colors.white, fontWeight: FontWeight.bold),
+          style: GoogleFonts.poppins(fontSize: theme.headingFontSize - 6, color: Color(theme.backgroundColor), fontWeight: FontWeight.bold),
         ),
       );
     }
@@ -649,32 +661,16 @@ class BiodataRenderer extends StatelessWidget {
     add(_buildPdfHeader(biodata, theme, primary, text, subtitle, displayName, profileImage));
     blocks.add(pw.SizedBox(height: theme.sectionSpacing));
 
-    // ---- About Me (heading kept with the first paragraph block) ----
-    if (biodata.aboutMe.isNotEmpty) {
-      final chunks = _pdfChunkText(biodata.aboutMe, chunkChars.paragraph);
-      add(_pdfKeepTogether([
-        _pdfSectionTitle('About Me', primary, theme),
-        pw.SizedBox(height: theme.fieldSpacing),
-        pw.Padding(
-          padding: const pw.EdgeInsets.only(bottom: 12),
-          child: pw.Text(chunks.first, style: pw.TextStyle(font: _pdfFont(), fontSize: theme.bodyFontSize, color: text)),
-        ),
-      ]));
-      for (var i = 1; i < chunks.length; i++) {
-        add(pw.Padding(
-          padding: const pw.EdgeInsets.only(bottom: 12),
-          child: pw.Text(chunks[i], style: pw.TextStyle(font: _pdfFont(), fontSize: theme.bodyFontSize, color: text)),
-        ));
-      }
-    }
-
-    // ---- Sections ----
+    // ---- Sections. About Me and any custom field not specifically tagged
+    // 'family'/'contact' render inside Personal Information (see
+    // _customFieldBelongsTo), so there are always exactly 3 headings. ----
     for (final section in kSections) {
       final sectionFields = section.fields.where((f) => f.value(biodata).isNotEmpty).toList();
-      final sectionCustom = biodata.customFields.where((c) => c.section == section.key && c.value.isNotEmpty).toList();
+      final sectionCustom = biodata.customFields.where((c) => _customFieldBelongsTo(section, c.section) && c.value.isNotEmpty).toList();
       final showSiblings = section.key == 'family' &&
           biodata.siblings.any((s) => s.name.trim().isNotEmpty || s.occupation.trim().isNotEmpty || s.maritalStatus.trim().isNotEmpty);
-      if (sectionFields.isEmpty && sectionCustom.isEmpty && !showSiblings) continue;
+      final showAboutMe = section.key == 'personal' && biodata.aboutMe.isNotEmpty;
+      if (sectionFields.isEmpty && sectionCustom.isEmpty && !showSiblings && !showAboutMe) continue;
 
       final rows = <pw.Widget>[];
       for (final field in sectionFields) {
@@ -694,28 +690,19 @@ class BiodataRenderer extends StatelessWidget {
         rows.addAll(_pdfValueRows(cf.label, cf.value, subtitle, text, theme, maxChars: chunkChars.row));
       }
 
+      if (showAboutMe) {
+        for (final chunk in _pdfChunkText(biodata.aboutMe, chunkChars.paragraph)) {
+          rows.add(pw.Padding(
+            padding: const pw.EdgeInsets.only(top: 4, bottom: 8),
+            child: pw.Text(chunk, style: pw.TextStyle(font: _pdfFont(), fontSize: theme.bodyFontSize, color: text)),
+          ));
+        }
+      }
+
       // Section heading + its first row are one unbreakable block, so a page
       // break can never leave a heading stranded at the bottom of a page.
       add(_pdfKeepTogether([
         _pdfSectionTitle(section.title, primary, theme),
-        pw.SizedBox(height: theme.fieldSpacing),
-        rows.removeAt(0),
-      ]));
-      for (final row in rows) {
-        add(row);
-      }
-      blocks.add(pw.SizedBox(height: theme.sectionSpacing));
-    }
-
-    // ---- Orphan custom fields under an "Additional Details" heading ----
-    final orphanCustomFields = biodata.customFields.where((c) => c.value.isNotEmpty && !kSections.any((s) => s.key == c.section)).toList();
-    if (orphanCustomFields.isNotEmpty) {
-      final rows = <pw.Widget>[];
-      for (final cf in orphanCustomFields) {
-        rows.addAll(_pdfValueRows(cf.label, cf.value, subtitle, text, theme, maxChars: chunkChars.row));
-      }
-      add(_pdfKeepTogether([
-        _pdfSectionTitle('Additional Details', primary, theme),
         pw.SizedBox(height: theme.fieldSpacing),
         rows.removeAt(0),
       ]));
@@ -760,7 +747,9 @@ class BiodataRenderer extends StatelessWidget {
     Biodata biodata, ThemeConfig theme, PdfColor primary, PdfColor text, PdfColor subtitle, String displayName, pw.MemoryImage? profileImage,
   ) {
     // Image-mode templates position the photo as an independent page overlay
-    // (see PdfService/pdfPhotoBox), so the flowing header is text-only here.
+    // (see PdfService/pdfPhotoBox), so the flowing header is text-only here:
+    // Name, then Date of Birth / Place of Birth as "Label : value" lines
+    // (each skipped if empty).
     if (theme.backgroundImage.isNotEmpty) {
       return pw.Container(
         padding: const pw.EdgeInsets.only(bottom: 16),
@@ -768,10 +757,10 @@ class BiodataRenderer extends StatelessWidget {
           crossAxisAlignment: pw.CrossAxisAlignment.start,
           children: [
             pw.Text(displayName, style: pw.TextStyle(font: _pdfFont(), fontSize: theme.headingFontSize, color: text, fontWeight: pw.FontWeight.bold)),
-            if (biodata.age.isNotEmpty || biodata.gender.isNotEmpty)
-              pw.Padding(padding: const pw.EdgeInsets.only(top: 4), child: pw.Text([biodata.age, biodata.gender].where((s) => s.isNotEmpty).join(' | '), style: pw.TextStyle(font: _pdfFont(), fontSize: theme.bodyFontSize, color: subtitle))),
-            if (biodata.occupation.isNotEmpty)
-              pw.Padding(padding: const pw.EdgeInsets.only(top: 4), child: pw.Text(biodata.occupation, style: pw.TextStyle(font: _pdfFont(), fontSize: theme.bodyFontSize, color: subtitle))),
+            if (biodata.dateOfBirth.isNotEmpty)
+              pw.Padding(padding: const pw.EdgeInsets.only(top: 6), child: pw.Text('Date of Birth : ${biodata.dateOfBirth}', style: pw.TextStyle(font: _pdfFont(), fontSize: theme.bodyFontSize, color: subtitle))),
+            if (biodata.birthPlace.isNotEmpty)
+              pw.Padding(padding: const pw.EdgeInsets.only(top: 4), child: pw.Text('Place of Birth : ${biodata.birthPlace}', style: pw.TextStyle(font: _pdfFont(), fontSize: theme.bodyFontSize, color: subtitle))),
           ],
         ),
       );
@@ -867,6 +856,9 @@ class BiodataRenderer extends StatelessWidget {
 
   static pw.Widget _pdfSectionTitle(String title, PdfColor primary, ThemeConfig theme) {
     if (theme.headerDecoration == 'pill') {
+      // Matches _flutterSectionTitle: the page background color contrasts
+      // with primary everywhere else in the renderer, so it doubles as a
+      // readable pill text color whether primary is light or dark.
       return pw.Padding(
         padding: const pw.EdgeInsets.only(bottom: 8),
         child: pw.Container(
@@ -877,7 +869,7 @@ class BiodataRenderer extends StatelessWidget {
           ),
           child: pw.Text(
             title.toUpperCase(),
-            style: pw.TextStyle(font: _pdfFont(), fontSize: theme.headingFontSize - 6, color: PdfColor.fromInt(0xFFFFFFFF), fontWeight: pw.FontWeight.bold),
+            style: pw.TextStyle(font: _pdfFont(), fontSize: theme.headingFontSize - 6, color: PdfColor.fromInt(theme.backgroundColor), fontWeight: pw.FontWeight.bold),
           ),
         ),
       );
