@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:biodata_maker/core/i18n/strings.dart';
@@ -18,11 +20,32 @@ import 'package:biodata_maker/features/admin/presentation/screens/admin_login_sc
 import 'package:biodata_maker/features/admin/presentation/screens/admin_dashboard_screen.dart';
 import 'package:biodata_maker/features/admin/presentation/screens/template_editor_screen.dart';
 import 'package:biodata_maker/features/admin/presentation/screens/template_preview_screen.dart';
+import 'package:biodata_maker/features/auth/data/repositories/auth_repository.dart';
+import 'package:biodata_maker/core/services/service_locator.dart';
 
 final GlobalKey<NavigatorState> _rootNavigatorKey = GlobalKey<NavigatorState>();
 final GlobalKey<NavigatorState> _shellNavigatorKey = GlobalKey<NavigatorState>();
 
 class AppRouter {
+  /// Only the admin account may open admin screens; everyone else is bounced
+  /// to the admin login. Guards sit on every /admin route except /admin/login.
+  static FutureOr<String?> _adminGuard(
+    BuildContext context,
+    GoRouterState state,
+  ) async {
+    try {
+      final user = await sl<AuthRepository>().getCurrentUser();
+      if (user?.email == 'admin@biodata.com') return null;
+    } catch (_) {}
+    return '/admin/login';
+  }
+
+  /// Redirect for '/create' → '/biodata/create'.
+  static FutureOr<String?> _legacyCreateRedirect(
+    BuildContext context,
+    GoRouterState state,
+  ) => '/biodata/create';
+
   static final GoRouter router = GoRouter(
     navigatorKey: _rootNavigatorKey,
     initialLocation: '/splash',
@@ -82,7 +105,7 @@ class AppRouter {
       GoRoute(
         path: '/create',
         parentNavigatorKey: _rootNavigatorKey,
-        redirect: (context, state) => '/biodata/create',
+        redirect: _legacyCreateRedirect,
       ),
       GoRoute(
         path: '/biodata/edit/:id',
@@ -126,16 +149,19 @@ class AppRouter {
       GoRoute(
         path: '/admin/dashboard',
         parentNavigatorKey: _rootNavigatorKey,
+        redirect: _adminGuard,
         builder: (context, state) => const AdminDashboardScreen(),
       ),
       GoRoute(
         path: '/admin/template/new',
         parentNavigatorKey: _rootNavigatorKey,
+        redirect: _adminGuard,
         builder: (context, state) => const TemplateEditorScreen(),
       ),
       GoRoute(
         path: '/admin/template/edit/:id',
         parentNavigatorKey: _rootNavigatorKey,
+        redirect: _adminGuard,
         builder: (context, state) => TemplateEditorScreen(
           templateId: state.pathParameters['id'],
         ),
@@ -143,6 +169,7 @@ class AppRouter {
       GoRoute(
         path: '/admin/template/preview/:id',
         parentNavigatorKey: _rootNavigatorKey,
+        redirect: _adminGuard,
         builder: (context, state) => TemplatePreviewScreen(
           templateId: state.pathParameters['id']!,
         ),

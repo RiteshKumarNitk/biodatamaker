@@ -183,6 +183,13 @@ mixin _$Biodata {
   @HiveField(80)
   String get selectedFontId => throw _privateConstructorUsedError;
 
+  /// Owning user's id (empty for data created before multi-user support or
+  /// by a guest who has since signed out). biodatas with an empty userId are
+  /// treated as owned by everyone (legacy data), so nobody loses their
+  /// biodatas after upgrading.
+  @HiveField(81)
+  String get userId => throw _privateConstructorUsedError;
+
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
   @JsonKey(ignore: true)
   $BiodataCopyWith<Biodata> get copyWith => throw _privateConstructorUsedError;
@@ -274,7 +281,8 @@ abstract class $BiodataCopyWith<$Res> {
       @HiveField(77) String contactPersonRelation,
       @HiveField(78) String alternateNumber,
       @HiveField(79) String pinCode,
-      @HiveField(80) String selectedFontId});
+      @HiveField(80) String selectedFontId,
+      @HiveField(81) String userId});
 }
 
 /// @nodoc
@@ -371,6 +379,7 @@ class _$BiodataCopyWithImpl<$Res, $Val extends Biodata>
     Object? alternateNumber = null,
     Object? pinCode = null,
     Object? selectedFontId = null,
+    Object? userId = null,
   }) {
     return _then(_value.copyWith(
       id: null == id
@@ -697,6 +706,10 @@ class _$BiodataCopyWithImpl<$Res, $Val extends Biodata>
           ? _value.selectedFontId
           : selectedFontId // ignore: cast_nullable_to_non_nullable
               as String,
+      userId: null == userId
+          ? _value.userId
+          : userId // ignore: cast_nullable_to_non_nullable
+              as String,
     ) as $Val);
   }
 }
@@ -789,7 +802,8 @@ abstract class _$$BiodataImplCopyWith<$Res> implements $BiodataCopyWith<$Res> {
       @HiveField(77) String contactPersonRelation,
       @HiveField(78) String alternateNumber,
       @HiveField(79) String pinCode,
-      @HiveField(80) String selectedFontId});
+      @HiveField(80) String selectedFontId,
+      @HiveField(81) String userId});
 }
 
 /// @nodoc
@@ -884,6 +898,7 @@ class __$$BiodataImplCopyWithImpl<$Res>
     Object? alternateNumber = null,
     Object? pinCode = null,
     Object? selectedFontId = null,
+    Object? userId = null,
   }) {
     return _then(_$BiodataImpl(
       id: null == id
@@ -1210,6 +1225,10 @@ class __$$BiodataImplCopyWithImpl<$Res>
           ? _value.selectedFontId
           : selectedFontId // ignore: cast_nullable_to_non_nullable
               as String,
+      userId: null == userId
+          ? _value.userId
+          : userId // ignore: cast_nullable_to_non_nullable
+              as String,
     ));
   }
 }
@@ -1299,7 +1318,8 @@ class _$BiodataImpl implements _Biodata {
       @HiveField(77) this.contactPersonRelation = '',
       @HiveField(78) this.alternateNumber = '',
       @HiveField(79) this.pinCode = '',
-      @HiveField(80) this.selectedFontId = ''})
+      @HiveField(80) this.selectedFontId = '',
+      @HiveField(81) this.userId = ''})
       : _photos = photos,
         _customFields = customFields,
         _siblings = siblings;
@@ -1646,9 +1666,18 @@ class _$BiodataImpl implements _Biodata {
   @HiveField(80)
   final String selectedFontId;
 
+  /// Owning user's id (empty for data created before multi-user support or
+  /// by a guest who has since signed out). biodatas with an empty userId are
+  /// treated as owned by everyone (legacy data), so nobody loses their
+  /// biodatas after upgrading.
+  @override
+  @JsonKey()
+  @HiveField(81)
+  final String userId;
+
   @override
   String toString() {
-    return 'Biodata(id: $id, name: $name, createdAt: $createdAt, updatedAt: $updatedAt, templateId: $templateId, isFavorite: $isFavorite, isArchived: $isArchived, isDraft: $isDraft, downloadCount: $downloadCount, fullName: $fullName, gender: $gender, dateOfBirth: $dateOfBirth, age: $age, height: $height, weight: $weight, religion: $religion, caste: $caste, subCaste: $subCaste, motherTongue: $motherTongue, maritalStatus: $maritalStatus, bloodGroup: $bloodGroup, complexion: $complexion, manglik: $manglik, horoscope: $horoscope, rashi: $rashi, nakshatra: $nakshatra, gotra: $gotra, birthPlace: $birthPlace, birthTime: $birthTime, aboutMe: $aboutMe, qualification: $qualification, college: $college, university: $university, occupation: $occupation, company: $company, business: $business, designation: $designation, annualIncome: $annualIncome, fatherName: $fatherName, fatherOccupation: $fatherOccupation, motherName: $motherName, motherOccupation: $motherOccupation, brothers: $brothers, sisters: $sisters, familyType: $familyType, familyValues: $familyValues, nativePlace: $nativePlace, diet: $diet, smoking: $smoking, drinking: $drinking, languages: $languages, hobbies: $hobbies, personality: $personality, mobile: $mobile, whatsapp: $whatsapp, email: $email, address: $address, city: $city, state: $state, country: $country, preferredAge: $preferredAge, preferredHeight: $preferredHeight, preferredEducation: $preferredEducation, preferredOccupation: $preferredOccupation, preferredReligion: $preferredReligion, preferredLocation: $preferredLocation, expectations: $expectations, photos: $photos, profilePhotoPath: $profilePhotoPath, customFields: $customFields, siblings: $siblings, grandFatherName: $grandFatherName, grandFatherOccupation: $grandFatherOccupation, grandMotherName: $grandMotherName, familyStatus: $familyStatus, familyDescription: $familyDescription, contactPerson: $contactPerson, contactPersonRelation: $contactPersonRelation, alternateNumber: $alternateNumber, pinCode: $pinCode, selectedFontId: $selectedFontId)';
+    return 'Biodata(id: $id, name: $name, createdAt: $createdAt, updatedAt: $updatedAt, templateId: $templateId, isFavorite: $isFavorite, isArchived: $isArchived, isDraft: $isDraft, downloadCount: $downloadCount, fullName: $fullName, gender: $gender, dateOfBirth: $dateOfBirth, age: $age, height: $height, weight: $weight, religion: $religion, caste: $caste, subCaste: $subCaste, motherTongue: $motherTongue, maritalStatus: $maritalStatus, bloodGroup: $bloodGroup, complexion: $complexion, manglik: $manglik, horoscope: $horoscope, rashi: $rashi, nakshatra: $nakshatra, gotra: $gotra, birthPlace: $birthPlace, birthTime: $birthTime, aboutMe: $aboutMe, qualification: $qualification, college: $college, university: $university, occupation: $occupation, company: $company, business: $business, designation: $designation, annualIncome: $annualIncome, fatherName: $fatherName, fatherOccupation: $fatherOccupation, motherName: $motherName, motherOccupation: $motherOccupation, brothers: $brothers, sisters: $sisters, familyType: $familyType, familyValues: $familyValues, nativePlace: $nativePlace, diet: $diet, smoking: $smoking, drinking: $drinking, languages: $languages, hobbies: $hobbies, personality: $personality, mobile: $mobile, whatsapp: $whatsapp, email: $email, address: $address, city: $city, state: $state, country: $country, preferredAge: $preferredAge, preferredHeight: $preferredHeight, preferredEducation: $preferredEducation, preferredOccupation: $preferredOccupation, preferredReligion: $preferredReligion, preferredLocation: $preferredLocation, expectations: $expectations, photos: $photos, profilePhotoPath: $profilePhotoPath, customFields: $customFields, siblings: $siblings, grandFatherName: $grandFatherName, grandFatherOccupation: $grandFatherOccupation, grandMotherName: $grandMotherName, familyStatus: $familyStatus, familyDescription: $familyDescription, contactPerson: $contactPerson, contactPersonRelation: $contactPersonRelation, alternateNumber: $alternateNumber, pinCode: $pinCode, selectedFontId: $selectedFontId, userId: $userId)';
   }
 
   @override
@@ -1779,7 +1808,8 @@ class _$BiodataImpl implements _Biodata {
             (identical(other.contactPersonRelation, contactPersonRelation) || other.contactPersonRelation == contactPersonRelation) &&
             (identical(other.alternateNumber, alternateNumber) || other.alternateNumber == alternateNumber) &&
             (identical(other.pinCode, pinCode) || other.pinCode == pinCode) &&
-            (identical(other.selectedFontId, selectedFontId) || other.selectedFontId == selectedFontId));
+            (identical(other.selectedFontId, selectedFontId) || other.selectedFontId == selectedFontId) &&
+            (identical(other.userId, userId) || other.userId == userId));
   }
 
   @JsonKey(ignore: true)
@@ -1866,7 +1896,8 @@ class _$BiodataImpl implements _Biodata {
         contactPersonRelation,
         alternateNumber,
         pinCode,
-        selectedFontId
+        selectedFontId,
+        userId
       ]);
 
   @JsonKey(ignore: true)
@@ -1965,7 +1996,8 @@ abstract class _Biodata implements Biodata {
       @HiveField(77) final String contactPersonRelation,
       @HiveField(78) final String alternateNumber,
       @HiveField(79) final String pinCode,
-      @HiveField(80) final String selectedFontId}) = _$BiodataImpl;
+      @HiveField(80) final String selectedFontId,
+      @HiveField(81) final String userId}) = _$BiodataImpl;
 
   factory _Biodata.fromJson(Map<String, dynamic> json) = _$BiodataImpl.fromJson;
 
@@ -2212,6 +2244,14 @@ abstract class _Biodata implements Biodata {
   @override
   @HiveField(80)
   String get selectedFontId;
+  @override
+
+  /// Owning user's id (empty for data created before multi-user support or
+  /// by a guest who has since signed out). biodatas with an empty userId are
+  /// treated as owned by everyone (legacy data), so nobody loses their
+  /// biodatas after upgrading.
+  @HiveField(81)
+  String get userId;
   @override
   @JsonKey(ignore: true)
   _$$BiodataImplCopyWith<_$BiodataImpl> get copyWith =>

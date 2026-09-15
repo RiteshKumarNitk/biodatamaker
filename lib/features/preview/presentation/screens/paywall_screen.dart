@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+import 'package:biodata_maker/core/i18n/strings.dart';
+import 'package:biodata_maker/core/services/purchase_service.dart';
 import 'package:biodata_maker/core/services/service_locator.dart';
 import 'package:biodata_maker/features/settings/data/repositories/settings_repository.dart';
 
@@ -13,63 +15,90 @@ class PaywallScreen extends StatefulWidget {
 
 class _PaywallScreenState extends State<PaywallScreen> {
   final SettingsRepository _settingsRepo = sl<SettingsRepository>();
+  final PurchaseService _purchases = sl<PurchaseService>();
+
   String _selectedPlan = 'yearly';
   bool _isProcessing = false;
+  bool _storeReady = false;
+  String? _storeMessage;
 
-  void _subscribe(String tier) async {
+  @override
+  void initState() {
+    super.initState();
+    _initStore();
+    // React to stream-driven phase changes (pending/success/error).
+    _purchases.phase.addListener(_onPhaseChanged);
+  }
+
+  @override
+  void dispose() {
+    _purchases.phase.removeListener(_onPhaseChanged);
+    super.dispose();
+  }
+
+  Future<void> _initStore() async {
     setState(() => _isProcessing = true);
-    try {
-      DateTime? expiresAt;
-      if (tier == 'monthly') {
-        expiresAt = DateTime.now().add(const Duration(days: 30));
-      } else if (tier == 'yearly') {
-        expiresAt = DateTime.now().add(const Duration(days: 365));
-      }
-      _settingsRepo.setSubscriptionTier(tier, expiresAt: expiresAt);
-      if (mounted) {
+    final ok = await _purchases.init();
+    if (!mounted) return;
+    setState(() {
+      _storeReady = ok;
+      _isProcessing = false;
+      _storeMessage = ok
+          ? null
+          : Strings.tr(
+              'Store unavailable. Premium is activated automatically once your purchase is processed by the store.');
+    });
+  }
+
+  void _onPhaseChanged() {
+    if (!mounted) return;
+    switch (_purchases.phase.value) {
+      case PurchasePhase.success:
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Welcome to Premium!')),
+          SnackBar(content: Text(Strings.tr('Welcome to Premium!'))),
         );
         Navigator.of(context).pop();
-      }
-    } catch (e) {
-      if (mounted) {
+        break;
+      case PurchasePhase.error:
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error: $e')),
+          SnackBar(
+            content: Text(_purchases.errorMessage.value ??
+                Strings.tr('Purchase failed')),
+            backgroundColor: Theme.of(context).colorScheme.error,
+            behavior: SnackBarBehavior.floating,
+          ),
         );
-      }
-    } finally {
-      if (mounted) setState(() => _isProcessing = false);
+        break;
+      default:
+        break;
+    }
+    if (mounted) setState(() {}); // refresh button states
+  }
+
+  void _subscribe(String tier) async {
+    if (!_storeReady) return;
+    setState(() => _isProcessing = true);
+    final started = await _purchases.buy(tier);
+    // The purchase stream drives the rest (pending/success/error).
+    if (mounted && !started) {
+      setState(() => _isProcessing = false);
     }
   }
 
   void _restorePurchases() async {
-    setState(() => _isProcessing = true);
-    try {
-      final currentTier = _settingsRepo.getSettings().subscriptionTier;
-      if (currentTier != 'free') {
-        _settingsRepo.setSubscriptionTier(currentTier);
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Purchases restored successfully')),
-          );
-        }
-      } else {
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('No previous purchases found')),
-          );
-        }
-      }
-    } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Restore failed: $e')),
-        );
-      }
-    } finally {
-      if (mounted) setState(() => _isProcessing = false);
+    if (!_storeReady) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(Strings.tr(
+              'Store unavailable. Connect to the internet and try again.')),
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
+      return;
     }
+    setState(() => _isProcessing = true);
+    await _purchases.restore();
+    if (mounted) setState(() => _isProcessing = false);
   }
 
   @override
@@ -78,7 +107,7 @@ class _PaywallScreenState extends State<PaywallScreen> {
     final colorScheme = Theme.of(context).colorScheme;
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Premium')),
+      appBar: AppBar(title: Text(Strings.tr('Premium'))),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(24),
         child: Column(
@@ -100,7 +129,7 @@ class _PaywallScreenState extends State<PaywallScreen> {
                     const SizedBox(width: 12),
                     Expanded(
                       child: Text(
-                        'You are already a Premium member!',
+                        Strings.tr('You are already a Premium member!'),
                         style: GoogleFonts.poppins(
                           fontWeight: FontWeight.w600,
                           color: colorScheme.onTertiaryContainer,
@@ -125,7 +154,7 @@ class _PaywallScreenState extends State<PaywallScreen> {
             ),
             const SizedBox(height: 24),
             Text(
-              'Go Premium',
+              Strings.tr('Go Premium'),
               style: GoogleFonts.playfairDisplay(
                 fontSize: 32,
                 fontWeight: FontWeight.bold,
@@ -133,7 +162,7 @@ class _PaywallScreenState extends State<PaywallScreen> {
             ),
             const SizedBox(height: 8),
             Text(
-              'Unlock all features and create beautiful biodatas',
+              Strings.tr('Unlock all features and create beautiful biodatas'),
               textAlign: TextAlign.center,
               style: GoogleFonts.poppins(
                 fontSize: 14,
@@ -142,20 +171,47 @@ class _PaywallScreenState extends State<PaywallScreen> {
             ),
             const SizedBox(height: 32),
             _buildBenefitRow(
-                Icons.dashboard_customize, 'All templates unlocked', colorScheme),
+                Icons.dashboard_customize, Strings.tr('All templates unlocked'), colorScheme),
             const SizedBox(height: 16),
             _buildBenefitRow(
-                Icons.water_drop, 'No watermark on PDF', colorScheme),
+                Icons.water_drop, Strings.tr('No watermark on PDF'), colorScheme),
             const SizedBox(height: 16),
             _buildBenefitRow(
-                Icons.all_inclusive, 'Unlimited biodatas', colorScheme),
+                Icons.all_inclusive, Strings.tr('Unlimited biodatas'), colorScheme),
             const SizedBox(height: 16),
             _buildBenefitRow(
-                Icons.edit_note, 'Custom fields support', colorScheme),
+                Icons.edit_note, Strings.tr('Custom fields support'), colorScheme),
             const SizedBox(height: 32),
+            if (_storeMessage != null) ...[
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.all(14),
+                decoration: BoxDecoration(
+                  color: colorScheme.surfaceContainerHighest.withValues(alpha: 0.4),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Row(
+                  children: [
+                    Icon(Icons.info_outline,
+                        size: 20, color: colorScheme.onSurfaceVariant),
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: Text(
+                        _storeMessage!,
+                        style: GoogleFonts.poppins(
+                          fontSize: 12,
+                          color: colorScheme.onSurfaceVariant,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 16),
+            ],
             _buildPlanCard(
-              'Monthly',
-              '₹149',
+              Strings.tr('Monthly'),
+              _priceFor('monthly', '₹149'),
               '/month',
               'monthly',
               colorScheme,
@@ -163,8 +219,8 @@ class _PaywallScreenState extends State<PaywallScreen> {
             ),
             const SizedBox(height: 12),
             _buildPlanCard(
-              'Yearly',
-              '₹499',
+              Strings.tr('Yearly'),
+              _priceFor('yearly', '₹499'),
               '/year',
               'yearly',
               colorScheme,
@@ -173,8 +229,8 @@ class _PaywallScreenState extends State<PaywallScreen> {
             ),
             const SizedBox(height: 12),
             _buildPlanCard(
-              'Lifetime',
-              '₹799',
+              Strings.tr('Lifetime'),
+              _priceFor('lifetime', '₹799'),
               ' one-time',
               'lifetime',
               colorScheme,
@@ -184,11 +240,20 @@ class _PaywallScreenState extends State<PaywallScreen> {
             SizedBox(
               width: double.infinity,
               height: 52,
-              child: ElevatedButton(
-                onPressed:
-                    isPremium ? null : () => _subscribe(_selectedPlan),
-                child: Text(
-                    isPremium ? 'Already Premium' : 'Continue'),
+              child: FilledButton(
+                onPressed: isPremium || _isProcessing || !_storeReady
+                    ? null
+                    : () => _subscribe(_selectedPlan),
+                child: _isProcessing
+                    ? const SizedBox(
+                        width: 20,
+                        height: 20,
+                        child: CircularProgressIndicator(strokeWidth: 2))
+                    : Text(isPremium
+                        ? Strings.tr('Already Premium')
+                        : (_purchases.phase.value == PurchasePhase.pending
+                            ? Strings.tr('Processing...')
+                            : Strings.tr('Continue'))),
               ),
             ),
             const SizedBox(height: 12),
@@ -197,7 +262,7 @@ class _PaywallScreenState extends State<PaywallScreen> {
               height: 52,
               child: OutlinedButton(
                 onPressed: _isProcessing ? null : _restorePurchases,
-                child: const Text('Restore Purchases'),
+                child: Text(Strings.tr('Restore Purchases')),
               ),
             ),
             const SizedBox(height: 24),
@@ -205,6 +270,12 @@ class _PaywallScreenState extends State<PaywallScreen> {
         ),
       ),
     );
+  }
+
+  /// Live store price when available; static fallback otherwise.
+  String _priceFor(String tier, String fallback) {
+    final product = _purchases.productFor(tier);
+    return product?.price ?? fallback;
   }
 
   Widget _buildBenefitRow(IconData icon, String text, ColorScheme cs) {
@@ -239,7 +310,9 @@ class _PaywallScreenState extends State<PaywallScreen> {
     final isSelected = _selectedPlan == value;
 
     return GestureDetector(
-      onTap: isPremium ? null : () => setState(() => _selectedPlan = value),
+      onTap: isPremium || !_storeReady
+          ? null
+          : () => setState(() => _selectedPlan = value),
       child: AnimatedScale(
         scale: isSelected ? 1.02 : 1.0,
         duration: const Duration(milliseconds: 200),
@@ -275,62 +348,61 @@ class _PaywallScreenState extends State<PaywallScreen> {
                         ),
                         if (isBestValue) ...[
                           const SizedBox(width: 8),
-                          AnimatedOpacity(
-                            opacity: isSelected ? 1.0 : 0.0,
-                            duration: const Duration(milliseconds: 200),
-                            child: Container(
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 8, vertical: 2),
-                              decoration: BoxDecoration(
-                                color: cs.tertiary,
-                                borderRadius: BorderRadius.circular(8),
-                              ),
-                              child: Text(
-                                'Best Value',
-                                style: GoogleFonts.poppins(
-                                  fontSize: 10,
-                                  color: cs.onTertiary,
-                                  fontWeight: FontWeight.w600,
-                                ),
+                          // Always visible when selected OR always shown as a
+                          // badge — previously it only appeared after tapping,
+                          // which defeated its purpose.
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 8, vertical: 2),
+                            decoration: BoxDecoration(
+                              color: cs.tertiary,
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: Text(
+                              Strings.tr('Best Value'),
+                              style: GoogleFonts.poppins(
+                                fontSize: 10,
+                                color: cs.onTertiary,
+                                fontWeight: FontWeight.w600,
                               ),
                             ),
                           ),
                         ],
                       ],
                     ),
-                  const SizedBox(height: 4),
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.end,
-                    children: [
-                      Text(
-                        price,
-                        style: GoogleFonts.poppins(
-                          fontSize: 24,
-                          fontWeight: FontWeight.bold,
-                          color: cs.primary,
-                        ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.only(bottom: 3, left: 4),
-                        child: Text(
-                          period,
+                    const SizedBox(height: 4),
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: [
+                        Text(
+                          price,
                           style: GoogleFonts.poppins(
-                            fontSize: 13,
-                            color: cs.onSurfaceVariant,
+                            fontSize: 24,
+                            fontWeight: FontWeight.bold,
+                            color: cs.primary,
                           ),
                         ),
-                      ),
-                    ],
-                  ),
-                ],
+                        Padding(
+                          padding: const EdgeInsets.only(bottom: 3, left: 4),
+                          child: Text(
+                            period,
+                            style: GoogleFonts.poppins(
+                              fontSize: 13,
+                              color: cs.onSurfaceVariant,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
               ),
-            ),
-            if (isSelected)
-              Icon(Icons.check_circle, color: cs.primary, size: 28),
-          ],
+              if (isSelected)
+                Icon(Icons.check_circle, color: cs.primary, size: 28),
+            ],
+          ),
         ),
       ),
-    ),
     );
   }
 }

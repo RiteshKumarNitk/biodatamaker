@@ -5,6 +5,7 @@ import 'package:biodata_maker/core/constants/app_constants.dart';
 import 'package:biodata_maker/core/i18n/strings.dart';
 import 'package:biodata_maker/features/biodata/data/models/biodata.dart';
 import 'package:biodata_maker/shared/widgets/custom_fields_editor.dart';
+import 'package:biodata_maker/features/biodata/presentation/widgets/steps/photo_step.dart';
 
 class BasicDetailsStep extends StatefulWidget {
   final Biodata biodata;
@@ -129,6 +130,12 @@ class _BasicDetailsStepState extends State<BasicDetailsStep> {
       initialDate: initialDate,
       firstDate: DateTime(1950),
       lastDate: DateTime.now(),
+      initialEntryMode: DatePickerEntryMode.calendarOnly,
+      helpText: 'SELECT DATE OF BIRTH',
+      cancelText: 'CANCEL',
+      confirmText: 'OK',
+      errorFormatText: 'Enter a valid date (DD/MM/YYYY)',
+      errorInvalidText: 'Enter a date between 1950 and today',
     );
 
     if (picked != null) {
@@ -228,6 +235,7 @@ class _BasicDetailsStepState extends State<BasicDetailsStep> {
         labelText: Strings.tr(label),
         hintText: hint,
         prefixIcon: prefixIcon,
+        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
       );
     }
 
@@ -237,6 +245,8 @@ class _BasicDetailsStepState extends State<BasicDetailsStep> {
         Text(Strings.tr('Personal Details'), style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600)),
         const SizedBox(height: 4),
         Text(Strings.tr('Enter your basic personal information'), style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.onSurfaceVariant)),
+        const SizedBox(height: 16),
+        PhotoStep(biodata: widget.biodata, onUpdate: widget.onUpdate),
         const SizedBox(height: 16),
         Card(
           margin: EdgeInsets.zero,
@@ -381,110 +391,107 @@ class _BasicDetailsStepState extends State<BasicDetailsStep> {
                   onChanged: (v) => _update(languages: v),
                 ),
                 const SizedBox(height: 8),
-                Text(Strings.tr('Quick select:'), style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.onSurfaceVariant)),
-                const SizedBox(height: 8),
-                Wrap(
-                  spacing: 8,
-                  runSpacing: 8,
-                  children: AppConstants.languages.take(12).map((lang) {
-                    final selected = _selectedLanguages.contains(lang);
-                    return FilterChip(
-                      label: Text(lang),
-                      selected: selected,
-                      visualDensity: VisualDensity.compact,
-                      onSelected: (_) => _toggleLanguage(lang),
-                    );
-                  }).toList(),
+                SizedBox(
+                  height: 36,
+                  child: ListView(
+                    scrollDirection: Axis.horizontal,
+                    children: AppConstants.languages.take(12).map((lang) {
+                      final selected = _selectedLanguages.contains(lang);
+                      return Padding(
+                        padding: const EdgeInsets.only(right: 8),
+                        child: FilterChip(
+                          label: Text(lang),
+                          selected: selected,
+                          visualDensity: VisualDensity.compact,
+                          onSelected: (_) => _toggleLanguage(lang),
+                        ),
+                      );
+                    }).toList(),
+                  ),
                 ),
               ],
             ),
           ),
         ),
         const SizedBox(height: 16),
-        Card(
-          margin: EdgeInsets.zero,
-          child: Padding(
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+        ExpansionTile(
+          tilePadding: const EdgeInsets.symmetric(horizontal: 16),
+          childrenPadding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+          title: Text(Strings.tr('Religion, Community & Astrology'), style: theme.textTheme.titleSmall?.copyWith(color: theme.colorScheme.primary, fontWeight: FontWeight.w600)),
+          subtitle: Text(Strings.tr('Optional - tap to expand'), style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.onSurfaceVariant)),
+          initiallyExpanded: b.religion.isNotEmpty || b.caste.isNotEmpty || b.gotra.isNotEmpty,
+          children: [
+            DropdownButtonFormField<String>(
+              initialValue: _validOption(b.religion, AppConstants.religions),
+              decoration: deco('Religion', prefixIcon: const Icon(Icons.church_outlined)),
+              items: AppConstants.religions.map((r) => DropdownMenuItem(value: r, child: Text(r))).toList(),
+              onChanged: (v) => _update(religion: v),
+            ),
+            const SizedBox(height: 12),
+            Row(
               children: [
-                Text(Strings.tr('Religion, Community & Astrology'), style: theme.textTheme.titleSmall?.copyWith(color: theme.colorScheme.primary, fontWeight: FontWeight.w600)),
-                const SizedBox(height: 4),
-                Text(Strings.tr('Optional - add only what you want to share'), style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.onSurfaceVariant)),
-                const SizedBox(height: 12),
-                DropdownButtonFormField<String>(
-                  initialValue: _validOption(b.religion, AppConstants.religions),
-                  decoration: deco('Religion', prefixIcon: const Icon(Icons.church_outlined)),
-                  items: AppConstants.religions.map((r) => DropdownMenuItem(value: r, child: Text(r))).toList(),
-                  onChanged: (v) => _update(religion: v),
+                Expanded(
+                  child: TextFormField(
+                    controller: _casteCtrl,
+                    decoration: deco('Caste / Community', hint: 'Enter caste', prefixIcon: const Icon(Icons.groups_outlined)),
+                    textCapitalization: TextCapitalization.words,
+                    onChanged: (v) => _update(caste: v),
+                  ),
                 ),
-                const SizedBox(height: 12),
-                Row(
-                  children: [
-                    Expanded(
-                      child: TextFormField(
-                        controller: _casteCtrl,
-                        decoration: deco('Caste / Community', hint: 'Enter caste', prefixIcon: const Icon(Icons.groups_outlined)),
-                        textCapitalization: TextCapitalization.words,
-                        onChanged: (v) => _update(caste: v),
-                      ),
-                    ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: TextFormField(
-                        controller: _subCasteCtrl,
-                        decoration: deco('Sub-caste', hint: 'Enter subcaste', prefixIcon: const Icon(Icons.group_outlined)),
-                        textCapitalization: TextCapitalization.words,
-                        onChanged: (v) => _update(subCaste: v),
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 12),
-                _autocompleteField(
-                  key: const ValueKey('gotra'),
-                  initialText: b.gotra,
-                  mirror: _gotraCtrl,
-                  options: (query) => query.isEmpty
-                      ? AppConstants.gotraSuggestions
-                      : AppConstants.gotraSuggestions.where((g) => g.toLowerCase().contains(query.toLowerCase())),
-                  label: Strings.tr('Gotra'),
-                  hint: 'e.g. Kashyap (optional)',
-                  icon: Icons.diversity_2_outlined,
-                  onChanged: (v) => _update(gotra: v),
-                ),
-                const SizedBox(height: 12),
-                Row(
-                  children: [
-                    Expanded(
-                      child: DropdownButtonFormField<String>(
-                        initialValue: _validOption(b.rashi, AppConstants.rashis),
-                        decoration: deco('Rashi', prefixIcon: const Icon(Icons.brightness_5_outlined)),
-                        items: AppConstants.rashis.map((r) => DropdownMenuItem(value: r, child: Text(r, overflow: TextOverflow.ellipsis))).toList(),
-                        onChanged: (v) => _update(rashi: v),
-                      ),
-                    ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: DropdownButtonFormField<String>(
-                        initialValue: _validOption(b.nakshatra, AppConstants.nakshatras),
-                        decoration: deco('Nakshatra', prefixIcon: const Icon(Icons.star_outline)),
-                        items: AppConstants.nakshatras.map((n) => DropdownMenuItem(value: n, child: Text(n, overflow: TextOverflow.ellipsis))).toList(),
-                        onChanged: (v) => _update(nakshatra: v),
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 12),
-                DropdownButtonFormField<String>(
-                  initialValue: _validOption(b.manglik, AppConstants.manglikStatuses),
-                  decoration: deco('Manglik Status', prefixIcon: const Icon(Icons.auto_awesome_outlined)),
-                  items: AppConstants.manglikStatuses.map((m) => DropdownMenuItem(value: m, child: Text(m))).toList(),
-                  onChanged: (v) => _update(manglik: v),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: TextFormField(
+                    controller: _subCasteCtrl,
+                    decoration: deco('Sub-caste', hint: 'Enter subcaste', prefixIcon: const Icon(Icons.group_outlined)),
+                    textCapitalization: TextCapitalization.words,
+                    onChanged: (v) => _update(subCaste: v),
+                  ),
                 ),
               ],
             ),
-          ),
+            const SizedBox(height: 12),
+            _autocompleteField(
+              key: const ValueKey('gotra'),
+              initialText: b.gotra,
+              mirror: _gotraCtrl,
+              options: (query) => query.isEmpty
+                  ? AppConstants.gotraSuggestions
+                  : AppConstants.gotraSuggestions.where((g) => g.toLowerCase().contains(query.toLowerCase())),
+              label: Strings.tr('Gotra'),
+              hint: 'e.g. Kashyap (optional)',
+              icon: Icons.diversity_2_outlined,
+              onChanged: (v) => _update(gotra: v),
+            ),
+            const SizedBox(height: 12),
+            Row(
+              children: [
+                Expanded(
+                  child: DropdownButtonFormField<String>(
+                    initialValue: _validOption(b.rashi, AppConstants.rashis),
+                    decoration: deco('Rashi', prefixIcon: const Icon(Icons.brightness_5_outlined)),
+                    items: AppConstants.rashis.map((r) => DropdownMenuItem(value: r, child: Text(r, overflow: TextOverflow.ellipsis))).toList(),
+                    onChanged: (v) => _update(rashi: v),
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: DropdownButtonFormField<String>(
+                    initialValue: _validOption(b.nakshatra, AppConstants.nakshatras),
+                    decoration: deco('Nakshatra', prefixIcon: const Icon(Icons.star_outline)),
+                    items: AppConstants.nakshatras.map((n) => DropdownMenuItem(value: n, child: Text(n, overflow: TextOverflow.ellipsis))).toList(),
+                    onChanged: (v) => _update(nakshatra: v),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 12),
+            DropdownButtonFormField<String>(
+              initialValue: _validOption(b.manglik, AppConstants.manglikStatuses),
+              decoration: deco('Manglik Status', prefixIcon: const Icon(Icons.auto_awesome_outlined)),
+              items: AppConstants.manglikStatuses.map((m) => DropdownMenuItem(value: m, child: Text(m))).toList(),
+              onChanged: (v) => _update(manglik: v),
+            ),
+          ],
         ),
         const SizedBox(height: 16),
         CustomFieldsEditor(

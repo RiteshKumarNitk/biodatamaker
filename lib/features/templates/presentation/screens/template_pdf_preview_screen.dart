@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:printing/printing.dart';
 
-import 'package:biodata_maker/core/i18n/strings.dart';
 import 'package:biodata_maker/core/services/pdf_service.dart';
 import 'package:biodata_maker/core/services/service_locator.dart';
 import 'package:biodata_maker/features/templates/data/models/theme_config.dart';

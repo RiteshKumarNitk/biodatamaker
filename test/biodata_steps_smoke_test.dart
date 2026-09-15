@@ -155,11 +155,13 @@ void main() {
     expect(find.text('Field Label'), findsOneWidget);
   });
 
-  testWidgets('Family step renders grandparents, siblings and custom fields', (tester) async {
+  testWidgets('Family step renders parents, siblings and custom fields', (tester) async {
     final b = _sampleBiodata();
     await pumpStep(tester, FamilyStep(biodata: b, onUpdate: (_) {}));
-    expect(find.text("Grandfather's Name"), findsOneWidget);
-    expect(find.text('Ram Singh'), findsOneWidget);
+    // Grandparent fields were removed from the UI (model keeps the data for
+    // legacy rows) — the step now starts at Parents.
+    expect(find.text("Father's Name"), findsOneWidget);
+    expect(find.text("Mother's Name"), findsOneWidget);
     expect(find.text('Abhinav Singh'), findsOneWidget);
     expect(find.text('Rohit Singh'), findsOneWidget);
     expect(find.text('Priya Singh'), findsOneWidget);
@@ -247,13 +249,15 @@ void main() {
     expect(find.text('Family Details'), findsOneWidget);
     expect(find.text('Contact Details'), findsOneWidget);
     // Lifestyle fields still render, just under Personal Information now.
-    expect(find.text('Reading, Cricket'), findsOneWidget);
-    // Sibling rows with de-duplicated labels
-    expect(find.text('Brother 1'), findsOneWidget);
-    expect(find.text('Brother 2'), findsOneWidget);
-    expect(find.text('Sister'), findsOneWidget);
+    // In centered_block layouts the row is one RichText ('Hobbies : value'),
+    // so match by substring across Text and RichText.
+    expect(find.textContaining('Reading, Cricket', findRichText: true), findsOneWidget);
+    // Sibling rows with de-duplicated labels (RichText row matcher)
+    expect(find.textContaining('Brother 1', findRichText: true), findsOneWidget);
+    expect(find.textContaining('Brother 2', findRichText: true), findsOneWidget);
+    expect(find.textContaining('Sister', findRichText: true), findsWidgets);
     // Custom fields appear inside their sections
-    expect(find.text('Textile Manufacturing'), findsOneWidget);
+    expect(find.textContaining('Textile Manufacturing', findRichText: true), findsOneWidget);
     // The old per-topic headings no longer exist at all.
     expect(find.text('Education & Career'), findsNothing);
     expect(find.text('Lifestyle & Interests'), findsNothing);

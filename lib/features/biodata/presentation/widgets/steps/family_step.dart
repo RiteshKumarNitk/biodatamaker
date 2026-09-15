@@ -17,6 +17,7 @@ class FamilyStep extends StatelessWidget {
       labelText: Strings.tr(label),
       hintText: hint,
       prefixIcon: prefixIcon,
+      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
     );
   }
 
@@ -184,40 +185,6 @@ class FamilyStep extends StatelessWidget {
         Text(Strings.tr('Family Details'), style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600)),
         const SizedBox(height: 4),
         Text(Strings.tr('Enter family background information'), style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.onSurfaceVariant)),
-        const SizedBox(height: 16),
-        Card(
-          margin: EdgeInsets.zero,
-          child: Padding(
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(Strings.tr('Grandparents'), style: theme.textTheme.titleSmall?.copyWith(color: theme.colorScheme.primary, fontWeight: FontWeight.w600)),
-                const SizedBox(height: 12),
-                TextFormField(
-                  initialValue: b.grandFatherName,
-                  decoration: _deco("Grandfather's Name", hint: 'Enter grandfather\'s name'),
-                  textCapitalization: TextCapitalization.words,
-                  onChanged: (v) => onUpdate(biodata.copyWith(grandFatherName: v)),
-                ),
-                const SizedBox(height: 12),
-                TextFormField(
-                  initialValue: b.grandFatherOccupation,
-                  decoration: _deco("Grandfather's Occupation", hint: 'e.g. Farmer, Retired'),
-                  textCapitalization: TextCapitalization.words,
-                  onChanged: (v) => onUpdate(biodata.copyWith(grandFatherOccupation: v)),
-                ),
-                const SizedBox(height: 12),
-                TextFormField(
-                  initialValue: b.grandMotherName,
-                  decoration: _deco("Grandmother's Name", hint: 'Enter grandmother\'s name'),
-                  textCapitalization: TextCapitalization.words,
-                  onChanged: (v) => onUpdate(biodata.copyWith(grandMotherName: v)),
-                ),
-              ],
-            ),
-          ),
-        ),
         const SizedBox(height: 16),
         Card(
           margin: EdgeInsets.zero,

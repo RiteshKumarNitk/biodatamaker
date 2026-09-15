@@ -33,7 +33,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   Future<void> _loadProfile() async {
     final user = await _authRepo.getCurrentUser();
-    final biodatas = _biodataRepo.getAll();
+    final biodatas = await _biodataRepo.getAllScoped();
     _totalBiodatas = biodatas.length;
     _totalDownloads =
         biodatas.fold<int>(0, (sum, b) => sum + b.downloadCount);
@@ -53,39 +53,61 @@ class _ProfileScreenState extends State<ProfileScreen> {
     final nameController = TextEditingController(text: _user?.name ?? '');
     final emailController = TextEditingController(text: _user?.email ?? '');
     final phoneController = TextEditingController(text: _user?.phone ?? '');
+    final formKey = GlobalKey<FormState>();
 
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text('Edit Profile'),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            TextField(
-              controller: nameController,
-              decoration: const InputDecoration(labelText: 'Name'),
-            ),
-            const SizedBox(height: 12),
-            TextField(
-              controller: emailController,
-              decoration: const InputDecoration(labelText: 'Email'),
-              keyboardType: TextInputType.emailAddress,
-            ),
-            const SizedBox(height: 12),
-            TextField(
-              controller: phoneController,
-              decoration: const InputDecoration(labelText: 'Phone'),
-              keyboardType: TextInputType.phone,
-            ),
-          ],
+        title: Text(Strings.tr('Edit Profile')),
+        content: Form(
+          key: formKey,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TextFormField(
+                controller: nameController,
+                decoration: InputDecoration(labelText: Strings.tr('Name')),
+                validator: (v) =>
+                    (v == null || v.trim().isEmpty) ? Strings.tr('Name is required') : null,
+              ),
+              const SizedBox(height: 12),
+              TextFormField(
+                controller: emailController,
+                decoration: InputDecoration(labelText: Strings.tr('Email')),
+                keyboardType: TextInputType.emailAddress,
+                validator: (v) {
+                  final value = v?.trim() ?? '';
+                  if (value.isEmpty) return null; // email optional
+                  final emailRegex = RegExp(r'^[^@\s]+@[^@\s]+\.[^@\s]+$');
+                  if (!emailRegex.hasMatch(value)) {
+                    return Strings.tr('Enter a valid email');
+                  }
+                  return null;
+                },
+              ),
+              const SizedBox(height: 12),
+              TextFormField(
+                controller: phoneController,
+                decoration: InputDecoration(labelText: Strings.tr('Phone')),
+                keyboardType: TextInputType.phone,
+                validator: (v) {
+                  final value = v?.trim() ?? '';
+                  if (value.isEmpty) return null; // phone optional
+                  if (value.length < 7) return Strings.tr('Enter a valid phone number');
+                  return null;
+                },
+              ),
+            ],
+          ),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(ctx).pop(),
-            child: const Text('Cancel'),
+            child: Text(Strings.tr('Cancel')),
           ),
           ElevatedButton(
             onPressed: () async {
+              if (!(formKey.currentState?.validate() ?? false)) return;
               if (_user != null) {
                 final updated = _user!.copyWith(
                   name: nameController.text.trim(),
@@ -93,15 +115,44 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   phone: phoneController.text.trim(),
                 );
                 await _authRepo.updateProfile(updated);
-                setState(() => _user = updated);
+                if (mounted) setState(() => _user = updated);
                 if (ctx.mounted) Navigator.of(ctx).pop();
               }
             },
-            child: const Text('Save'),
+            child: Text(Strings.tr('Save')),
           ),
         ],
       ),
     );
+  }
+
+  /// Confirms before signing out — one accidental tap should not wipe the
+  /// session.
+  Future<void> _confirmLogout() async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text(Strings.tr('Logout')),
+        content: Text(Strings.tr('Are you sure you want to sign out?')),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: Text(Strings.tr('Cancel')),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, true),
+            child: Text(
+              Strings.tr('Logout'),
+              style: TextStyle(color: Theme.of(ctx).colorScheme.error),
+            ),
+          ),
+        ],
+      ),
+    );
+    if (confirmed == true && mounted) {
+      await _authRepo.signOut();
+      if (mounted) context.go('/login');
+    }
   }
 
   @override
@@ -174,7 +225,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           ),
                         ),
                         Text(
-                          'Total Biodatas',
+                          Strings.tr('Total Biodatas'),
                           style: GoogleFonts.poppins(
                             fontSize: 12,
                             color: colorScheme.onSurfaceVariant,
@@ -202,7 +253,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           ),
                         ),
                         Text(
-                          'Downloads',
+                          Strings.tr('Downloads'),
                           style: GoogleFonts.poppins(
                             fontSize: 12,
                             color: colorScheme.onSurfaceVariant,
@@ -221,7 +272,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               children: [
                 ListTile(
                   leading: const Icon(Icons.edit_outlined),
-                  title: const Text('Edit Profile'),
+                  title: Text(Strings.tr('Edit Profile')),
                   trailing: const Icon(Icons.chevron_right),
                   onTap: _showEditDialog,
                 ).animate().fadeIn(delay: 0.ms).slideX(begin: 0.1),
@@ -236,37 +287,34 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 const Divider(height: 1),
                 ListTile(
                   leading: const Icon(Icons.subscriptions_outlined),
-                  title: const Text('My Subscription'),
+                  title: Text(Strings.tr('My Subscription')),
                   trailing: const Icon(Icons.chevron_right),
                   onTap: () => context.push('/paywall'),
                 ).animate().fadeIn(delay: 100.ms).slideX(begin: 0.1),
                 const Divider(height: 1),
                 ListTile(
                   leading: const Icon(Icons.settings_outlined),
-                  title: const Text('Settings'),
+                  title: Text(Strings.tr('Settings')),
                   trailing: const Icon(Icons.chevron_right),
                   onTap: () => context.push('/settings'),
                 ).animate().fadeIn(delay: 200.ms).slideX(begin: 0.1),
                 const Divider(height: 1),
                 ListTile(
                   leading: const Icon(Icons.share_outlined),
-                  title: const Text('Share App'),
+                  title: Text(Strings.tr('Share App')),
                   trailing: const Icon(Icons.chevron_right),
                   onTap: () {
-                    Share.share('Check out Biodata Maker app!');
+                    SharePlus.instance.share(
+                      ShareParams(text: Strings.tr('Check out Biodata Maker app!')),
+                    );
                   },
                 ).animate().fadeIn(delay: 300.ms).slideX(begin: 0.1),
                 const Divider(height: 1),
                 ListTile(
                   leading: Icon(Icons.logout, color: colorScheme.error),
-                  title: Text('Logout',
+                  title: Text(Strings.tr('Logout'),
                       style: TextStyle(color: colorScheme.error)),
-                  onTap: () async {
-                    await _authRepo.signOut();
-                    if (context.mounted) {
-                      context.go('/login');
-                    }
-                  },
+                  onTap: _confirmLogout,
                 ).animate().fadeIn(delay: 400.ms).slideX(begin: 0.1),
               ],
             ),

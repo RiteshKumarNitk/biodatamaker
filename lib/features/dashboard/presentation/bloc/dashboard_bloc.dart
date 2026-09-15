@@ -82,9 +82,9 @@ class DashboardBloc extends Bloc<DashboardEvent, DashboardState> {
   Future<void> _onLoad(LoadDashboard event, Emitter<DashboardState> emit) async {
     emit(state.copyWith(isLoading: true, error: null));
     try {
-      final recent = _biodataRepo.getRecent(limit: 5);
-      final drafts = _biodataRepo.getDrafts();
-      final stats = _biodataRepo.getStats();
+      final recent = await _biodataRepo.getRecent(limit: 5);
+      final drafts = await _biodataRepo.getDrafts();
+      final stats = await _biodataRepo.getStats();
       final filteredDrafts = drafts.where((d) => !recent.contains(d)).take(3).toList();
       emit(state.copyWith(
         isLoading: false,

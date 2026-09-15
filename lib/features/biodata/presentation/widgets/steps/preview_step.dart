@@ -31,9 +31,9 @@ class _PreviewStepState extends State<PreviewStep> {
   /// that feed it are still reachable via Next/Back from there.
   static const Map<String, int> _sectionSteps = {
     'photo': 0,
-    'personal': 1,
-    'family': 3,
-    'contact': 5,
+    'personal': 0,
+    'family': 2,
+    'contact': 4,
   };
 
   void _editSection(BuildContext context, String sectionKey) {

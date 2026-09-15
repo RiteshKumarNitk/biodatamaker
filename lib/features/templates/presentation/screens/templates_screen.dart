@@ -12,14 +12,15 @@ import 'package:biodata_maker/features/templates/presentation/bloc/template_bloc
 import 'package:biodata_maker/features/templates/presentation/bloc/template_event.dart';
 import 'package:biodata_maker/features/templates/presentation/bloc/template_state.dart';
 import 'package:biodata_maker/features/templates/presentation/screens/template_pdf_preview_screen.dart';
+import 'package:biodata_maker/shared/widgets/template_thumbnail.dart';
 
 class TemplatesScreen extends StatelessWidget {
   const TemplatesScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (_) => TemplateBloc()..add(const LoadTemplates()),
+    return BlocProvider.value(
+      value: context.read<TemplateBloc>()..add(const LoadTemplates()),
       child: const _TemplatesView(),
     );
   }
@@ -62,6 +63,7 @@ class _TemplateContent extends StatefulWidget {
 class _TemplateContentState extends State<_TemplateContent>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
+  bool _isPremiumUser = false;
 
   @override
   void initState() {
@@ -76,6 +78,12 @@ class _TemplateContentState extends State<_TemplateContent>
       _tabController.index = initialIndex;
     }
     _tabController.addListener(_onTabChanged);
+    _loadPremiumState();
+  }
+
+  Future<void> _loadPremiumState() async {
+    final isPremium = sl<SettingsRepository>().isPremium;
+    if (mounted) setState(() => _isPremiumUser = isPremium);
   }
 
   void _onTabChanged() {
@@ -118,19 +126,34 @@ class _TemplateContentState extends State<_TemplateContent>
           controller: _tabController,
           isScrollable: true,
           tabs: widget.state.categories
-              .map((c) => Tab(text: c))
+              .map((c) => Tab(text: Strings.tr(c) == c ? c : Strings.tr(c)))
               .toList(),
         ).animate().fadeIn(duration: 400.ms).slideY(begin: 0.2, duration: 400.ms),
         Expanded(
           child: BlocBuilder<TemplateBloc, TemplateState>(
             builder: (context, state) {
               if (state is TemplateLoaded) {
+                // FIX: each tab must render only the templates of ITS OWN
+                // category. The old code passed `state.templates` (the
+                // currently-filtered list) to every tab, so all tabs showed
+                // identical content.
                 return TabBarView(
                   controller: _tabController,
                   children: widget.state.categories.map((category) {
+                    final List<ThemeConfig> tabTemplates;
+                    if (category == 'All') {
+                      tabTemplates = state.templates;
+                    } else if (state.selectedCategory == category) {
+                      // Bloc already filtered for the active tab.
+                      tabTemplates = state.templates;
+                    } else {
+                      tabTemplates = state.templates
+                          .where((t) => t.category == category)
+                          .toList();
+                    }
                     return _TemplateGrid(
-                      templates: state.templates,
-                      selectedCategory: category,
+                      templates: tabTemplates,
+                      isPremiumUser: _isPremiumUser,
                     );
                   }).toList(),
                 );
@@ -146,11 +169,11 @@ class _TemplateContentState extends State<_TemplateContent>
 
 class _TemplateGrid extends StatelessWidget {
   final List<ThemeConfig> templates;
-  final String selectedCategory;
+  final bool isPremiumUser;
 
   const _TemplateGrid({
     required this.templates,
-    required this.selectedCategory,
+    required this.isPremiumUser,
   });
 
   @override
@@ -163,7 +186,7 @@ class _TemplateGrid extends StatelessWidget {
             Icon(Icons.dashboard_customize_outlined,
                 size: 64, color: Theme.of(context).colorScheme.outline),
             const SizedBox(height: 16),
-            Text('No templates in this category',
+            Text(Strings.tr('No templates in this category'),
                 style: Theme.of(context).textTheme.bodyLarge),
           ],
         ),
@@ -173,103 +196,109 @@ class _TemplateGrid extends StatelessWidget {
       padding: const EdgeInsets.all(16),
       gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: 2,
-        childAspectRatio: 0.72,
+        childAspectRatio: 0.62,
         crossAxisSpacing: 12,
         mainAxisSpacing: 12,
       ),
       itemCount: templates.length,
-      itemBuilder: (context, index) =>
-          _TemplateCard(template: templates[index]).animate().fadeIn(delay: (index * 100).ms).slideX(begin: 0.1),
+      itemBuilder: (context, index) => _TemplateCard(
+        template: templates[index],
+        isPremiumUser: isPremiumUser,
+      ).animate().fadeIn(delay: (index * 60).ms).slideY(begin: 0.08),
     );
   }
 }
 
 class _TemplateCard extends StatelessWidget {
   final ThemeConfig template;
+  final bool isPremiumUser;
 
-  const _TemplateCard({required this.template});
+  const _TemplateCard({
+    required this.template,
+    required this.isPremiumUser,
+  });
 
   @override
   Widget build(BuildContext context) {
-    final primaryColor = Color(template.primaryColor);
-    final secondaryColor = Color(template.secondaryColor);
+    final locked = template.isPremium && !isPremiumUser;
 
     return GestureDetector(
-      onTap: () => _showTemplatePreview(context),
+      onTap: () => _onTap(context),
       child: Card(
+        clipBehavior: Clip.antiAlias,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Expanded(
-              child: Container(
-                width: double.infinity,
-                decoration: BoxDecoration(
-                  color: primaryColor.withValues(alpha: 0.1),
-                  borderRadius:
-                      const BorderRadius.vertical(top: Radius.circular(16)),
-                  image: template.backgroundImage.isNotEmpty
-                      ? DecorationImage(image: AssetImage(template.backgroundImage), fit: BoxFit.cover)
-                      : null,
-                ),
-                clipBehavior: Clip.antiAlias,
-                child: Stack(
-                  children: [
-                    Positioned(
-                      top: 12,
-                      left: 12,
+              child: Stack(
+                fit: StackFit.expand,
+                children: [
+                  TemplateThumbnail(
+                    template: template,
+                    width: double.infinity,
+                    height: double.infinity,
+                  ),
+                  if (locked)
+                    Positioned.fill(
                       child: Container(
-                        width: 40,
-                        height: 40,
-                        decoration: BoxDecoration(
-                          color: primaryColor,
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        child: Center(
-                          child: Text(
-                            template.name.isNotEmpty
-                                ? template.name[0].toUpperCase()
-                                : '?',
-                            style: GoogleFonts.poppins(
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 18,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                    Positioned(
-                      bottom: 12,
-                      left: 12,
-                      right: 12,
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Container(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 8, vertical: 3),
-                            decoration: BoxDecoration(
-                              color: secondaryColor,
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            child: Text(
-                              template.category,
-                              style: GoogleFonts.poppins(
-                                fontSize: 10,
-                                color: Colors.white,
-                                fontWeight: FontWeight.w500,
+                        color: Theme.of(context)
+                            .colorScheme
+                            .surface
+                            .withValues(alpha: 0.55),
+                        alignment: Alignment.center,
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(Icons.lock_rounded,
+                                size: 32,
+                                color: Theme.of(context).colorScheme.primary),
+                            const SizedBox(height: 6),
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 10, vertical: 3),
+                              decoration: BoxDecoration(
+                                color: Theme.of(context).colorScheme.primary,
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                              child: Text(
+                                Strings.tr('PRO'),
+                                style: GoogleFonts.poppins(
+                                  fontSize: 10,
+                                  fontWeight: FontWeight.w700,
+                                  color:
+                                      Theme.of(context).colorScheme.onPrimary,
+                                ),
                               ),
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
                     ),
-                  ],
-                ),
+                  Positioned(
+                    top: 8,
+                    right: 8,
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 8, vertical: 3),
+                      decoration: BoxDecoration(
+                        color: Color(template.secondaryColor),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Text(
+                        template.category,
+                        style: GoogleFonts.poppins(
+                          fontSize: 9,
+                          color: Colors.white,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ),
             Padding(
-              padding: const EdgeInsets.all(12),
+              padding: const EdgeInsets.all(10),
               child: Text(
                 template.name,
                 style: GoogleFonts.poppins(
@@ -286,7 +315,23 @@ class _TemplateCard extends StatelessWidget {
     );
   }
 
-  void _showTemplatePreview(BuildContext context) {
+  void _onTap(BuildContext context) {
+    final locked = template.isPremium && !isPremiumUser;
+    if (locked) {
+      // Offer the upgrade instead of previewing a locked template.
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(Strings.tr(
+              'This template is Premium. Upgrade to unlock all designs.')),
+          behavior: SnackBarBehavior.floating,
+          action: SnackBarAction(
+            label: Strings.tr('Upgrade'),
+            onPressed: () => context.push('/paywall'),
+          ),
+        ),
+      );
+      return;
+    }
     Navigator.of(context).push(
       MaterialPageRoute(
         builder: (_) => TemplatePdfPreviewScreen(template: template),

@@ -22,14 +22,19 @@ class EditBiodataScreen extends StatelessWidget {
             context.go('/preview/${state.biodata!.id}');
           }
         },
-        child: Scaffold(
-          appBar: AppBar(
-            title: const Text('Edit Biodata'),
-            // Builder gives a context inside BlocProvider's subtree, unlike
-            // this build method's own context (its parent).
-            actions: [Builder(builder: (innerContext) => Row(mainAxisSize: MainAxisSize.min, children: wizardPreviewAppBarActions(innerContext)))],
-          ),
-          body: const MultiStepForm(),
+        child: Builder(
+          builder: (context) {
+            final isSaved = context.select<BiodataFormBloc, bool>((b) => b.state.isSaved);
+            return Scaffold(
+              appBar: AppBar(
+                title: const Text('Edit Biodata'),
+                actions: isSaved
+                    ? []
+                    : [Builder(builder: (innerContext) => Row(mainAxisSize: MainAxisSize.min, children: wizardPreviewAppBarActions(innerContext)))],
+              ),
+              body: const MultiStepForm(),
+            );
+          },
         ),
       ),
     );

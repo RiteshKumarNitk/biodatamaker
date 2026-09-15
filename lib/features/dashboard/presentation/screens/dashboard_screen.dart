@@ -21,7 +21,6 @@ class DashboardScreen extends StatefulWidget {
 }
 
 class _DashboardScreenState extends State<DashboardScreen> {
-  final _bloc = DashboardBloc();
   int? _pressedActionIndex;
   User? _user;
 
@@ -29,7 +28,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
   void initState() {
     super.initState();
     _loadUser();
-    _bloc.add(const LoadDashboard());
+    context.read<DashboardBloc>().add(const LoadDashboard());
   }
 
   Future<void> _loadUser() async {
@@ -37,18 +36,12 @@ class _DashboardScreenState extends State<DashboardScreen> {
     if (mounted) setState(() => _user = user);
   }
 
-  @override
-  void dispose() {
-    _bloc.close();
-    super.dispose();
-  }
-
   String _timeAgo(DateTime date) {
     final diff = DateTime.now().difference(date);
-    if (diff.inDays > 0) return '${diff.inDays}d ago';
-    if (diff.inHours > 0) return '${diff.inHours}h ago';
-    if (diff.inMinutes > 0) return '${diff.inMinutes}m ago';
-    return 'just now';
+    if (diff.inDays > 0) return Strings.tr('${diff.inDays}d ago');
+    if (diff.inHours > 0) return Strings.tr('${diff.inHours}h ago');
+    if (diff.inMinutes > 0) return Strings.tr('${diff.inMinutes}m ago');
+    return Strings.tr('just now');
   }
 
   @override
@@ -58,13 +51,11 @@ class _DashboardScreenState extends State<DashboardScreen> {
     final colorScheme = theme.colorScheme;
 
     return Scaffold(
-      body: BlocProvider.value(
-        value: _bloc,
-        child: BlocBuilder<DashboardBloc, DashboardState>(
-          builder: (context, state) {
+      body: BlocBuilder<DashboardBloc, DashboardState>(
+        builder: (context, state) {
             return RefreshIndicator(
               onRefresh: () async {
-                _bloc.add(const LoadDashboard());
+                context.read<DashboardBloc>().add(const LoadDashboard());
               },
               child: CustomScrollView(
                 physics: const AlwaysScrollableScrollPhysics(),
@@ -89,7 +80,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
             );
           },
         ),
-      ),
     );
   }
 
@@ -177,7 +167,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
             Icon(Icons.error_outline, size: 64, color: Theme.of(context).colorScheme.error.withValues(alpha: 0.7)),
             const SizedBox(height: 16),
             Text(
-              'Something went wrong',
+              Strings.tr('Something went wrong'),
               style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.w600,
@@ -195,9 +185,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
             ),
             const SizedBox(height: 24),
             FilledButton.icon(
-              onPressed: () => _bloc.add(const LoadDashboard()),
+              onPressed: () => context.read<DashboardBloc>().add(const LoadDashboard()),
               icon: const Icon(Icons.refresh),
-              label: const Text('Try Again'),
+              label: Text(Strings.tr('Try Again')),
             ),
           ],
         ),
@@ -219,6 +209,13 @@ class _DashboardScreenState extends State<DashboardScreen> {
               child: LottieBuilder.asset(
                 AssetConstants.emptyState,
                 fit: BoxFit.contain,
+                errorBuilder: (context, error, stackTrace) {
+                  return Icon(
+                    Icons.image_not_supported_outlined,
+                    size: 80,
+                    color: colorScheme.error.withValues(alpha: 0.5),
+                  );
+                },
               ),
             ).animate().fadeIn(duration: 600.ms).scale(
                   begin: const Offset(0.8, 0.8),
@@ -227,7 +224,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 ),
             const SizedBox(height: 24),
             Text(
-              'Create your first biodata',
+              Strings.tr('Create your first biodata'),
               style: TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.w600,
@@ -239,7 +236,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 ),
             const SizedBox(height: 8),
             Text(
-              'Design a beautiful marriage biodata\nin minutes',
+              Strings.tr('Design a beautiful marriage biodata\nin minutes'),
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontSize: 14,
@@ -396,7 +393,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
       children: [
         Expanded(child: _buildStatCard(
           icon: Icons.description,
-          label: 'Total',
+          label: Strings.tr('Total'),
           count: state.totalCount,
           gradientColors: [colorScheme.primary, colorScheme.primary.withValues(alpha: 0.8)],
           delay: 0,
@@ -404,7 +401,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
         const SizedBox(width: 12),
         Expanded(child: _buildStatCard(
           icon: Icons.favorite,
-          label: 'Favorites',
+          label: Strings.tr('Favorites'),
           count: state.favoriteCount,
           gradientColors: [colorScheme.error, colorScheme.error.withValues(alpha: 0.8)],
           delay: 100,
@@ -412,7 +409,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
         const SizedBox(width: 12),
         Expanded(child: _buildStatCard(
           icon: Icons.archive,
-          label: 'Archived',
+          label: Strings.tr('Archived'),
           count: state.archivedCount,
           gradientColors: [colorScheme.onSurfaceVariant, colorScheme.onSurfaceVariant.withValues(alpha: 0.8)],
           delay: 200,
@@ -509,7 +506,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                     children: [
                       Expanded(
                         child: Text(
-                          draft.name.isNotEmpty ? draft.name : 'Untitled',
+                          draft.name.isNotEmpty ? draft.name : Strings.tr('Untitled'),
                           style: TextStyle(
                             fontSize: 14,
                             fontWeight: FontWeight.w600,
@@ -526,7 +523,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                           borderRadius: BorderRadius.circular(6),
                         ),
                         child: Text(
-                          'Draft',
+                          Strings.tr('Draft'),
                           style: TextStyle(
                             fontSize: 10,
                             fontWeight: FontWeight.w600,
@@ -617,7 +614,11 @@ class _DashboardScreenState extends State<DashboardScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        biodata.fullName.isNotEmpty ? biodata.fullName : biodata.name,
+                        biodata.fullName.isNotEmpty
+                            ? biodata.fullName
+                            : (biodata.name.isNotEmpty
+                                ? biodata.name
+                                : Strings.tr('Untitled')),
                         style: TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.w600,
@@ -674,7 +675,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
           child: _buildActionCard(
             context: context,
             icon: Icons.add_circle_outline,
-            title: 'Create New\nBiodata',
+            title: Strings.tr('Create New\nBiodata'),
             gradientColors: [colorScheme.primary, colorScheme.primary.withValues(alpha: 0.8)],
             onTap: () => context.push('/biodata/create'),
             delay: 0,
@@ -685,7 +686,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
           child: _buildActionCard(
             context: context,
             icon: Icons.grid_view_rounded,
-            title: 'Browse\nTemplates',
+            title: Strings.tr('Browse\nTemplates'),
             gradientColors: [colorScheme.tertiary, colorScheme.tertiary.withValues(alpha: 0.8)],
             onTap: () => context.push('/templates'),
             delay: 100,

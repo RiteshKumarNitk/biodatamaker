@@ -98,13 +98,14 @@ class BiodataAdapter extends TypeAdapter<Biodata> {
       alternateNumber: fields[78] as String,
       pinCode: fields[79] as String,
       selectedFontId: fields[80] as String,
+      userId: fields[81] as String,
     );
   }
 
   @override
   void write(BinaryWriter writer, Biodata obj) {
     writer
-      ..writeByte(81)
+      ..writeByte(82)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
@@ -266,7 +267,9 @@ class BiodataAdapter extends TypeAdapter<Biodata> {
       ..writeByte(79)
       ..write(obj.pinCode)
       ..writeByte(80)
-      ..write(obj.selectedFontId);
+      ..write(obj.selectedFontId)
+      ..writeByte(81)
+      ..write(obj.userId);
   }
 
   @override
@@ -376,6 +379,7 @@ _$BiodataImpl _$$BiodataImplFromJson(Map<String, dynamic> json) =>
       alternateNumber: json['alternateNumber'] as String? ?? '',
       pinCode: json['pinCode'] as String? ?? '',
       selectedFontId: json['selectedFontId'] as String? ?? '',
+      userId: json['userId'] as String? ?? '',
     );
 
 Map<String, dynamic> _$$BiodataImplToJson(_$BiodataImpl instance) =>
@@ -461,4 +465,5 @@ Map<String, dynamic> _$$BiodataImplToJson(_$BiodataImpl instance) =>
       'alternateNumber': instance.alternateNumber,
       'pinCode': instance.pinCode,
       'selectedFontId': instance.selectedFontId,
+      'userId': instance.userId,
     };

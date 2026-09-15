@@ -88,9 +88,6 @@ final List<SectionConfig> kSections = [
     ],
   ),
   SectionConfig(key: 'family', title: 'Family Details', fields: [
-    FieldConfig(label: "Grandfather's Name", value: (b) => b.grandFatherName),
-    FieldConfig(label: "Grandfather's Occupation", value: (b) => b.grandFatherOccupation),
-    FieldConfig(label: "Grandmother's Name", value: (b) => b.grandMotherName),
     FieldConfig(label: 'Father', value: (b) => b.fatherName),
     FieldConfig(label: "Father's Occupation", value: (b) => b.fatherOccupation),
     FieldConfig(label: 'Mother', value: (b) => b.motherName),
@@ -568,9 +565,9 @@ class BiodataRenderer extends StatelessWidget {
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            SizedBox(width: 150, child: Text(shownLabel, style: GoogleFonts.getFont(resolvedFont, fontSize: theme.bodyFontSize, color: subtitle, fontWeight: FontWeight.w600))),
+            SizedBox(width: 130, child: Text(shownLabel, style: GoogleFonts.getFont(resolvedFont, fontSize: theme.bodyFontSize, color: subtitle, fontWeight: FontWeight.w600))),
             if (theme.showColon) Text(' : ', style: GoogleFonts.getFont(resolvedFont, fontSize: theme.bodyFontSize, color: subtitle, fontWeight: FontWeight.w600)),
-            if (theme.showColon) const SizedBox(width: 8),
+            if (theme.showColon) const SizedBox(width: 4),
             Expanded(child: Text(value, style: GoogleFonts.getFont(resolvedFont, fontSize: theme.bodyFontSize, color: text))),
           ],
         ),
@@ -993,9 +990,9 @@ class BiodataRenderer extends StatelessWidget {
         child: pw.Row(
           crossAxisAlignment: pw.CrossAxisAlignment.start,
           children: [
-            pw.SizedBox(width: 150, child: pw.Text(label, style: pw.TextStyle(font: font, fontSize: theme.bodyFontSize, color: subtitle, fontWeight: pw.FontWeight.bold))),
+            pw.SizedBox(width: 130, child: pw.Text(label, style: pw.TextStyle(font: font, fontSize: theme.bodyFontSize, color: subtitle, fontWeight: pw.FontWeight.bold))),
             if (theme.showColon) pw.Text(' : ', style: pw.TextStyle(font: font, fontSize: theme.bodyFontSize, color: subtitle, fontWeight: pw.FontWeight.bold)),
-            if (theme.showColon) pw.SizedBox(width: 8),
+            if (theme.showColon) pw.SizedBox(width: 4),
             pw.Expanded(child: pw.Text(value, style: pw.TextStyle(font: font, fontSize: theme.bodyFontSize, color: text))),
           ],
         ),

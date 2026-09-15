@@ -25,7 +25,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     ),
     _OnboardingPage(
       title: 'Choose Stunning Templates',
-      subtitle: 'Pick from 16+ premium temple and modern designs',
+      subtitle: 'Pick from premium temple and modern designs',
       lottie: AssetConstants.onboarding2,
     ),
     _OnboardingPage(
@@ -98,6 +98,13 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                             child: Lottie.asset(
                               page.lottie,
                               fit: BoxFit.contain,
+                              errorBuilder: (context, error, stackTrace) {
+                                return Icon(
+                                  Icons.image_not_supported_outlined,
+                                  size: 80,
+                                  color: Theme.of(context).colorScheme.error.withValues(alpha: 0.5),
+                                );
+                              },
                             ),
                           ),
                         ),

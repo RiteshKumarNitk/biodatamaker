@@ -16,7 +16,7 @@ class BiodataFormState extends Equatable {
   final bool isSaved;
   final String? error;
 
-  static const int totalSteps = 10;
+  static const int totalSteps = 8;
 
   const BiodataFormState({
     this.biodata,
@@ -184,8 +184,24 @@ class BiodataFormBloc extends Bloc<BiodataFormEvent, BiodataFormState> {
     }
   }
 
+  /// Steps cannot be jumped to beyond the first invalid step: the stepper
+  /// stays free to navigate backwards or within completed territory, but a
+  /// user cannot skip Personal (name required) or hop from step 1 to the
+  /// Download step with an empty form.
+  int maxReachableStep(Biodata? biodata) {
+    if (biodata == null) return 0;
+    if (biodata.fullName.trim().isEmpty) return 0;
+    return BiodataFormState.totalSteps - 1;
+  }
+
   void _onGoToStep(GoToStep event, Emitter<BiodataFormState> emit) {
     if (event.step >= 0 && event.step < BiodataFormState.totalSteps) {
+      if (event.step > maxReachableStep(state.biodata)) {
+        emit(state.copyWith(
+          error: 'Please enter your full name to continue',
+        ));
+        return;
+      }
       emit(state.copyWith(currentStep: event.step));
     }
   }
@@ -198,7 +214,7 @@ class BiodataFormBloc extends Bloc<BiodataFormEvent, BiodataFormState> {
         isDraft: false,
         updatedAt: DateTime.now(),
       );
-      await _repo.save(biodata);
+      await _repo.save(biodata); // stamps the owning userId inside the repo
       emit(state.copyWith(
         biodata: biodata,
         isSaving: false,

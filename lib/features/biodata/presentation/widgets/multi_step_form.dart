@@ -4,15 +4,13 @@ import 'package:flutter_animate/flutter_animate.dart';
 
 import 'package:biodata_maker/core/i18n/strings.dart';
 import 'package:biodata_maker/features/biodata/presentation/bloc/form_bloc.dart';
-import 'package:biodata_maker/features/biodata/presentation/widgets/steps/photo_step.dart';
 import 'package:biodata_maker/features/biodata/presentation/widgets/steps/basic_details_step.dart';
 import 'package:biodata_maker/features/biodata/presentation/widgets/steps/education_career_step.dart';
 import 'package:biodata_maker/features/biodata/presentation/widgets/steps/family_step.dart';
 import 'package:biodata_maker/features/biodata/presentation/widgets/steps/additional_details_step.dart';
 import 'package:biodata_maker/features/biodata/presentation/widgets/steps/contact_partner_step.dart';
-import 'package:biodata_maker/features/biodata/presentation/widgets/steps/template_step.dart';
 import 'package:biodata_maker/features/biodata/presentation/widgets/steps/font_selection_step.dart';
-import 'package:biodata_maker/features/biodata/presentation/widgets/steps/preview_step.dart';
+import 'package:biodata_maker/features/biodata/presentation/widgets/steps/template_step.dart';
 import 'package:biodata_maker/features/biodata/presentation/widgets/steps/download_step.dart';
 import 'package:biodata_maker/features/biodata/presentation/widgets/live_preview_panel.dart';
 import 'package:biodata_maker/core/services/service_locator.dart';
@@ -36,28 +34,24 @@ class _MultiStepFormState extends State<MultiStepForm> {
   int _previousStep = 0;
 
   static const _stepLabels = [
-    'Photo',
     'Personal',
     'Education',
     'Family',
     'Lifestyle',
     'Contact',
-    'Review',
-    'Template',
     'Font',
+    'Template',
     'Download',
   ];
 
   static const _stepIcons = [
-    Icons.camera_alt,
     Icons.person,
     Icons.school,
     Icons.family_restroom,
     Icons.spa,
     Icons.contact_phone,
-    Icons.preview,
-    Icons.dashboard_customize,
     Icons.font_download,
+    Icons.dashboard_customize,
     Icons.download,
   ];
 
@@ -92,7 +86,18 @@ class _MultiStepFormState extends State<MultiStepForm> {
               labels: [for (final label in _stepLabels) Strings.tr(label)],
               icons: _stepIcons,
               onStepTapped: (step) {
-                context.read<BiodataFormBloc>().add(GoToStep(step));
+                // Bloc rejects jumps past the first invalid step and sets a
+                // visible error (shown as a snackbar below).
+                final bloc = context.read<BiodataFormBloc>();
+                bloc.add(GoToStep(step));
+                if (bloc.state.error != null) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text(Strings.tr(bloc.state.error!)),
+                      behavior: SnackBarBehavior.floating,
+                    ),
+                  );
+                }
               },
             ).animate().fadeIn(duration: 300.ms),
             Expanded(
@@ -130,7 +135,7 @@ class _MultiStepFormState extends State<MultiStepForm> {
                   // own screen to reviewing the result. Narrower screens get
                   // a toggle action in the app bar instead (see
                   // wizard_preview_action.dart).
-                  final showSplitPreview = constraints.maxWidth >= kSplitPreviewBreakpoint && state.currentStep <= 5;
+                  final showSplitPreview = constraints.maxWidth >= kSplitPreviewBreakpoint && state.currentStep <= 4;
                   if (!showSplitPreview) return stepContent;
 
                   return Row(
@@ -151,7 +156,7 @@ class _MultiStepFormState extends State<MultiStepForm> {
               onNext: () {
                 final name = (state.biodata?.fullName ?? '').trim();
                 final isLast = state.currentStep == BiodataFormState.totalSteps - 1;
-                if (name.isEmpty && (state.currentStep == 1 || isLast)) {
+                if (name.isEmpty && (state.currentStep == 0 || isLast)) {
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
                       content: Text(
@@ -182,24 +187,20 @@ class _MultiStepFormState extends State<MultiStepForm> {
 
     switch (step) {
       case 0:
-        return PhotoStep(biodata: biodata, onUpdate: onUpdate);
-      case 1:
         return BasicDetailsStep(biodata: biodata, onUpdate: onUpdate);
-      case 2:
+      case 1:
         return EducationCareerStep(biodata: biodata, onUpdate: onUpdate);
-      case 3:
+      case 2:
         return FamilyStep(biodata: biodata, onUpdate: onUpdate);
-      case 4:
+      case 3:
         return AdditionalDetailsStep(biodata: biodata, onUpdate: onUpdate);
-      case 5:
+      case 4:
         return ContactPartnerStep(biodata: biodata, onUpdate: onUpdate);
-      case 6:
-        return PreviewStep(biodata: biodata);
-      case 7:
-        return TemplateStep(biodata: biodata, onUpdate: onUpdate);
-      case 8:
+      case 5:
         return FontSelectionStep(biodata: biodata, onUpdate: onUpdate);
-      case 9:
+      case 6:
+        return TemplateStep(biodata: biodata, onUpdate: onUpdate);
+      case 7:
         return DownloadStep(biodata: biodata);
       default:
         return const SizedBox();

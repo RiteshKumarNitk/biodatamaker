@@ -130,20 +130,23 @@ class _AdditionalDetailsStepState extends State<AdditionalDetailsStep> {
                   onChanged: (v) => _update(hobbies: v),
                 ),
                 const SizedBox(height: 8),
-                Text(Strings.tr('Quick select:'), style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.onSurfaceVariant)),
-                const SizedBox(height: 8),
-                Wrap(
-                  spacing: 8,
-                  runSpacing: 8,
-                  children: _hobbySuggestions.map((hobby) {
-                    final selected = _selectedFrom(_hobbiesCtrl).contains(hobby);
-                    return FilterChip(
-                      label: Text(hobby),
-                      selected: selected,
-                      visualDensity: VisualDensity.compact,
-                      onSelected: (_) => setState(() => _toggle(_hobbiesCtrl, hobby, (v) => _update(hobbies: v))),
-                    );
-                  }).toList(),
+                SizedBox(
+                  height: 36,
+                  child: ListView(
+                    scrollDirection: Axis.horizontal,
+                    children: _hobbySuggestions.map((hobby) {
+                      final selected = _selectedFrom(_hobbiesCtrl).contains(hobby);
+                      return Padding(
+                        padding: const EdgeInsets.only(right: 8),
+                        child: FilterChip(
+                          label: Text(hobby),
+                          selected: selected,
+                          visualDensity: VisualDensity.compact,
+                          onSelected: (_) => setState(() => _toggle(_hobbiesCtrl, hobby, (v) => _update(hobbies: v))),
+                        ),
+                      );
+                    }).toList(),
+                  ),
                 ),
                 const SizedBox(height: 16),
                 TextFormField(
@@ -157,20 +160,23 @@ class _AdditionalDetailsStepState extends State<AdditionalDetailsStep> {
                   onChanged: (v) => _update(personality: v),
                 ),
                 const SizedBox(height: 8),
-                Text(Strings.tr('Quick select:'), style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.onSurfaceVariant)),
-                const SizedBox(height: 8),
-                Wrap(
-                  spacing: 8,
-                  runSpacing: 8,
-                  children: _skillSuggestions.map((skill) {
-                    final selected = _selectedFrom(_personalityCtrl).contains(skill);
-                    return FilterChip(
-                      label: Text(skill),
-                      selected: selected,
-                      visualDensity: VisualDensity.compact,
-                      onSelected: (_) => setState(() => _toggle(_personalityCtrl, skill, (v) => _update(personality: v))),
-                    );
-                  }).toList(),
+                SizedBox(
+                  height: 36,
+                  child: ListView(
+                    scrollDirection: Axis.horizontal,
+                    children: _skillSuggestions.map((skill) {
+                      final selected = _selectedFrom(_personalityCtrl).contains(skill);
+                      return Padding(
+                        padding: const EdgeInsets.only(right: 8),
+                        child: FilterChip(
+                          label: Text(skill),
+                          selected: selected,
+                          visualDensity: VisualDensity.compact,
+                          onSelected: (_) => setState(() => _toggle(_personalityCtrl, skill, (v) => _update(personality: v))),
+                        ),
+                      );
+                    }).toList(),
+                  ),
                 ),
               ],
             ),

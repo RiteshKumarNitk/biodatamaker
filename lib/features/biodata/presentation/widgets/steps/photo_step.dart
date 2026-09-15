@@ -1,19 +1,27 @@
 import 'dart:io';
+import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
-import 'package:flutter_animate/flutter_animate.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:crop_image/crop_image.dart';
 
 import 'package:biodata_maker/core/i18n/strings.dart';
 import 'package:biodata_maker/features/biodata/data/models/biodata.dart';
 import 'package:biodata_maker/features/biodata/data/models/photo_info.dart';
 
-class PhotoStep extends StatelessWidget {
+class PhotoStep extends StatefulWidget {
   final Biodata biodata;
   final void Function(Biodata) onUpdate;
 
   const PhotoStep({super.key, required this.biodata, required this.onUpdate});
 
-  Future<void> _pickImage(BuildContext context, ImageSource source) async {
+  @override
+  State<PhotoStep> createState() => _PhotoStepState();
+}
+
+class _PhotoStepState extends State<PhotoStep> {
+  String _selectedShape = 'circle';
+
+  Future<void> _pickAndCropImage(BuildContext context, ImageSource source) async {
     try {
       final picker = ImagePicker();
       final pickedFile = await picker.pickImage(
@@ -21,17 +29,24 @@ class PhotoStep extends StatelessWidget {
         maxWidth: 1024,
         maxHeight: 1024,
       );
-      if (pickedFile == null) return;
+      if (pickedFile == null || !context.mounted) return;
+
+      final croppedFile = await Navigator.of(context).push<File>(
+        MaterialPageRoute(
+          builder: (_) => _ImageCropScreen(imagePath: pickedFile.path),
+        ),
+      );
+
+      if (croppedFile == null || !context.mounted) return;
 
       final photo = PhotoInfo(
         id: DateTime.now().millisecondsSinceEpoch.toString(),
-        path: pickedFile.path,
-        isProfilePhoto: biodata.photos.isEmpty,
+        path: croppedFile.path,
+        isProfilePhoto: true,
       );
-      final photos = [...biodata.photos, photo];
-      onUpdate(biodata.copyWith(
-        photos: photos,
-        profilePhotoPath: biodata.profilePhotoPath.isEmpty ? pickedFile.path : biodata.profilePhotoPath,
+      widget.onUpdate(widget.biodata.copyWith(
+        photos: [photo],
+        profilePhotoPath: croppedFile.path,
       ));
     } catch (e) {
       if (context.mounted) {
@@ -54,7 +69,7 @@ class PhotoStep extends StatelessWidget {
               title: Text(Strings.tr('Camera')),
               onTap: () {
                 Navigator.pop(ctx);
-                _pickImage(context, ImageSource.camera);
+                _pickAndCropImage(context, ImageSource.camera);
               },
             ),
             ListTile(
@@ -62,7 +77,7 @@ class PhotoStep extends StatelessWidget {
               title: Text(Strings.tr('Gallery')),
               onTap: () {
                 Navigator.pop(ctx);
-                _pickImage(context, ImageSource.gallery);
+                _pickAndCropImage(context, ImageSource.gallery);
               },
             ),
           ],
@@ -71,31 +86,15 @@ class PhotoStep extends StatelessWidget {
     );
   }
 
-  void _setAsProfile(int index) {
-    final photos = biodata.photos.asMap().entries.map((entry) {
-      return entry.value.copyWith(isProfilePhoto: entry.key == index);
-    }).toList();
-    final profilePhoto = biodata.photos[index];
-    onUpdate(biodata.copyWith(
-      photos: photos,
-      profilePhotoPath: profilePhoto.path,
-    ));
-  }
-
-  void _removePhoto(int index) {
-    final photos = [...biodata.photos];
-    final removed = photos.removeAt(index);
-    final newProfilePath = removed.isProfilePhoto
-        ? (photos.isNotEmpty ? photos.firstWhere((p) => p.isProfilePhoto, orElse: () => photos.first).path : '')
-        : biodata.profilePhotoPath;
-    onUpdate(biodata.copyWith(
-      photos: photos,
-      profilePhotoPath: newProfilePath,
+  void _removePhoto() {
+    widget.onUpdate(widget.biodata.copyWith(
+      photos: [],
+      profilePhotoPath: '',
     ));
   }
 
   Widget _buildProfilePhoto(BuildContext context, ThemeData theme) {
-    if (biodata.photos.isEmpty) {
+    if (widget.biodata.photos.isEmpty) {
       return GestureDetector(
         onTap: () => _showPicker(context),
         child: Container(
@@ -103,8 +102,9 @@ class PhotoStep extends StatelessWidget {
           height: 120,
           decoration: BoxDecoration(
             color: theme.colorScheme.surfaceContainerHighest,
-            borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: theme.colorScheme.outlineVariant, width: 1.5, style: BorderStyle.solid),
+            shape: _selectedShape == 'circle' ? BoxShape.circle : BoxShape.rectangle,
+            borderRadius: _selectedShape == 'rectangle' ? BorderRadius.circular(16) : null,
+            border: Border.all(color: theme.colorScheme.outlineVariant, width: 1.5),
           ),
           child: Center(
             child: Column(
@@ -119,7 +119,10 @@ class PhotoStep extends StatelessWidget {
         ),
       );
     }
-    final profilePhoto = biodata.photos.firstWhere((p) => p.isProfilePhoto, orElse: () => biodata.photos.first);
+    final profilePhoto = widget.biodata.photos.firstWhere(
+      (p) => p.isProfilePhoto,
+      orElse: () => widget.biodata.photos.first,
+    );
     final photoExists = File(profilePhoto.path).existsSync();
     return Stack(
       children: [
@@ -127,7 +130,8 @@ class PhotoStep extends StatelessWidget {
           width: 120,
           height: 120,
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(16),
+            shape: _selectedShape == 'circle' ? BoxShape.circle : BoxShape.rectangle,
+            borderRadius: _selectedShape == 'rectangle' ? BorderRadius.circular(16) : null,
             border: Border.all(color: theme.colorScheme.primary, width: 2),
           ),
           clipBehavior: Clip.antiAlias,
@@ -142,24 +146,28 @@ class PhotoStep extends StatelessWidget {
         Positioned(
           top: 4,
           right: 4,
-          child: CircleAvatar(
-            backgroundColor: theme.colorScheme.primary,
-            radius: 14,
-            child: Icon(Icons.star, size: 14, color: theme.colorScheme.onPrimary),
-          ),
-        ),
-        Positioned(
-          bottom: 4,
-          right: 4,
           child: GestureDetector(
             onTap: () => _showPicker(context),
             child: CircleAvatar(
-              backgroundColor: theme.colorScheme.secondaryContainer,
+              backgroundColor: theme.colorScheme.primary,
               radius: 14,
-              child: Icon(Icons.edit, size: 14, color: theme.colorScheme.onSecondaryContainer),
+              child: Icon(Icons.edit, size: 14, color: theme.colorScheme.onPrimary),
             ),
           ),
         ),
+        if (widget.biodata.photos.isNotEmpty)
+          Positioned(
+            bottom: 4,
+            right: 4,
+            child: GestureDetector(
+              onTap: _removePhoto,
+              child: CircleAvatar(
+                backgroundColor: theme.colorScheme.error,
+                radius: 14,
+                child: Icon(Icons.delete, size: 14, color: theme.colorScheme.onError),
+              ),
+            ),
+          ),
       ],
     );
   }
@@ -176,105 +184,116 @@ class PhotoStep extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    return ListView(
-      padding: const EdgeInsets.all(16),
-      children: [
-        Text(
-          'Add Photos',
-          style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600),
-        ),
-        const SizedBox(height: 4),
-        Text(
-          'Upload a profile photo to personalize your biodata',
-          style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.onSurfaceVariant),
-        ),
-        const SizedBox(height: 16),
-        Card(
-          child: Padding(
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+    return Card(
+      margin: EdgeInsets.zero,
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
               children: [
+                Icon(Icons.photo_camera_outlined, size: 20, color: theme.colorScheme.primary),
+                const SizedBox(width: 8),
                 Text(Strings.tr('Profile Photo'), style: theme.textTheme.titleSmall?.copyWith(color: theme.colorScheme.primary, fontWeight: FontWeight.w600)),
-                const SizedBox(height: 12),
-                Center(child: _buildProfilePhoto(context, theme)),
               ],
             ),
-          ),
-        ),
-        const SizedBox(height: 16),
-        Card(
-          child: Padding(
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+            const SizedBox(height: 12),
+            Center(child: _buildProfilePhoto(context, theme)),
+            const SizedBox(height: 12),
+            Text(Strings.tr('Photo Shape'), style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.onSurfaceVariant)),
+            const SizedBox(height: 8),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Text(Strings.tr('Additional Photos'), style: theme.textTheme.titleSmall?.copyWith(color: theme.colorScheme.primary, fontWeight: FontWeight.w600)),
-                const SizedBox(height: 12),
-                ...biodata.photos.asMap().entries.map((entry) {
-                  final index = entry.key;
-                  final photo = entry.value;
-                  if (photo.isProfilePhoto) return const SizedBox.shrink();
-                  return Padding(
-                    padding: const EdgeInsets.only(bottom: 8),
-                    child: Stack(
-                      children: [
-                        Container(
-                          width: double.infinity,
-                          height: 100,
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(12),
-                            image: DecorationImage(
-                              image: FileImage(File(photo.path)),
-                              fit: BoxFit.cover,
-                            ),
-                          ),
-                        ),
-                        Positioned(
-                          top: 4,
-                          right: 4,
-                          child: PopupMenuButton<String>(
-                            onSelected: (value) {
-                              if (value == 'profile') _setAsProfile(index);
-                              if (value == 'delete') _removePhoto(index);
-                            },
-                            itemBuilder: (_) => [
-                              PopupMenuItem(value: 'profile', child: Text(Strings.tr('Set as profile'))),
-                                  PopupMenuItem(value: 'delete', child: Text(Strings.tr('Remove'), style: TextStyle(color: theme.colorScheme.error))),
-                            ],
-                          ),
-                        ),
-                      ],
-                    )).animate().fadeIn(duration: 400.ms, delay: (index * 100).ms);
-                }),
-                GestureDetector(
-                  onTap: () => _showPicker(context),
-                  child: Container(
-                    width: double.infinity,
-                    height: 80,
-                    decoration: BoxDecoration(
-                      color: theme.colorScheme.surfaceContainerHighest,
-                      borderRadius: BorderRadius.circular(12),
-                      border: Border.all(color: theme.colorScheme.outlineVariant),
-                    ),
-                    child: Center(
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(Icons.add, color: theme.colorScheme.onSurfaceVariant),
-                          const SizedBox(width: 8),
-                          Text(Strings.tr('Add Photo'), style: theme.textTheme.bodyMedium?.copyWith(color: theme.colorScheme.onSurfaceVariant)),
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
+                _buildShapeOption(context, 'circle', 'Circle', Icons.circle_outlined),
+                const SizedBox(width: 16),
+                _buildShapeOption(context, 'rectangle', 'Rounded', Icons.rounded_corner),
               ],
             ),
-          ),
+          ],
         ),
-        const SizedBox(height: 32),
-      ],
+      ),
+    );
+  }
+
+  Widget _buildShapeOption(BuildContext context, String shape, String label, IconData icon) {
+    final theme = Theme.of(context);
+    final isSelected = _selectedShape == shape;
+    return GestureDetector(
+      onTap: () {
+        setState(() => _selectedShape = shape);
+      },
+      child: Column(
+        children: [
+          Container(
+            width: 48,
+            height: 48,
+            decoration: BoxDecoration(
+              color: isSelected ? theme.colorScheme.primary.withValues(alpha: 0.1) : theme.colorScheme.surfaceContainerHighest,
+              shape: shape == 'circle' ? BoxShape.circle : BoxShape.rectangle,
+              borderRadius: shape == 'rectangle' ? BorderRadius.circular(8) : null,
+              border: Border.all(
+                color: isSelected ? theme.colorScheme.primary : theme.colorScheme.outlineVariant,
+                width: isSelected ? 2 : 1,
+              ),
+            ),
+            child: Icon(icon, color: isSelected ? theme.colorScheme.primary : theme.colorScheme.onSurfaceVariant, size: 24),
+          ),
+          const SizedBox(height: 4),
+          Text(label, style: theme.textTheme.labelSmall?.copyWith(color: isSelected ? theme.colorScheme.primary : theme.colorScheme.onSurfaceVariant)),
+        ],
+      ),
+    );
+  }
+}
+
+class _ImageCropScreen extends StatefulWidget {
+  final String imagePath;
+
+  const _ImageCropScreen({required this.imagePath});
+
+  @override
+  State<_ImageCropScreen> createState() => _ImageCropScreenState();
+}
+
+class _ImageCropScreenState extends State<_ImageCropScreen> {
+  final _controller = CropController(aspectRatio: 1.0);
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(Strings.tr('Crop Image')),
+        actions: [
+          TextButton(
+            onPressed: () async {
+              final bitmap = await _controller.croppedBitmap();
+              final data = await bitmap.toByteData(format: ui.ImageByteFormat.png);
+              final bytes = data!.buffer.asUint8List();
+
+              final tempDir = await Directory.systemTemp.createTemp();
+              final file = File('${tempDir.path}/cropped_${DateTime.now().millisecondsSinceEpoch}.png');
+              await file.writeAsBytes(bytes);
+
+              if (context.mounted) {
+                Navigator.of(context).pop(file);
+              }
+            },
+            child: Text(Strings.tr('Done'), style: TextStyle(fontWeight: FontWeight.bold)),
+          ),
+        ],
+      ),
+      body: CropImage(
+        image: Image.file(File(widget.imagePath)),
+        controller: _controller,
+      ),
     );
   }
 }

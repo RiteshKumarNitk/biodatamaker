@@ -8,7 +8,10 @@ import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:printing/printing.dart';
 import 'package:share_plus/share_plus.dart';
+import 'package:biodata_maker/core/services/export_service.dart';
+import 'package:biodata_maker/core/services/service_locator.dart';
 import 'package:biodata_maker/features/biodata/data/models/biodata.dart';
+import 'package:biodata_maker/features/settings/data/models/user_settings.dart';
 import 'package:biodata_maker/features/templates/data/models/theme_config.dart';
 import 'package:biodata_maker/shared/widgets/biodata_renderer.dart';
 
@@ -17,32 +20,45 @@ class PdfService {
   factory PdfService() => _instance;
   PdfService._internal();
 
+  /// Returns the [PdfPageFormat] matching the user's page-size preference.
+  static PdfPageFormat _pageFormat(UserSettings settings) {
+    switch (settings.pdfPageSize) {
+      case 'Letter':
+        return PdfPageFormat.letter;
+      case 'A4':
+      default:
+        return PdfPageFormat.a4;
+    }
+  }
 
-  /// Renders [biodata] on [theme], favoring fitting it on one page: if
-  /// normal spacing spills onto a second page, retries once with a ~15%
-  /// more compact spacing/font preset and uses that instead when it actually
-  /// gets it down to one page. Genuinely long content (still needs 2+ pages
-  /// even compact) keeps the normal, more readable spacing and paginates as
-  /// usual. This only affects the PDF — position/margin fields never change,
-  /// and it's driven by the real render (page count of the actual output),
-  /// not an estimate, since only the PDF has a "page" for content to spill
-  /// off of (the on-screen preview is one continuous scroll either way).
-  Future<Uint8List> generatePdf(Biodata biodata, ThemeConfig theme) async {
-    final normal = await _renderPdf(biodata, theme);
+  /// Returns a DPI multiplier based on the user's quality preference.
+  /// High = 200 DPI, Medium = 150 DPI, Low = 100 DPI.
+  static double _qualityDpi(UserSettings settings) {
+    switch (settings.pdfQuality) {
+      case 'medium':
+        return 150;
+      case 'low':
+        return 100;
+      case 'high':
+      default:
+        return 200;
+    }
+  }
+
+  Future<Uint8List> generatePdf(Biodata biodata, ThemeConfig theme, {UserSettings? settings}) async {
+    final pageFormat = settings != null ? _pageFormat(settings) : PdfPageFormat.a4;
+    final normal = await _renderPdf(biodata, theme, pageFormat: pageFormat);
     if (_pageCount(normal) <= 1) return normal;
 
-    // Only apply a mild compact if it spills to 2 pages and we want to try fitting it on 1
     final compact = await _renderPdf(biodata, theme.copyWith(
       sectionSpacing: theme.sectionSpacing * 0.85,
       fieldSpacing: theme.fieldSpacing * 0.85,
       bodyFontSize: (theme.bodyFontSize * 0.9).clamp(theme.minFontSize, theme.maxFontSize),
       headingFontSize: (theme.headingFontSize * 0.9).clamp(theme.minFontSize, theme.maxFontSize),
-    ));
+    ), pageFormat: pageFormat);
     final countCompact = _pageCount(compact);
     if (countCompact <= 1) return compact;
 
-    // If it still takes 2 pages or more, return the normal readable version.
-    // The user has explicit font size controls if they want to shrink it further.
     return normal;
   }
 
@@ -52,7 +68,7 @@ class PdfService {
     return counts.isEmpty ? 1 : counts.reduce(math.max);
   }
 
-  Future<Uint8List> _renderPdf(Biodata biodata, ThemeConfig theme) async {
+  Future<Uint8List> _renderPdf(Biodata biodata, ThemeConfig theme, {PdfPageFormat? pageFormat}) async {
     final pdf = pw.Document();
 
     pw.MemoryImage? profileImage;
@@ -100,7 +116,7 @@ class PdfService {
     pdf.addPage(
       pw.MultiPage(
         pageTheme: pw.PageTheme(
-          pageFormat: PdfPageFormat.a4,
+          pageFormat: pageFormat ?? PdfPageFormat.a4,
           margin: pageMargin,
           theme: pw.ThemeData.withFont(base: font),
           buildBackground: (context) => _buildPageBackground(
@@ -284,15 +300,34 @@ class PdfService {
   Future<void> sharePdf(Biodata biodata, ThemeConfig theme) async {
     final pdf = await generatePdf(biodata, theme);
     final dir = await getTemporaryDirectory();
-    final file = File('${dir.path}/${biodata.fullName.replaceAll(' ', '_')}_biodata.pdf');
+    final file = File('${dir.path}/${_pdfName(biodata)}');
     await file.writeAsBytes(pdf);
-    await Share.shareXFiles([XFile(file.path)], text: '${biodata.fullName} - Biodata');
+    await SharePlus.instance.share(
+      ShareParams(files: [XFile(file.path)], text: '${biodata.fullName} - Biodata'),
+    );
   }
 
+  static String _pdfName(Biodata biodata) =>
+      '${biodata.fullName.replaceAll(' ', '_')}_biodata.pdf';
+
+  /// Generates the PDF and saves it somewhere the user can find it: the
+  /// device Downloads folder (Android, via MediaStore) or the app documents
+  /// directory (iOS/desktop, where users export through the share sheet).
+  /// Returns the [ExportResult] describing where it landed.
+  Future<ExportResult> savePdfVisible(Biodata biodata, ThemeConfig theme) async {
+    final pdf = await generatePdf(biodata, theme);
+    final result = await sl<ExportService>().savePdfBytesToDownloads(pdf, _pdfName(biodata));
+    if (result.location == ExportLocation.appDocuments && !Platform.isAndroid) {
+      return result; // iOS/desktop: app documents is the norm; share via UI
+    }
+    return result;
+  }
+
+  /// Legacy direct-path save (kept for callers that need the raw file path).
   Future<String> savePdf(Biodata biodata, ThemeConfig theme) async {
     final pdf = await generatePdf(biodata, theme);
     final dir = await getApplicationDocumentsDirectory();
-    final fileName = '${biodata.fullName.replaceAll(' ', '_')}_biodata.pdf';
+    final fileName = _pdfName(biodata);
     final file = File('${dir.path}/$fileName');
     await file.writeAsBytes(pdf);
     return file.path;
@@ -306,20 +341,21 @@ class PdfService {
     ThemeConfig theme, {
     int page = 0,
     double dpi = 200,
+    UserSettings? settings,
   }) async {
-    final pdf = await generatePdf(biodata, theme);
-    final raster = await Printing.raster(pdf, pages: [page], dpi: dpi).first;
+    final resolvedDpi = settings != null ? _qualityDpi(settings) : dpi;
+    final pdf = await generatePdf(biodata, theme, settings: settings);
+    final raster = await Printing.raster(pdf, pages: [page], dpi: resolvedDpi).first;
     return raster.toPng();
   }
 
-  Future<String> saveImage(Biodata biodata, ThemeConfig theme, {int page = 0}) async {
+  /// Rasterized PNG saved straight into the device gallery so it shows up in
+  /// Photos/Files immediately. Returns the [ExportResult] for UI messaging.
+  Future<ExportResult> saveImage(Biodata biodata, ThemeConfig theme, {int page = 0}) async {
     final png = await renderPageImage(biodata, theme, page: page);
-    final dir = await getApplicationDocumentsDirectory();
     final suffix = page > 0 ? '_page${page + 1}' : '';
     final fileName = '${biodata.fullName.replaceAll(' ', '_')}_biodata$suffix.png';
-    final file = File('${dir.path}/$fileName');
-    await file.writeAsBytes(png);
-    return file.path;
+    return sl<ExportService>().saveImageToGallery(png, fileName);
   }
 
   Future<void> shareImage(Biodata biodata, ThemeConfig theme, {int page = 0}) async {
@@ -327,6 +363,8 @@ class PdfService {
     final dir = await getTemporaryDirectory();
     final file = File('${dir.path}/${biodata.fullName.replaceAll(' ', '_')}_biodata.png');
     await file.writeAsBytes(png);
-    await Share.shareXFiles([XFile(file.path)], text: '${biodata.fullName} - Biodata');
+    await SharePlus.instance.share(
+      ShareParams(files: [XFile(file.path)], text: '${biodata.fullName} - Biodata'),
+    );
   }
 }

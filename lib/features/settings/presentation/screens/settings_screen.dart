@@ -9,6 +9,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:go_router/go_router.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import 'package:biodata_maker/core/config/app_config.dart';
 import 'package:biodata_maker/core/i18n/strings.dart';
@@ -314,16 +315,18 @@ class _SettingsContent extends StatelessWidget {
                   leading: const Icon(Icons.star_outline),
                   title: Text(Strings.tr('Rate App')),
                   trailing: const Icon(Icons.chevron_right),
-                  onTap: () {},
+                  onTap: () => _rateApp(context),
                 ),
                 const Divider(height: 1),
                 ListTile(
                   leading: const Icon(Icons.share_outlined),
                   title: Text(Strings.tr('Share App')),
                   trailing: const Icon(Icons.chevron_right),
-                    onTap: () {
-                      Share.share(Strings.tr('Check out Biodata Maker app!'));
-                    },
+                  onTap: () {
+                    SharePlus.instance.share(
+                      ShareParams(text: Strings.tr('Check out Biodata Maker app!')),
+                    );
+                  },
                 ),
                 const Divider(height: 1),
                 ListTile(
@@ -350,6 +353,24 @@ class _SettingsContent extends StatelessWidget {
         const SizedBox(height: 32),
       ],
     );
+  }
+
+  /// Opens the store listing page so the user can rate the app. No-ops
+  /// gracefully (with a message) when no store app is available.
+  Future<void> _rateApp(BuildContext context) async {
+    const androidUrl = 'https://play.google.com/store/apps/details?id=com.example.biodata_maker';
+    final uri = Uri.parse(androidUrl);
+    try {
+      if (await canLaunchUrl(uri)) {
+        await launchUrl(uri, mode: LaunchMode.externalApplication);
+        return;
+      }
+    } catch (_) {}
+    if (context.mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(Strings.tr('Could not open the store app'))),
+      );
+    }
   }
 
   Future<void> _performBackup(BuildContext context) async {

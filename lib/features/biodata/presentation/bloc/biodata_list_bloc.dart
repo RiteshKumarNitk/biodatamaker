@@ -115,23 +115,23 @@ class BiodataListBloc extends Bloc<BiodataListEvent, BiodataListState> {
     on<DuplicateBiodata>(_onDuplicate);
   }
 
-  List<Biodata> _filterBiodatas(String filter, String query) {
+  Future<List<Biodata>> _filterBiodatas(String filter, String query) async {
     List<Biodata> result;
     switch (filter) {
       case 'drafts':
-        result = _repo.getDrafts();
+        result = await _repo.getDrafts();
         break;
       case 'completed':
-        result = _repo.getCompleted();
+        result = await _repo.getCompleted();
         break;
       case 'favorites':
-        result = _repo.getFavorites();
+        result = await _repo.getFavorites();
         break;
       case 'archived':
-        result = _repo.getArchived();
+        result = await _repo.getArchived();
         break;
       default:
-        result = _repo.getActive();
+        result = await _repo.getActive();
         break;
     }
     if (query.isNotEmpty) {
@@ -144,10 +144,10 @@ class BiodataListBloc extends Bloc<BiodataListEvent, BiodataListState> {
     return result;
   }
 
-  void _onLoad(LoadBiodatas event, Emitter<BiodataListState> emit) {
+  Future<void> _onLoad(LoadBiodatas event, Emitter<BiodataListState> emit) async {
     emit(state.copyWith(isLoading: true, clearError: true));
     try {
-      final biodatas = _filterBiodatas(state.filter, state.searchQuery);
+      final biodatas = await _filterBiodatas(state.filter, state.searchQuery);
       emit(state.copyWith(isLoading: false, biodatas: biodatas));
     } catch (e) {
       emit(state.copyWith(isLoading: false, error: e.toString()));

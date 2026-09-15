@@ -13,7 +13,6 @@ import 'package:biodata_maker/features/auth/data/models/user.dart';
 import 'package:biodata_maker/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:biodata_maker/features/dashboard/presentation/bloc/dashboard_bloc.dart';
 import 'package:biodata_maker/features/biodata/presentation/bloc/biodata_list_bloc.dart';
-import 'package:biodata_maker/features/biodata/presentation/bloc/form_bloc.dart';
 import 'package:biodata_maker/features/templates/presentation/bloc/template_bloc.dart';
 import 'package:biodata_maker/features/templates/presentation/bloc/template_event.dart';
 import 'package:biodata_maker/features/settings/presentation/bloc/settings_bloc.dart';
@@ -90,7 +89,6 @@ class BiodataMakerApp extends StatelessWidget {
         BlocProvider<AuthBloc>(create: (_) => AuthBloc()),
         BlocProvider<DashboardBloc>(create: (_) => DashboardBloc()),
         BlocProvider<BiodataListBloc>(create: (_) => BiodataListBloc()),
-        BlocProvider<BiodataFormBloc>(create: (_) => BiodataFormBloc()),
         BlocProvider<TemplateBloc>(create: (_) => TemplateBloc()..add(const LoadTemplates())),
         BlocProvider<SettingsBloc>(create: (_) => SettingsBloc()..add(const LoadSettings())),
       ],

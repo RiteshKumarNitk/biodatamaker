@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:lottie/lottie.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
-import 'package:biodata_maker/core/constants/asset_constants.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:biodata_maker/core/config/app_config.dart';
 import 'package:biodata_maker/features/auth/presentation/bloc/auth_bloc.dart';
@@ -19,9 +18,15 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
     super.initState();
-    Future.delayed(const Duration(milliseconds: 1500), () {
-      if (mounted) {
+    Future.delayed(const Duration(milliseconds: 1500), () async {
+      if (!mounted) return;
+      final prefs = await SharedPreferences.getInstance();
+      final onboardingDone = prefs.getBool('onboarding_complete') ?? false;
+      if (!mounted) return;
+      if (onboardingDone) {
         context.read<AuthBloc>().add(CheckAuth());
+      } else {
+        context.go('/onboarding');
       }
     });
   }
@@ -45,11 +50,13 @@ class _SplashScreenState extends State<SplashScreen> {
         ),
         child: BlocListener<AuthBloc, AuthState>(
           listener: (context, state) {
+            if (!mounted) return;
             if (state is AuthAuthenticated || state is AuthGuest) {
               context.go('/dashboard');
             } else if (state is AuthUnauthenticated) {
               context.go('/onboarding');
             } else if (state is AuthError) {
+              if (!mounted) return;
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(content: Text('Error: ${state.message}')),
               );

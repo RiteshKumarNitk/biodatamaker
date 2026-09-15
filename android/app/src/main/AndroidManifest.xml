@@ -1,6 +1,9 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
     <uses-permission android:name="android.permission.INTERNET"/>
+    <!-- Gallery saves (gal) on Android 10 and below -->
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" android:maxSdkVersion="29"/>
     <application
+        android:requestLegacyExternalStorage="true"
         android:label="VivahBio"
         android:name="${applicationName}"
         android:icon="@mipmap/launcher_icon">

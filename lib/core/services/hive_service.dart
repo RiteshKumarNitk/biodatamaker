@@ -190,7 +190,7 @@ class HiveService {
 
   bool isLoggedIn() {
     if (!_initialized) return false;
-    return _authBox.isNotEmpty;
+    return false;
   }
 
   List<User> getAllUsers() {
