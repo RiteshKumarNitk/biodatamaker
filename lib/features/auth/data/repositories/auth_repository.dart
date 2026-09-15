@@ -1,5 +1,6 @@
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:uuid/uuid.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 
 import 'package:biodata_maker/core/services/hive_service.dart';
 import 'package:biodata_maker/core/services/service_locator.dart';
@@ -7,6 +8,13 @@ import 'package:biodata_maker/features/auth/data/models/user.dart';
 
 class AuthRepository {
   final HiveService _hiveService;
+  GoogleSignIn? _googleSignInInstance;
+  
+  GoogleSignIn get _googleSignIn {
+    _googleSignInInstance ??= GoogleSignIn(scopes: ['email', 'profile']);
+    return _googleSignInInstance!;
+  }
+  
   String? _currentUserId;
   static const _currentUserIdKey = 'current_user_id';
 
@@ -76,18 +84,44 @@ class AuthRepository {
   }
 
   Future<User> signInWithGoogle() async {
-    final now = DateTime.now();
-    final user = User(
-      id: const Uuid().v4(),
-      name: 'Google User',
-      email: 'google_user_${now.millisecondsSinceEpoch}@gmail.com',
-      createdAt: now,
-      lastLoginAt: now,
-    );
-    await _hiveService.saveUser(user);
-    _currentUserId = user.id;
-    await _persistUserId();
-    return user;
+    try {
+      final GoogleSignInAccount? account = await _googleSignIn.signIn();
+      if (account == null) {
+        throw Exception('Sign-in aborted by user');
+      }
+
+      final users = _hiveService.getAllUsers();
+      final existing = users.where((u) => u.email == account.email);
+      
+      if (existing.isNotEmpty) {
+        final user = existing.first;
+        final updated = user.copyWith(
+          lastLoginAt: DateTime.now(),
+          loginCount: user.loginCount + 1,
+          name: account.displayName ?? user.name,
+        );
+        await _hiveService.saveUser(updated);
+        _currentUserId = updated.id;
+        await _persistUserId();
+        return updated;
+      }
+
+      final now = DateTime.now();
+      final user = User(
+        id: account.id.isNotEmpty ? account.id : const Uuid().v4(),
+        name: account.displayName ?? 'Google User',
+        email: account.email,
+        createdAt: now,
+        lastLoginAt: now,
+      );
+      
+      await _hiveService.saveUser(user);
+      _currentUserId = user.id;
+      await _persistUserId();
+      return user;
+    } catch (e) {
+      throw Exception('Failed to sign in with Google: $e');
+    }
   }
 
   Future<User> signInAsGuest() async {
@@ -106,6 +140,11 @@ class AuthRepository {
   }
 
   Future<void> signOut() async {
+    try {
+      if (await _googleSignIn.isSignedIn()) {
+        await _googleSignIn.signOut();
+      }
+    } catch (_) {}
     _currentUserId = null;
     await _persistUserId();
   }

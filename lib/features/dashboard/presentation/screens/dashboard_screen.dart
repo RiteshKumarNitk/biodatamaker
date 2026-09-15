@@ -578,7 +578,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
         borderRadius: BorderRadius.circular(16),
         elevation: 0,
         child: InkWell(
-          onTap: () => context.push('/preview/${biodata.id}'),
+          onTap: () => context.push('/biodata/edit/${biodata.id}'),
           borderRadius: BorderRadius.circular(16),
           child: Container(
             padding: const EdgeInsets.all(14),

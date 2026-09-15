@@ -100,6 +100,9 @@ class ThemeEngine {
           backgroundImage: '',
           isPublished: true,
           displayOrder: 5,
+          layoutStyle: 'centered_block',
+          headingAlignment: 'center',
+          continuationContentAreaTop: 40.0,
         ),
         const ThemeConfig(
           id: 'nikah_green',
@@ -114,6 +117,9 @@ class ThemeEngine {
           backgroundImage: '',
           isPublished: true,
           displayOrder: 6,
+          layoutStyle: 'traditional_row',
+          headingAlignment: 'center',
+          continuationContentAreaTop: 40.0,
         ),
         const ThemeConfig(
           id: 'emerald_gold',
@@ -127,6 +133,9 @@ class ThemeEngine {
           backgroundImage: '',
           isPublished: true,
           displayOrder: 7,
+          layoutStyle: 'traditional_row',
+          headingAlignment: 'left',
+          continuationContentAreaTop: 40.0,
         ),
         const ThemeConfig(
           id: 'white_minimal',
@@ -141,6 +150,9 @@ class ThemeEngine {
           backgroundImage: '',
           isPublished: true,
           displayOrder: 8,
+          layoutStyle: 'centered_block',
+          headingAlignment: 'center',
+          continuationContentAreaTop: 40.0,
         ),
         const ThemeConfig(
           id: 'punjabi_blue',
@@ -154,6 +166,9 @@ class ThemeEngine {
           backgroundImage: '',
           isPublished: true,
           displayOrder: 9,
+          layoutStyle: 'traditional_row',
+          headingAlignment: 'left',
+          continuationContentAreaTop: 40.0,
         ),
         const ThemeConfig(
           id: 'golden_punjab',
@@ -168,6 +183,9 @@ class ThemeEngine {
           backgroundImage: '',
           isPublished: true,
           displayOrder: 10,
+          layoutStyle: 'traditional_row',
+          headingAlignment: 'center',
+          continuationContentAreaTop: 40.0,
         ),
         const ThemeConfig(
           id: 'white_floral',
@@ -183,6 +201,9 @@ class ThemeEngine {
           backgroundImage: '',
           isPublished: true,
           displayOrder: 11,
+          layoutStyle: 'centered_block',
+          headingAlignment: 'center',
+          continuationContentAreaTop: 40.0,
         ),
         const ThemeConfig(
           id: 'elegant_blue',
@@ -196,6 +217,9 @@ class ThemeEngine {
           backgroundImage: '',
           isPublished: true,
           displayOrder: 12,
+          layoutStyle: 'traditional_row',
+          headingAlignment: 'left',
+          continuationContentAreaTop: 40.0,
         ),
         const ThemeConfig(
           id: 'modern_minimal',
@@ -212,6 +236,9 @@ class ThemeEngine {
           backgroundImage: '',
           isPublished: true,
           displayOrder: 13,
+          layoutStyle: 'centered_block',
+          headingAlignment: 'left',
+          continuationContentAreaTop: 40.0,
         ),
         const ThemeConfig(
           id: 'corporate',
@@ -228,6 +255,9 @@ class ThemeEngine {
           backgroundImage: '',
           isPublished: true,
           displayOrder: 14,
+          layoutStyle: 'traditional_row',
+          headingAlignment: 'left',
+          continuationContentAreaTop: 40.0,
         ),
         const ThemeConfig(
           id: 'pastel_luxury',
@@ -243,6 +273,9 @@ class ThemeEngine {
           backgroundImage: '',
           isPublished: true,
           displayOrder: 15,
+          layoutStyle: 'centered_block',
+          headingAlignment: 'center',
+          continuationContentAreaTop: 40.0,
         ),
         const ThemeConfig(
           id: 'dark_elegance',
@@ -260,6 +293,9 @@ class ThemeEngine {
           backgroundImage: '',
           isPublished: true,
           displayOrder: 16,
+          layoutStyle: 'traditional_row',
+          headingAlignment: 'right',
+          continuationContentAreaTop: 40.0,
         ),
         // --- Image-based background templates -------------------------------
         // Real background artwork (design-only, no text baked in) supplied by
@@ -287,11 +323,18 @@ class ThemeEngine {
           photoRectWidth: 110,
           photoRectHeight: 140,
           contentAreaLeft: 40,
-          contentAreaTop: 200,
+          contentAreaTop: 40,
           contentAreaRight: 40,
           contentAreaBottom: 110,
           isPublished: true,
           displayOrder: 17,
+          layoutStyle: 'traditional_row',
+          headingAlignment: 'left',
+          continuationContentAreaTop: 50.0,
+          showColon: false,
+          headerAlignment: 'left',
+          headerPaddingLeft: 130.0,
+          headerHeight: 160.0,
         ),
         const ThemeConfig(
           id: 'royal_blue_mandala',
@@ -317,6 +360,9 @@ class ThemeEngine {
           contentAreaBottom: 110,
           isPublished: true,
           displayOrder: 18,
+          layoutStyle: 'traditional_row',
+          headingAlignment: 'center',
+          continuationContentAreaTop: 50.0,
         ),
         const ThemeConfig(
           id: 'ivory_mandala',
@@ -343,6 +389,9 @@ class ThemeEngine {
           contentAreaBottom: 55,
           isPublished: true,
           displayOrder: 19,
+          layoutStyle: 'centered_block',
+          headingAlignment: 'center',
+          continuationContentAreaTop: 65.0,
         ),
         const ThemeConfig(
           id: 'ivory_ganesh_floral',
@@ -369,6 +418,9 @@ class ThemeEngine {
           contentAreaBottom: 110,
           isPublished: true,
           displayOrder: 20,
+          layoutStyle: 'traditional_row',
+          headingAlignment: 'left',
+          continuationContentAreaTop: 120.0,
         ),
         const ThemeConfig(
           id: 'ivory_ganesh_ornate',
@@ -395,6 +447,9 @@ class ThemeEngine {
           contentAreaBottom: 120,
           isPublished: true,
           displayOrder: 21,
+          layoutStyle: 'traditional_row',
+          headingAlignment: 'center',
+          continuationContentAreaTop: 130.0,
         ),
         const ThemeConfig(
           id: 'white_ganesh_geometric',
@@ -421,6 +476,9 @@ class ThemeEngine {
           contentAreaBottom: 100,
           isPublished: true,
           displayOrder: 22,
+          layoutStyle: 'centered_block',
+          headingAlignment: 'center',
+          continuationContentAreaTop: 110.0,
         ),
       ];
 

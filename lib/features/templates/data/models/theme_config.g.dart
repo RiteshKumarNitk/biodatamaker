@@ -64,13 +64,17 @@ class ThemeConfigAdapter extends TypeAdapter<ThemeConfig> {
       continuationContentAreaTop: fields[44] as double,
       minFontSize: fields[45] as double,
       maxFontSize: fields[46] as double,
+      showColon: fields[47] as bool,
+      headerAlignment: fields[48] as String,
+      headerPaddingLeft: fields[49] as double,
+      headerHeight: fields[50] as double,
     );
   }
 
   @override
   void write(BinaryWriter writer, ThemeConfig obj) {
     writer
-      ..writeByte(47)
+      ..writeByte(51)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
@@ -164,7 +168,15 @@ class ThemeConfigAdapter extends TypeAdapter<ThemeConfig> {
       ..writeByte(45)
       ..write(obj.minFontSize)
       ..writeByte(46)
-      ..write(obj.maxFontSize);
+      ..write(obj.maxFontSize)
+      ..writeByte(47)
+      ..write(obj.showColon)
+      ..writeByte(48)
+      ..write(obj.headerAlignment)
+      ..writeByte(49)
+      ..write(obj.headerPaddingLeft)
+      ..writeByte(50)
+      ..write(obj.headerHeight);
   }
 
   @override
@@ -251,6 +263,10 @@ _$ThemeConfigImpl _$$ThemeConfigImplFromJson(Map<String, dynamic> json) =>
           (json['continuationContentAreaTop'] as num?)?.toDouble() ?? 40.0,
       minFontSize: (json['minFontSize'] as num?)?.toDouble() ?? 10.0,
       maxFontSize: (json['maxFontSize'] as num?)?.toDouble() ?? 24.0,
+      showColon: json['showColon'] as bool? ?? true,
+      headerAlignment: json['headerAlignment'] as String? ?? 'center',
+      headerPaddingLeft: (json['headerPaddingLeft'] as num?)?.toDouble() ?? 0.0,
+      headerHeight: (json['headerHeight'] as num?)?.toDouble() ?? 0.0,
     );
 
 Map<String, dynamic> _$$ThemeConfigImplToJson(_$ThemeConfigImpl instance) =>
@@ -302,4 +318,8 @@ Map<String, dynamic> _$$ThemeConfigImplToJson(_$ThemeConfigImpl instance) =>
       'continuationContentAreaTop': instance.continuationContentAreaTop,
       'minFontSize': instance.minFontSize,
       'maxFontSize': instance.maxFontSize,
+      'showColon': instance.showColon,
+      'headerAlignment': instance.headerAlignment,
+      'headerPaddingLeft': instance.headerPaddingLeft,
+      'headerHeight': instance.headerHeight,
     };

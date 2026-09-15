@@ -425,19 +425,37 @@ class BiodataRenderer extends StatelessWidget {
   static Widget _buildFlutterHeaderTextOnly(
     Biodata biodata, ThemeConfig theme, Color text, Color subtitle, String displayName, String fontName,
   ) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.center,
+    CrossAxisAlignment crossAlign = CrossAxisAlignment.center;
+    TextAlign align = TextAlign.center;
+    if (theme.headerAlignment == 'left') {
+      crossAlign = CrossAxisAlignment.start;
+      align = TextAlign.left;
+    } else if (theme.headerAlignment == 'right') {
+      crossAlign = CrossAxisAlignment.end;
+      align = TextAlign.right;
+    }
+
+    final column = Column(
+      crossAxisAlignment: crossAlign,
+      mainAxisAlignment: theme.headerHeight > 0 ? MainAxisAlignment.center : MainAxisAlignment.start,
       children: [
-        Text(displayName, textAlign: TextAlign.center, style: GoogleFonts.getFont(fontName, fontSize: theme.headingFontSize, color: text, fontWeight: FontWeight.bold)),
+        Text(displayName, textAlign: align, style: GoogleFonts.getFont(fontName, fontSize: theme.headingFontSize, color: text, fontWeight: FontWeight.bold)),
         if (biodata.dateOfBirth.isNotEmpty) ...[
           const SizedBox(height: 6),
-          Text('${Strings.tr('Date of Birth')} : ${biodata.dateOfBirth}', textAlign: TextAlign.center, style: GoogleFonts.getFont(fontName, fontSize: theme.bodyFontSize, color: subtitle)),
+          Text('${Strings.tr('Date of Birth')}${theme.showColon ? ' : ' : '   '}${biodata.dateOfBirth}', textAlign: align, style: GoogleFonts.getFont(fontName, fontSize: theme.bodyFontSize, color: subtitle)),
         ],
         if (biodata.birthPlace.isNotEmpty) ...[
           const SizedBox(height: 4),
-          Text('${Strings.tr('Place of Birth')} : ${biodata.birthPlace}', textAlign: TextAlign.center, style: GoogleFonts.getFont(fontName, fontSize: theme.bodyFontSize, color: subtitle)),
+          Text('${Strings.tr('Place of Birth')}${theme.showColon ? ' : ' : '   '}${biodata.birthPlace}', textAlign: align, style: GoogleFonts.getFont(fontName, fontSize: theme.bodyFontSize, color: subtitle)),
         ],
       ],
+    );
+
+    return Container(
+      padding: EdgeInsets.only(left: theme.headerPaddingLeft),
+      width: double.infinity,
+      height: theme.headerHeight > 0 ? theme.headerHeight : null,
+      child: column,
     );
   }
 
@@ -537,7 +555,7 @@ class BiodataRenderer extends StatelessWidget {
             textAlign: TextAlign.center,
             text: TextSpan(
               children: [
-                TextSpan(text: '$shownLabel : ', style: GoogleFonts.getFont(resolvedFont, fontSize: theme.bodyFontSize, color: subtitle, fontWeight: FontWeight.w600)),
+                TextSpan(text: '$shownLabel${theme.showColon ? ' : ' : '   '}', style: GoogleFonts.getFont(resolvedFont, fontSize: theme.bodyFontSize, color: subtitle, fontWeight: FontWeight.w600)),
                 TextSpan(text: value, style: GoogleFonts.getFont(resolvedFont, fontSize: theme.bodyFontSize, color: text)),
               ],
             ),
@@ -550,9 +568,9 @@ class BiodataRenderer extends StatelessWidget {
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            SizedBox(width: 130, child: Text(shownLabel, style: GoogleFonts.getFont(resolvedFont, fontSize: theme.bodyFontSize, color: subtitle, fontWeight: FontWeight.w600))),
-            Text(' : ', style: GoogleFonts.getFont(resolvedFont, fontSize: theme.bodyFontSize, color: subtitle, fontWeight: FontWeight.w600)),
-            const SizedBox(width: 8),
+            SizedBox(width: 150, child: Text(shownLabel, style: GoogleFonts.getFont(resolvedFont, fontSize: theme.bodyFontSize, color: subtitle, fontWeight: FontWeight.w600))),
+            if (theme.showColon) Text(' : ', style: GoogleFonts.getFont(resolvedFont, fontSize: theme.bodyFontSize, color: subtitle, fontWeight: FontWeight.w600)),
+            if (theme.showColon) const SizedBox(width: 8),
             Expanded(child: Text(value, style: GoogleFonts.getFont(resolvedFont, fontSize: theme.bodyFontSize, color: text))),
           ],
         ),
@@ -805,19 +823,33 @@ class BiodataRenderer extends StatelessWidget {
     // Name, then Date of Birth / Place of Birth as "Label : value" lines
     // (each skipped if empty).
     if (theme.backgroundImage.isNotEmpty) {
+      pw.CrossAxisAlignment crossAlign = pw.CrossAxisAlignment.center;
+      pw.TextAlign align = pw.TextAlign.center;
+      if (theme.headerAlignment == 'left') {
+        crossAlign = pw.CrossAxisAlignment.start;
+        align = pw.TextAlign.left;
+      } else if (theme.headerAlignment == 'right') {
+        crossAlign = pw.CrossAxisAlignment.end;
+        align = pw.TextAlign.right;
+      }
+
+      final column = pw.Column(
+        crossAxisAlignment: crossAlign,
+        mainAxisAlignment: theme.headerHeight > 0 ? pw.MainAxisAlignment.center : pw.MainAxisAlignment.start,
+        children: [
+          pw.Text(displayName, textAlign: align, style: pw.TextStyle(font: font, fontSize: theme.headingFontSize, color: text, fontWeight: pw.FontWeight.bold)),
+          if (biodata.dateOfBirth.isNotEmpty)
+            pw.Padding(padding: const pw.EdgeInsets.only(top: 6), child: pw.Text('Date of Birth${theme.showColon ? ' : ' : '   '}${biodata.dateOfBirth}', textAlign: align, style: pw.TextStyle(font: font, fontSize: theme.bodyFontSize, color: subtitle))),
+          if (biodata.birthPlace.isNotEmpty)
+            pw.Padding(padding: const pw.EdgeInsets.only(top: 4), child: pw.Text('Place of Birth${theme.showColon ? ' : ' : '   '}${biodata.birthPlace}', textAlign: align, style: pw.TextStyle(font: font, fontSize: theme.bodyFontSize, color: subtitle))),
+        ],
+      );
+
       return pw.Container(
-        padding: const pw.EdgeInsets.only(bottom: 16),
+        padding: pw.EdgeInsets.only(left: theme.headerPaddingLeft, bottom: 16),
         width: double.infinity,
-        child: pw.Column(
-          crossAxisAlignment: pw.CrossAxisAlignment.center,
-          children: [
-            pw.Text(displayName, textAlign: pw.TextAlign.center, style: pw.TextStyle(font: font, fontSize: theme.headingFontSize, color: text, fontWeight: pw.FontWeight.bold)),
-            if (biodata.dateOfBirth.isNotEmpty)
-              pw.Padding(padding: const pw.EdgeInsets.only(top: 6), child: pw.Text('Date of Birth : ${biodata.dateOfBirth}', textAlign: pw.TextAlign.center, style: pw.TextStyle(font: font, fontSize: theme.bodyFontSize, color: subtitle))),
-            if (biodata.birthPlace.isNotEmpty)
-              pw.Padding(padding: const pw.EdgeInsets.only(top: 4), child: pw.Text('Place of Birth : ${biodata.birthPlace}', textAlign: pw.TextAlign.center, style: pw.TextStyle(font: font, fontSize: theme.bodyFontSize, color: subtitle))),
-          ],
-        ),
+        height: theme.headerHeight > 0 ? theme.headerHeight : null,
+        child: column,
       );
     }
 
@@ -947,23 +979,23 @@ class BiodataRenderer extends StatelessWidget {
           child: pw.RichText(
             textAlign: pw.TextAlign.center,
             text: pw.TextSpan(
-              children: [
-                pw.TextSpan(text: '$label : ', style: pw.TextStyle(font: font, fontSize: theme.bodyFontSize, color: subtitle, fontWeight: pw.FontWeight.bold)),
-                pw.TextSpan(text: value, style: pw.TextStyle(font: font, fontSize: theme.bodyFontSize, color: text)),
-              ],
-            ),
+            children: [
+              pw.TextSpan(text: '$label${theme.showColon ? ' : ' : '   '}', style: pw.TextStyle(font: font, fontSize: theme.bodyFontSize, color: subtitle, fontWeight: pw.FontWeight.bold)),
+              pw.TextSpan(text: value, style: pw.TextStyle(font: font, fontSize: theme.bodyFontSize, color: text)),
+            ],
           ),
         ),
-      );
+      ),
+    );
     } else {
       return pw.Padding(
         padding: const pw.EdgeInsets.only(bottom: 4),
         child: pw.Row(
           crossAxisAlignment: pw.CrossAxisAlignment.start,
           children: [
-            pw.SizedBox(width: 130, child: pw.Text(label, style: pw.TextStyle(font: font, fontSize: theme.bodyFontSize, color: subtitle, fontWeight: pw.FontWeight.bold))),
-            pw.Text(' : ', style: pw.TextStyle(font: font, fontSize: theme.bodyFontSize, color: subtitle, fontWeight: pw.FontWeight.bold)),
-            pw.SizedBox(width: 8),
+            pw.SizedBox(width: 150, child: pw.Text(label, style: pw.TextStyle(font: font, fontSize: theme.bodyFontSize, color: subtitle, fontWeight: pw.FontWeight.bold))),
+            if (theme.showColon) pw.Text(' : ', style: pw.TextStyle(font: font, fontSize: theme.bodyFontSize, color: subtitle, fontWeight: pw.FontWeight.bold)),
+            if (theme.showColon) pw.SizedBox(width: 8),
             pw.Expanded(child: pw.Text(value, style: pw.TextStyle(font: font, fontSize: theme.bodyFontSize, color: text))),
           ],
         ),

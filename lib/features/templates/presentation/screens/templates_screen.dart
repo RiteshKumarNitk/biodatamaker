@@ -11,8 +11,7 @@ import 'package:biodata_maker/features/templates/data/models/theme_config.dart';
 import 'package:biodata_maker/features/templates/presentation/bloc/template_bloc.dart';
 import 'package:biodata_maker/features/templates/presentation/bloc/template_event.dart';
 import 'package:biodata_maker/features/templates/presentation/bloc/template_state.dart';
-import 'package:biodata_maker/shared/widgets/biodata_renderer.dart';
-import 'package:biodata_maker/shared/widgets/sample_biodata.dart';
+import 'package:biodata_maker/features/templates/presentation/screens/template_pdf_preview_screen.dart';
 
 class TemplatesScreen extends StatelessWidget {
   const TemplatesScreen({super.key});
@@ -239,23 +238,6 @@ class _TemplateCard extends StatelessWidget {
                         ),
                       ),
                     ),
-                    if (template.isPremium)
-                      Positioned(
-                        top: 12,
-                        right: 12,
-                        child: Container(
-                          padding: const EdgeInsets.all(6),
-                          decoration: BoxDecoration(
-                            color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.12),
-                            borderRadius: BorderRadius.circular(20),
-                          ),
-                          child: const Icon(
-                            Icons.lock,
-                            color: Colors.white,
-                            size: 16,
-                          ),
-                        ),
-                      ),
                     Positioned(
                       bottom: 12,
                       left: 12,
@@ -305,162 +287,10 @@ class _TemplateCard extends StatelessWidget {
   }
 
   void _showTemplatePreview(BuildContext context) {
-    final settingsRepo = sl<SettingsRepository>();
-    final isPremium = settingsRepo.isPremium;
-
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (_) => TemplatePdfPreviewScreen(template: template),
       ),
-      builder: (ctx) => DraggableScrollableSheet(
-        initialChildSize: 0.85,
-        minChildSize: 0.5,
-        maxChildSize: 0.95,
-        expand: false,
-        builder: (_, scrollController) => SingleChildScrollView(
-          controller: scrollController,
-          padding: const EdgeInsets.all(24),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Center(
-                child: Container(
-                  width: 40,
-                  height: 4,
-                  decoration: BoxDecoration(
-                    color: Theme.of(context).colorScheme.outlineVariant,
-                    borderRadius: BorderRadius.circular(2),
-                  ),
-                ),
-              ),
-              const SizedBox(height: 24),
-              ConstrainedBox(
-                constraints: const BoxConstraints(maxHeight: 420),
-                child: Container(
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: Theme.of(context).colorScheme.outlineVariant),
-                  ),
-                  clipBehavior: Clip.antiAlias,
-                  child: IgnorePointer(
-                    child: SingleChildScrollView(
-                      child: BiodataRenderer(
-                        biodata: sampleBiodataForPreview,
-                        theme: template,
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-              const SizedBox(height: 20),
-              Center(
-                child: Text(
-                  template.name,
-                  style: GoogleFonts.playfairDisplay(
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ),
-              const SizedBox(height: 4),
-              Center(
-                child: Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-                  decoration: BoxDecoration(
-                    color: Color(template.secondaryColor),
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: Text(
-                    template.category,
-                    style: GoogleFonts.poppins(
-                      color: Colors.white,
-                      fontSize: 12,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                ),
-              ),
-              const SizedBox(height: 24),
-              Text(
-                'Template Details',
-                style: GoogleFonts.poppins(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-              const SizedBox(height: 12),
-              Wrap(
-                spacing: 8,
-                runSpacing: 8,
-                children: [
-                  _buildChip('Colors', '${template.primaryColor.toRadixString(16).substring(2)} / ${template.secondaryColor.toRadixString(16).substring(2)}'),
-                  _buildChip('Font Style', '${template.headingFont} / ${template.bodyFont}'),
-                  _buildChip('Photo Shape', template.photoShape),
-                  _buildChip('Border Style', template.borderStyle),
-                  _buildChip('Header Decoration', template.headerDecoration),
-                  _buildChip('Footer Decoration', template.footerDecoration),
-                  _buildChip('Divider Style', template.dividerStyle),
-                  if (template.isPremium)
-                    const Chip(
-                      avatar: Icon(Icons.star, size: 16),
-                      label: Text('Premium'),
-                    )
-                  else
-                    Chip(
-                      avatar: Icon(Icons.check_circle, size: 16,
-                          color: Theme.of(context).colorScheme.tertiary),
-                      label: const Text('Free'),
-                    ),
-                ],
-              ),
-              const SizedBox(height: 32),
-              SizedBox(
-                width: double.infinity,
-                height: 52,
-                child: ElevatedButton(
-                  onPressed: () {
-                    if (template.isPremium && !isPremium) {
-                      Navigator.of(ctx).pop();
-                      context.push('/paywall');
-                    } else {
-                      Navigator.of(ctx).pop();
-                      context.push('/biodata/create?templateId=${template.id}');
-                    }
-                  },
-                  child: Text(
-                    template.isPremium && !isPremium
-                        ? 'Unlock with Premium'
-                        : 'Use This Template',
-                  ),
-                ),
-              ),
-              if (template.isPremium && !isPremium)
-                Padding(
-                  padding: const EdgeInsets.only(top: 8),
-                  child: Center(
-                    child: TextButton(
-                      onPressed: () {
-                        Navigator.of(ctx).pop();
-                        context.push('/paywall');
-                      },
-                      child: const Text('View Premium Plans'),
-                    ),
-                  ),
-                ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildChip(String label, String value) {
-    return Chip(
-      label: Text('$label: $value'),
-      labelStyle: GoogleFonts.poppins(fontSize: 11),
     );
   }
 }

@@ -120,7 +120,18 @@ mixin _$ThemeConfig {
   @HiveField(45)
   double get minFontSize => throw _privateConstructorUsedError;
   @HiveField(46)
-  double get maxFontSize => throw _privateConstructorUsedError;
+  double get maxFontSize =>
+      throw _privateConstructorUsedError; // --- Phase 2 Header & Data Representation Configs ---
+  @HiveField(47)
+  bool get showColon => throw _privateConstructorUsedError;
+  @HiveField(48)
+  String get headerAlignment =>
+      throw _privateConstructorUsedError; // 'left' | 'center' | 'right'
+  @HiveField(49)
+  double get headerPaddingLeft =>
+      throw _privateConstructorUsedError; // Pushes header text to the right of the photo
+  @HiveField(50)
+  double get headerHeight => throw _privateConstructorUsedError;
 
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
   @JsonKey(ignore: true)
@@ -181,7 +192,11 @@ abstract class $ThemeConfigCopyWith<$Res> {
       @HiveField(43) String headingAlignment,
       @HiveField(44) double continuationContentAreaTop,
       @HiveField(45) double minFontSize,
-      @HiveField(46) double maxFontSize});
+      @HiveField(46) double maxFontSize,
+      @HiveField(47) bool showColon,
+      @HiveField(48) String headerAlignment,
+      @HiveField(49) double headerPaddingLeft,
+      @HiveField(50) double headerHeight});
 }
 
 /// @nodoc
@@ -244,6 +259,10 @@ class _$ThemeConfigCopyWithImpl<$Res, $Val extends ThemeConfig>
     Object? continuationContentAreaTop = null,
     Object? minFontSize = null,
     Object? maxFontSize = null,
+    Object? showColon = null,
+    Object? headerAlignment = null,
+    Object? headerPaddingLeft = null,
+    Object? headerHeight = null,
   }) {
     return _then(_value.copyWith(
       id: null == id
@@ -434,6 +453,22 @@ class _$ThemeConfigCopyWithImpl<$Res, $Val extends ThemeConfig>
           ? _value.maxFontSize
           : maxFontSize // ignore: cast_nullable_to_non_nullable
               as double,
+      showColon: null == showColon
+          ? _value.showColon
+          : showColon // ignore: cast_nullable_to_non_nullable
+              as bool,
+      headerAlignment: null == headerAlignment
+          ? _value.headerAlignment
+          : headerAlignment // ignore: cast_nullable_to_non_nullable
+              as String,
+      headerPaddingLeft: null == headerPaddingLeft
+          ? _value.headerPaddingLeft
+          : headerPaddingLeft // ignore: cast_nullable_to_non_nullable
+              as double,
+      headerHeight: null == headerHeight
+          ? _value.headerHeight
+          : headerHeight // ignore: cast_nullable_to_non_nullable
+              as double,
     ) as $Val);
   }
 }
@@ -493,7 +528,11 @@ abstract class _$$ThemeConfigImplCopyWith<$Res>
       @HiveField(43) String headingAlignment,
       @HiveField(44) double continuationContentAreaTop,
       @HiveField(45) double minFontSize,
-      @HiveField(46) double maxFontSize});
+      @HiveField(46) double maxFontSize,
+      @HiveField(47) bool showColon,
+      @HiveField(48) String headerAlignment,
+      @HiveField(49) double headerPaddingLeft,
+      @HiveField(50) double headerHeight});
 }
 
 /// @nodoc
@@ -554,6 +593,10 @@ class __$$ThemeConfigImplCopyWithImpl<$Res>
     Object? continuationContentAreaTop = null,
     Object? minFontSize = null,
     Object? maxFontSize = null,
+    Object? showColon = null,
+    Object? headerAlignment = null,
+    Object? headerPaddingLeft = null,
+    Object? headerHeight = null,
   }) {
     return _then(_$ThemeConfigImpl(
       id: null == id
@@ -744,6 +787,22 @@ class __$$ThemeConfigImplCopyWithImpl<$Res>
           ? _value.maxFontSize
           : maxFontSize // ignore: cast_nullable_to_non_nullable
               as double,
+      showColon: null == showColon
+          ? _value.showColon
+          : showColon // ignore: cast_nullable_to_non_nullable
+              as bool,
+      headerAlignment: null == headerAlignment
+          ? _value.headerAlignment
+          : headerAlignment // ignore: cast_nullable_to_non_nullable
+              as String,
+      headerPaddingLeft: null == headerPaddingLeft
+          ? _value.headerPaddingLeft
+          : headerPaddingLeft // ignore: cast_nullable_to_non_nullable
+              as double,
+      headerHeight: null == headerHeight
+          ? _value.headerHeight
+          : headerHeight // ignore: cast_nullable_to_non_nullable
+              as double,
     ));
   }
 }
@@ -806,7 +865,11 @@ class _$ThemeConfigImpl implements _ThemeConfig {
       @HiveField(43) this.headingAlignment = 'left',
       @HiveField(44) this.continuationContentAreaTop = 40.0,
       @HiveField(45) this.minFontSize = 10.0,
-      @HiveField(46) this.maxFontSize = 24.0})
+      @HiveField(46) this.maxFontSize = 24.0,
+      @HiveField(47) this.showColon = true,
+      @HiveField(48) this.headerAlignment = 'center',
+      @HiveField(49) this.headerPaddingLeft = 0.0,
+      @HiveField(50) this.headerHeight = 0.0})
       : _sectionOrder = sectionOrder,
         _hiddenFields = hiddenFields,
         _labelOverrides = labelOverrides;
@@ -1024,10 +1087,29 @@ class _$ThemeConfigImpl implements _ThemeConfig {
   @JsonKey()
   @HiveField(46)
   final double maxFontSize;
+// --- Phase 2 Header & Data Representation Configs ---
+  @override
+  @JsonKey()
+  @HiveField(47)
+  final bool showColon;
+  @override
+  @JsonKey()
+  @HiveField(48)
+  final String headerAlignment;
+// 'left' | 'center' | 'right'
+  @override
+  @JsonKey()
+  @HiveField(49)
+  final double headerPaddingLeft;
+// Pushes header text to the right of the photo
+  @override
+  @JsonKey()
+  @HiveField(50)
+  final double headerHeight;
 
   @override
   String toString() {
-    return 'ThemeConfig(id: $id, name: $name, category: $category, isPremium: $isPremium, primaryColor: $primaryColor, secondaryColor: $secondaryColor, backgroundColor: $backgroundColor, textColor: $textColor, subtitleColor: $subtitleColor, headingFont: $headingFont, bodyFont: $bodyFont, headingFontSize: $headingFontSize, bodyFontSize: $bodyFontSize, photoShape: $photoShape, borderStyle: $borderStyle, sectionSpacing: $sectionSpacing, fieldSpacing: $fieldSpacing, margin: $margin, headerDecoration: $headerDecoration, footerDecoration: $footerDecoration, dividerStyle: $dividerStyle, showWatermark: $showWatermark, watermarkText: $watermarkText, sectionOrder: $sectionOrder, hiddenFields: $hiddenFields, labelOverrides: $labelOverrides, iconStyle: $iconStyle, backgroundImage: $backgroundImage, borderImage: $borderImage, watermarkImage: $watermarkImage, isPublished: $isPublished, displayOrder: $displayOrder, continuationBackgroundMode: $continuationBackgroundMode, continuationBackgroundImage: $continuationBackgroundImage, photoRectLeft: $photoRectLeft, photoRectTop: $photoRectTop, photoRectWidth: $photoRectWidth, photoRectHeight: $photoRectHeight, contentAreaLeft: $contentAreaLeft, contentAreaTop: $contentAreaTop, contentAreaRight: $contentAreaRight, contentAreaBottom: $contentAreaBottom, layoutStyle: $layoutStyle, headingAlignment: $headingAlignment, continuationContentAreaTop: $continuationContentAreaTop, minFontSize: $minFontSize, maxFontSize: $maxFontSize)';
+    return 'ThemeConfig(id: $id, name: $name, category: $category, isPremium: $isPremium, primaryColor: $primaryColor, secondaryColor: $secondaryColor, backgroundColor: $backgroundColor, textColor: $textColor, subtitleColor: $subtitleColor, headingFont: $headingFont, bodyFont: $bodyFont, headingFontSize: $headingFontSize, bodyFontSize: $bodyFontSize, photoShape: $photoShape, borderStyle: $borderStyle, sectionSpacing: $sectionSpacing, fieldSpacing: $fieldSpacing, margin: $margin, headerDecoration: $headerDecoration, footerDecoration: $footerDecoration, dividerStyle: $dividerStyle, showWatermark: $showWatermark, watermarkText: $watermarkText, sectionOrder: $sectionOrder, hiddenFields: $hiddenFields, labelOverrides: $labelOverrides, iconStyle: $iconStyle, backgroundImage: $backgroundImage, borderImage: $borderImage, watermarkImage: $watermarkImage, isPublished: $isPublished, displayOrder: $displayOrder, continuationBackgroundMode: $continuationBackgroundMode, continuationBackgroundImage: $continuationBackgroundImage, photoRectLeft: $photoRectLeft, photoRectTop: $photoRectTop, photoRectWidth: $photoRectWidth, photoRectHeight: $photoRectHeight, contentAreaLeft: $contentAreaLeft, contentAreaTop: $contentAreaTop, contentAreaRight: $contentAreaRight, contentAreaBottom: $contentAreaBottom, layoutStyle: $layoutStyle, headingAlignment: $headingAlignment, continuationContentAreaTop: $continuationContentAreaTop, minFontSize: $minFontSize, maxFontSize: $maxFontSize, showColon: $showColon, headerAlignment: $headerAlignment, headerPaddingLeft: $headerPaddingLeft, headerHeight: $headerHeight)';
   }
 
   @override
@@ -1123,7 +1205,11 @@ class _$ThemeConfigImpl implements _ThemeConfig {
             (identical(other.headingAlignment, headingAlignment) || other.headingAlignment == headingAlignment) &&
             (identical(other.continuationContentAreaTop, continuationContentAreaTop) || other.continuationContentAreaTop == continuationContentAreaTop) &&
             (identical(other.minFontSize, minFontSize) || other.minFontSize == minFontSize) &&
-            (identical(other.maxFontSize, maxFontSize) || other.maxFontSize == maxFontSize));
+            (identical(other.maxFontSize, maxFontSize) || other.maxFontSize == maxFontSize) &&
+            (identical(other.showColon, showColon) || other.showColon == showColon) &&
+            (identical(other.headerAlignment, headerAlignment) || other.headerAlignment == headerAlignment) &&
+            (identical(other.headerPaddingLeft, headerPaddingLeft) || other.headerPaddingLeft == headerPaddingLeft) &&
+            (identical(other.headerHeight, headerHeight) || other.headerHeight == headerHeight));
   }
 
   @JsonKey(ignore: true)
@@ -1176,7 +1262,11 @@ class _$ThemeConfigImpl implements _ThemeConfig {
         headingAlignment,
         continuationContentAreaTop,
         minFontSize,
-        maxFontSize
+        maxFontSize,
+        showColon,
+        headerAlignment,
+        headerPaddingLeft,
+        headerHeight
       ]);
 
   @JsonKey(ignore: true)
@@ -1241,7 +1331,11 @@ abstract class _ThemeConfig implements ThemeConfig {
       @HiveField(43) final String headingAlignment,
       @HiveField(44) final double continuationContentAreaTop,
       @HiveField(45) final double minFontSize,
-      @HiveField(46) final double maxFontSize}) = _$ThemeConfigImpl;
+      @HiveField(46) final double maxFontSize,
+      @HiveField(47) final bool showColon,
+      @HiveField(48) final String headerAlignment,
+      @HiveField(49) final double headerPaddingLeft,
+      @HiveField(50) final double headerHeight}) = _$ThemeConfigImpl;
 
   factory _ThemeConfig.fromJson(Map<String, dynamic> json) =
       _$ThemeConfigImpl.fromJson;
@@ -1388,6 +1482,18 @@ abstract class _ThemeConfig implements ThemeConfig {
   @override
   @HiveField(46)
   double get maxFontSize;
+  @override // --- Phase 2 Header & Data Representation Configs ---
+  @HiveField(47)
+  bool get showColon;
+  @override
+  @HiveField(48)
+  String get headerAlignment;
+  @override // 'left' | 'center' | 'right'
+  @HiveField(49)
+  double get headerPaddingLeft;
+  @override // Pushes header text to the right of the photo
+  @HiveField(50)
+  double get headerHeight;
   @override
   @JsonKey(ignore: true)
   _$$ThemeConfigImplCopyWith<_$ThemeConfigImpl> get copyWith =>

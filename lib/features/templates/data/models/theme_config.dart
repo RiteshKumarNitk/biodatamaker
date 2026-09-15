@@ -59,6 +59,12 @@ class ThemeConfig with _$ThemeConfig {
     @HiveField(44) @Default(40.0) double continuationContentAreaTop, // Prevents page 2 overlap
     @HiveField(45) @Default(10.0) double minFontSize,
     @HiveField(46) @Default(24.0) double maxFontSize,
+    
+    // --- Phase 2 Header & Data Representation Configs ---
+    @HiveField(47) @Default(true) bool showColon,
+    @HiveField(48) @Default('center') String headerAlignment, // 'left' | 'center' | 'right'
+    @HiveField(49) @Default(0.0) double headerPaddingLeft, // Pushes header text to the right of the photo
+    @HiveField(50) @Default(0.0) double headerHeight, // Ensures content clears the photo vertically
   }) = _ThemeConfig;
 
   factory ThemeConfig.fromJson(Map<String, dynamic> json) => _$ThemeConfigFromJson(json);

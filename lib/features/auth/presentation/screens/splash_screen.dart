@@ -49,6 +49,11 @@ class _SplashScreenState extends State<SplashScreen> {
               context.go('/dashboard');
             } else if (state is AuthUnauthenticated) {
               context.go('/onboarding');
+            } else if (state is AuthError) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text('Error: ${state.message}')),
+              );
+              context.go('/onboarding');
             }
           },
           child: Column(
