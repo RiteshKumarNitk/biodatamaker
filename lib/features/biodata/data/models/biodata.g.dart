@@ -98,7 +98,7 @@ class BiodataAdapter extends TypeAdapter<Biodata> {
       alternateNumber: fields[78] as String,
       pinCode: fields[79] as String,
       selectedFontId: fields[80] as String,
-      userId: fields[81] as String,
+      userId: fields[81] == null ? '' : fields[81] as String,
     );
   }
 

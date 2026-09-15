@@ -97,7 +97,9 @@ class Biodata with _$Biodata {
     /// by a guest who has since signed out). biodatas with an empty userId are
     /// treated as owned by everyone (legacy data), so nobody loses their
     /// biodatas after upgrading.
-    @HiveField(81) @Default('') String userId,
+    // defaultValue makes the generated adapter null-safe when deserializing
+    // rows written before this field existed (fields[81] == null → '').
+    @HiveField(81, defaultValue: '') @Default('') String userId,
   }) = _Biodata;
 
   factory Biodata.fromJson(Map<String, dynamic> json) => _$BiodataFromJson(json);

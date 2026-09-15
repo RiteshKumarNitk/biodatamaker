@@ -187,7 +187,9 @@ mixin _$Biodata {
   /// by a guest who has since signed out). biodatas with an empty userId are
   /// treated as owned by everyone (legacy data), so nobody loses their
   /// biodatas after upgrading.
-  @HiveField(81)
+// defaultValue makes the generated adapter null-safe when deserializing
+// rows written before this field existed (fields[81] == null → '').
+  @HiveField(81, defaultValue: '')
   String get userId => throw _privateConstructorUsedError;
 
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -282,7 +284,7 @@ abstract class $BiodataCopyWith<$Res> {
       @HiveField(78) String alternateNumber,
       @HiveField(79) String pinCode,
       @HiveField(80) String selectedFontId,
-      @HiveField(81) String userId});
+      @HiveField(81, defaultValue: '') String userId});
 }
 
 /// @nodoc
@@ -803,7 +805,7 @@ abstract class _$$BiodataImplCopyWith<$Res> implements $BiodataCopyWith<$Res> {
       @HiveField(78) String alternateNumber,
       @HiveField(79) String pinCode,
       @HiveField(80) String selectedFontId,
-      @HiveField(81) String userId});
+      @HiveField(81, defaultValue: '') String userId});
 }
 
 /// @nodoc
@@ -1319,7 +1321,7 @@ class _$BiodataImpl implements _Biodata {
       @HiveField(78) this.alternateNumber = '',
       @HiveField(79) this.pinCode = '',
       @HiveField(80) this.selectedFontId = '',
-      @HiveField(81) this.userId = ''})
+      @HiveField(81, defaultValue: '') this.userId = ''})
       : _photos = photos,
         _customFields = customFields,
         _siblings = siblings;
@@ -1670,9 +1672,11 @@ class _$BiodataImpl implements _Biodata {
   /// by a guest who has since signed out). biodatas with an empty userId are
   /// treated as owned by everyone (legacy data), so nobody loses their
   /// biodatas after upgrading.
+// defaultValue makes the generated adapter null-safe when deserializing
+// rows written before this field existed (fields[81] == null → '').
   @override
   @JsonKey()
-  @HiveField(81)
+  @HiveField(81, defaultValue: '')
   final String userId;
 
   @override
@@ -1997,7 +2001,7 @@ abstract class _Biodata implements Biodata {
       @HiveField(78) final String alternateNumber,
       @HiveField(79) final String pinCode,
       @HiveField(80) final String selectedFontId,
-      @HiveField(81) final String userId}) = _$BiodataImpl;
+      @HiveField(81, defaultValue: '') final String userId}) = _$BiodataImpl;
 
   factory _Biodata.fromJson(Map<String, dynamic> json) = _$BiodataImpl.fromJson;
 
@@ -2250,7 +2254,9 @@ abstract class _Biodata implements Biodata {
   /// by a guest who has since signed out). biodatas with an empty userId are
   /// treated as owned by everyone (legacy data), so nobody loses their
   /// biodatas after upgrading.
-  @HiveField(81)
+// defaultValue makes the generated adapter null-safe when deserializing
+// rows written before this field existed (fields[81] == null → '').
+  @HiveField(81, defaultValue: '')
   String get userId;
   @override
   @JsonKey(ignore: true)
