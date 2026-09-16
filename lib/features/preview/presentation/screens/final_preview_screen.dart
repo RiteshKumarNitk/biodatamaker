@@ -32,6 +32,10 @@ class FinalPreviewScreen extends StatelessWidget {
         canDebug: false,
         actions: [
           PdfPreviewAction(
+            icon: const Icon(Icons.share, color: Colors.green),
+            onPressed: (context, build, format) => sl<PdfService>().sharePdf(biodata, theme),
+          ),
+          PdfPreviewAction(
             icon: const Icon(Icons.image_outlined),
             onPressed: (context, build, format) => _saveImage(context),
           ),

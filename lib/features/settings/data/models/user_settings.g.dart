@@ -28,13 +28,14 @@ class UserSettingsAdapter extends TypeAdapter<UserSettings> {
       totalBiodatasCreated: fields[8] as int,
       subscriptionTier: fields[9] as String,
       subscriptionExpiresAt: fields[10] as DateTime?,
+      isWatermarkRemoved: fields[11] as bool,
     );
   }
 
   @override
   void write(BinaryWriter writer, UserSettings obj) {
     writer
-      ..writeByte(11)
+      ..writeByte(12)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
@@ -56,7 +57,9 @@ class UserSettingsAdapter extends TypeAdapter<UserSettings> {
       ..writeByte(9)
       ..write(obj.subscriptionTier)
       ..writeByte(10)
-      ..write(obj.subscriptionExpiresAt);
+      ..write(obj.subscriptionExpiresAt)
+      ..writeByte(11)
+      ..write(obj.isWatermarkRemoved);
   }
 
   @override
@@ -90,6 +93,7 @@ _$UserSettingsImpl _$$UserSettingsImplFromJson(Map<String, dynamic> json) =>
       subscriptionExpiresAt: json['subscriptionExpiresAt'] == null
           ? null
           : DateTime.parse(json['subscriptionExpiresAt'] as String),
+      isWatermarkRemoved: json['isWatermarkRemoved'] as bool? ?? false,
     );
 
 Map<String, dynamic> _$$UserSettingsImplToJson(_$UserSettingsImpl instance) =>
@@ -106,4 +110,5 @@ Map<String, dynamic> _$$UserSettingsImplToJson(_$UserSettingsImpl instance) =>
       'subscriptionTier': instance.subscriptionTier,
       'subscriptionExpiresAt':
           instance.subscriptionExpiresAt?.toIso8601String(),
+      'isWatermarkRemoved': instance.isWatermarkRemoved,
     };

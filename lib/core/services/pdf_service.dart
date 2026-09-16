@@ -12,6 +12,7 @@ import 'package:biodata_maker/core/services/export_service.dart';
 import 'package:biodata_maker/core/services/service_locator.dart';
 import 'package:biodata_maker/features/biodata/data/models/biodata.dart';
 import 'package:biodata_maker/features/settings/data/models/user_settings.dart';
+import 'package:biodata_maker/features/settings/data/repositories/settings_repository.dart';
 import 'package:biodata_maker/features/templates/data/models/theme_config.dart';
 import 'package:biodata_maker/shared/widgets/biodata_renderer.dart';
 
@@ -88,6 +89,13 @@ class PdfService {
     }
 
     final font = await BiodataRenderer.loadPdfFont(biodata.selectedFontId);
+    final fallbacks = <pw.Font>[];
+    if (biodata.language == 'hi') {
+      try {
+        fallbacks.add(await PdfGoogleFonts.notoSansDevanagariRegular());
+      } catch (_) {}
+    }
+    
     final displayName = biodata.fullName.isNotEmpty ? biodata.fullName : biodata.name;
     final useImageLayout = theme.backgroundImage.isNotEmpty;
 
@@ -119,7 +127,7 @@ class PdfService {
         pageTheme: pw.PageTheme(
           pageFormat: pageFormat ?? PdfPageFormat.a4,
           margin: pageMargin,
-          theme: pw.ThemeData.withFont(base: font),
+          theme: pw.ThemeData.withFont(base: font, fontFallback: fallbacks),
           buildBackground: (context) => _buildPageBackground(
             theme,
             biodata,
@@ -134,6 +142,7 @@ class PdfService {
             biodata: biodata,
             profileImage: profileImage,
             displayName: displayName,
+            isWatermarkRemoved: sl<SettingsRepository>().getSettings().isWatermarkRemoved,
           ),
         ),
         footer: (context) => _buildPageFooter(context, theme, font),
@@ -212,9 +221,10 @@ class PdfService {
     required Biodata biodata,
     required pw.MemoryImage? profileImage,
     required String displayName,
+    required bool isWatermarkRemoved,
   }) {
     final showPhotoOverlay = theme.backgroundImage.isNotEmpty && context.pageNumber == 1;
-    final showWatermark = theme.showWatermark && theme.watermarkText.isNotEmpty;
+    final showWatermark = !isWatermarkRemoved;
     if (!showPhotoOverlay && !showWatermark) return pw.SizedBox();
 
     final stack = pw.Stack(
@@ -281,8 +291,8 @@ class PdfService {
             child: pw.Transform.rotate(
               angle: -math.pi / 4,
               child: pw.Text(
-                theme.watermarkText,
-                style: pw.TextStyle(fontSize: 48, font: font, color: PdfColor.fromInt(theme.textColor)),
+                'Created with Biodata Maker',
+                style: pw.TextStyle(fontSize: 40, font: font, color: PdfColor.fromInt(theme.textColor)),
               ),
             ),
           ),

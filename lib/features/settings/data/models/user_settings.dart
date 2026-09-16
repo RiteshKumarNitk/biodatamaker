@@ -19,6 +19,7 @@ class UserSettings with _$UserSettings {
     @HiveField(8) @Default(0) int totalBiodatasCreated,
     @HiveField(9) @Default('free') String subscriptionTier,
     @HiveField(10) DateTime? subscriptionExpiresAt,
+    @HiveField(11) @Default(false) bool isWatermarkRemoved,
   }) = _UserSettings;
 
   factory UserSettings.fromJson(Map<String, dynamic> json) => _$UserSettingsFromJson(json);

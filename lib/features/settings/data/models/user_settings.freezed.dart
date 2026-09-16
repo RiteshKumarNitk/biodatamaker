@@ -42,6 +42,8 @@ mixin _$UserSettings {
   String get subscriptionTier => throw _privateConstructorUsedError;
   @HiveField(10)
   DateTime? get subscriptionExpiresAt => throw _privateConstructorUsedError;
+  @HiveField(11)
+  bool get isWatermarkRemoved => throw _privateConstructorUsedError;
 
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
   @JsonKey(ignore: true)
@@ -66,7 +68,8 @@ abstract class $UserSettingsCopyWith<$Res> {
       @HiveField(7) String lastBackupId,
       @HiveField(8) int totalBiodatasCreated,
       @HiveField(9) String subscriptionTier,
-      @HiveField(10) DateTime? subscriptionExpiresAt});
+      @HiveField(10) DateTime? subscriptionExpiresAt,
+      @HiveField(11) bool isWatermarkRemoved});
 }
 
 /// @nodoc
@@ -93,6 +96,7 @@ class _$UserSettingsCopyWithImpl<$Res, $Val extends UserSettings>
     Object? totalBiodatasCreated = null,
     Object? subscriptionTier = null,
     Object? subscriptionExpiresAt = freezed,
+    Object? isWatermarkRemoved = null,
   }) {
     return _then(_value.copyWith(
       id: null == id
@@ -139,6 +143,10 @@ class _$UserSettingsCopyWithImpl<$Res, $Val extends UserSettings>
           ? _value.subscriptionExpiresAt
           : subscriptionExpiresAt // ignore: cast_nullable_to_non_nullable
               as DateTime?,
+      isWatermarkRemoved: null == isWatermarkRemoved
+          ? _value.isWatermarkRemoved
+          : isWatermarkRemoved // ignore: cast_nullable_to_non_nullable
+              as bool,
     ) as $Val);
   }
 }
@@ -162,7 +170,8 @@ abstract class _$$UserSettingsImplCopyWith<$Res>
       @HiveField(7) String lastBackupId,
       @HiveField(8) int totalBiodatasCreated,
       @HiveField(9) String subscriptionTier,
-      @HiveField(10) DateTime? subscriptionExpiresAt});
+      @HiveField(10) DateTime? subscriptionExpiresAt,
+      @HiveField(11) bool isWatermarkRemoved});
 }
 
 /// @nodoc
@@ -187,6 +196,7 @@ class __$$UserSettingsImplCopyWithImpl<$Res>
     Object? totalBiodatasCreated = null,
     Object? subscriptionTier = null,
     Object? subscriptionExpiresAt = freezed,
+    Object? isWatermarkRemoved = null,
   }) {
     return _then(_$UserSettingsImpl(
       id: null == id
@@ -233,6 +243,10 @@ class __$$UserSettingsImplCopyWithImpl<$Res>
           ? _value.subscriptionExpiresAt
           : subscriptionExpiresAt // ignore: cast_nullable_to_non_nullable
               as DateTime?,
+      isWatermarkRemoved: null == isWatermarkRemoved
+          ? _value.isWatermarkRemoved
+          : isWatermarkRemoved // ignore: cast_nullable_to_non_nullable
+              as bool,
     ));
   }
 }
@@ -251,7 +265,8 @@ class _$UserSettingsImpl implements _UserSettings {
       @HiveField(7) this.lastBackupId = '',
       @HiveField(8) this.totalBiodatasCreated = 0,
       @HiveField(9) this.subscriptionTier = 'free',
-      @HiveField(10) this.subscriptionExpiresAt});
+      @HiveField(10) this.subscriptionExpiresAt,
+      @HiveField(11) this.isWatermarkRemoved = false});
 
   factory _$UserSettingsImpl.fromJson(Map<String, dynamic> json) =>
       _$$UserSettingsImplFromJson(json);
@@ -298,10 +313,14 @@ class _$UserSettingsImpl implements _UserSettings {
   @override
   @HiveField(10)
   final DateTime? subscriptionExpiresAt;
+  @override
+  @JsonKey()
+  @HiveField(11)
+  final bool isWatermarkRemoved;
 
   @override
   String toString() {
-    return 'UserSettings(id: $id, themeMode: $themeMode, language: $language, pdfQuality: $pdfQuality, pdfPageSize: $pdfPageSize, autoSave: $autoSave, cloudBackupEnabled: $cloudBackupEnabled, lastBackupId: $lastBackupId, totalBiodatasCreated: $totalBiodatasCreated, subscriptionTier: $subscriptionTier, subscriptionExpiresAt: $subscriptionExpiresAt)';
+    return 'UserSettings(id: $id, themeMode: $themeMode, language: $language, pdfQuality: $pdfQuality, pdfPageSize: $pdfPageSize, autoSave: $autoSave, cloudBackupEnabled: $cloudBackupEnabled, lastBackupId: $lastBackupId, totalBiodatasCreated: $totalBiodatasCreated, subscriptionTier: $subscriptionTier, subscriptionExpiresAt: $subscriptionExpiresAt, isWatermarkRemoved: $isWatermarkRemoved)';
   }
 
   @override
@@ -329,7 +348,9 @@ class _$UserSettingsImpl implements _UserSettings {
             (identical(other.subscriptionTier, subscriptionTier) ||
                 other.subscriptionTier == subscriptionTier) &&
             (identical(other.subscriptionExpiresAt, subscriptionExpiresAt) ||
-                other.subscriptionExpiresAt == subscriptionExpiresAt));
+                other.subscriptionExpiresAt == subscriptionExpiresAt) &&
+            (identical(other.isWatermarkRemoved, isWatermarkRemoved) ||
+                other.isWatermarkRemoved == isWatermarkRemoved));
   }
 
   @JsonKey(ignore: true)
@@ -346,7 +367,8 @@ class _$UserSettingsImpl implements _UserSettings {
       lastBackupId,
       totalBiodatasCreated,
       subscriptionTier,
-      subscriptionExpiresAt);
+      subscriptionExpiresAt,
+      isWatermarkRemoved);
 
   @JsonKey(ignore: true)
   @override
@@ -364,18 +386,18 @@ class _$UserSettingsImpl implements _UserSettings {
 
 abstract class _UserSettings implements UserSettings {
   const factory _UserSettings(
-          {@HiveField(0) required final String id,
-          @HiveField(1) final String themeMode,
-          @HiveField(2) final String language,
-          @HiveField(3) final String pdfQuality,
-          @HiveField(4) final String pdfPageSize,
-          @HiveField(5) final bool autoSave,
-          @HiveField(6) final bool cloudBackupEnabled,
-          @HiveField(7) final String lastBackupId,
-          @HiveField(8) final int totalBiodatasCreated,
-          @HiveField(9) final String subscriptionTier,
-          @HiveField(10) final DateTime? subscriptionExpiresAt}) =
-      _$UserSettingsImpl;
+      {@HiveField(0) required final String id,
+      @HiveField(1) final String themeMode,
+      @HiveField(2) final String language,
+      @HiveField(3) final String pdfQuality,
+      @HiveField(4) final String pdfPageSize,
+      @HiveField(5) final bool autoSave,
+      @HiveField(6) final bool cloudBackupEnabled,
+      @HiveField(7) final String lastBackupId,
+      @HiveField(8) final int totalBiodatasCreated,
+      @HiveField(9) final String subscriptionTier,
+      @HiveField(10) final DateTime? subscriptionExpiresAt,
+      @HiveField(11) final bool isWatermarkRemoved}) = _$UserSettingsImpl;
 
   factory _UserSettings.fromJson(Map<String, dynamic> json) =
       _$UserSettingsImpl.fromJson;
@@ -413,6 +435,9 @@ abstract class _UserSettings implements UserSettings {
   @override
   @HiveField(10)
   DateTime? get subscriptionExpiresAt;
+  @override
+  @HiveField(11)
+  bool get isWatermarkRemoved;
   @override
   @JsonKey(ignore: true)
   _$$UserSettingsImplCopyWith<_$UserSettingsImpl> get copyWith =>

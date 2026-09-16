@@ -300,10 +300,14 @@ class BiodataRenderer extends StatelessWidget {
       headerShownFields.add('Occupation');
     }
 
-    // Sections from config. About Me and any custom field not specifically
-    // tagged 'family'/'contact' render inside Personal Information (see
-    // _customFieldBelongsTo), so there are always exactly 3 headings.
-    for (final section in kSections) {
+    // _customFieldBelongsTo), so we render them based on sectionOrder.
+    final orderedSectionKeys = biodata.sectionOrder.isNotEmpty 
+        ? biodata.sectionOrder 
+        : kSections.map((s) => s.key).toList();
+
+    for (final key in orderedSectionKeys) {
+      final section = kSections.firstWhere((s) => s.key == key, orElse: () => kSections.first);
+      if (section.key != key) continue;
       final sectionFields = section.fields.where((f) => f.value(biodata).isNotEmpty && !headerShownFields.contains(f.label)).toList();
       final sectionCustom = biodata.customFields.where((c) => _customFieldBelongsTo(section, c.section) && c.value.isNotEmpty).toList();
       final showSiblings = section.key == 'family' &&
@@ -453,7 +457,19 @@ class BiodataRenderer extends StatelessWidget {
   }
 
   static Widget _buildFlutterHeaderIcon(String iconType, Color primary) {
-    if (iconType == 'ganesh' || iconType == 'om' || iconType == 'swastik' || iconType == 'cross' || iconType == 'moon' || iconType == 'khanda') {
+    if (['ganesh', 'om', 'swastik', 'cross', 'moon', 'khanda', 'kalash', 'diya', 'bismillah'].contains(iconType)) {
+      String char = '';
+      switch (iconType) {
+        case 'ganesh': char = 'ॐ'; break;
+        case 'om': char = 'ॐ'; break;
+        case 'swastik': char = '卐'; break;
+        case 'cross': char = '✝'; break;
+        case 'moon': char = '☪'; break;
+        case 'khanda': char = 'ੴ'; break;
+        case 'kalash': char = '🏺'; break;
+        case 'diya': char = '🪔'; break;
+        case 'bismillah': char = '﷽'; break;
+      }
       return Container(
         width: 48,
         height: 48,
@@ -463,7 +479,7 @@ class BiodataRenderer extends StatelessWidget {
         ),
         child: Center(
           child: Text(
-            iconType == 'ganesh' ? 'ॐ' : (iconType == 'om' ? 'ॐ' : (iconType == 'swastik' ? '卐' : (iconType == 'cross' ? '✝' : (iconType == 'moon' ? '☪' : 'ੴ')))),
+            char,
             style: TextStyle(fontSize: 24, color: primary, fontWeight: FontWeight.bold),
           ),
         ),
@@ -850,10 +866,14 @@ class BiodataRenderer extends StatelessWidget {
       headerShownFields.add('Occupation');
     }
 
-    // ---- Sections. About Me and any custom field not specifically tagged
-    // 'family'/'contact' render inside Personal Information (see
-    // _customFieldBelongsTo), so there are always exactly 3 headings. ----
-    for (final section in kSections) {
+    // _customFieldBelongsTo), so we render them based on sectionOrder. ----
+    final orderedSectionKeys = biodata.sectionOrder.isNotEmpty 
+        ? biodata.sectionOrder 
+        : kSections.map((s) => s.key).toList();
+
+    for (final key in orderedSectionKeys) {
+      final section = kSections.firstWhere((s) => s.key == key, orElse: () => kSections.first);
+      if (section.key != key) continue;
       final sectionFields = section.fields.where((f) => f.value(biodata).isNotEmpty && !headerShownFields.contains(f.label)).toList();
       final sectionCustom = biodata.customFields.where((c) => _customFieldBelongsTo(section, c.section) && c.value.isNotEmpty).toList();
       final showSiblings = section.key == 'family' &&
@@ -1038,7 +1058,19 @@ class BiodataRenderer extends StatelessWidget {
   }
 
   static pw.Widget _buildPdfHeaderIcon(String iconType, PdfColor primary, pw.Font font) {
-    if (iconType == 'ganesh' || iconType == 'om' || iconType == 'swastik' || iconType == 'cross' || iconType == 'moon' || iconType == 'khanda') {
+    if (['ganesh', 'om', 'swastik', 'cross', 'moon', 'khanda', 'kalash', 'diya', 'bismillah'].contains(iconType)) {
+      String char = '';
+      switch (iconType) {
+        case 'ganesh': char = 'ॐ'; break;
+        case 'om': char = 'ॐ'; break;
+        case 'swastik': char = '卐'; break;
+        case 'cross': char = '✝'; break;
+        case 'moon': char = '☪'; break;
+        case 'khanda': char = 'ੴ'; break;
+        case 'kalash': char = '🏺'; break;
+        case 'diya': char = '🪔'; break;
+        case 'bismillah': char = '﷽'; break;
+      }
       return pw.Container(
         width: 48,
         height: 48,
@@ -1048,7 +1080,7 @@ class BiodataRenderer extends StatelessWidget {
         ),
         child: pw.Center(
           child: pw.Text(
-            iconType == 'ganesh' ? 'ॐ' : (iconType == 'om' ? 'ॐ' : (iconType == 'swastik' ? '卐' : (iconType == 'cross' ? '✝' : (iconType == 'moon' ? '☪' : 'ੴ')))),
+            char,
             style: pw.TextStyle(font: font, fontSize: 24, color: primary, fontWeight: pw.FontWeight.bold),
           ),
         ),

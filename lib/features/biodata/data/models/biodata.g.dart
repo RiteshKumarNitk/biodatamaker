@@ -118,13 +118,15 @@ class BiodataAdapter extends TypeAdapter<Biodata> {
       showColons: fields[98] as bool,
       customHeaderStyle: fields[99] as String,
       customHeadingAlignment: fields[100] as String,
+      language: fields[101] as String,
+      sectionOrder: (fields[102] as List).cast<String>(),
     );
   }
 
   @override
   void write(BinaryWriter writer, Biodata obj) {
     writer
-      ..writeByte(101)
+      ..writeByte(103)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
@@ -326,7 +328,11 @@ class BiodataAdapter extends TypeAdapter<Biodata> {
       ..writeByte(99)
       ..write(obj.customHeaderStyle)
       ..writeByte(100)
-      ..write(obj.customHeadingAlignment);
+      ..write(obj.customHeadingAlignment)
+      ..writeByte(101)
+      ..write(obj.language)
+      ..writeByte(102)
+      ..write(obj.sectionOrder);
   }
 
   @override
@@ -461,6 +467,11 @@ _$BiodataImpl _$$BiodataImplFromJson(Map<String, dynamic> json) =>
       showColons: json['showColons'] as bool? ?? true,
       customHeaderStyle: json['customHeaderStyle'] as String? ?? '',
       customHeadingAlignment: json['customHeadingAlignment'] as String? ?? '',
+      language: json['language'] as String? ?? 'en',
+      sectionOrder: (json['sectionOrder'] as List<dynamic>?)
+              ?.map((e) => e as String)
+              .toList() ??
+          const ['personal', 'family', 'contact', 'education', 'additional'],
     );
 
 Map<String, dynamic> _$$BiodataImplToJson(_$BiodataImpl instance) =>
@@ -566,4 +577,6 @@ Map<String, dynamic> _$$BiodataImplToJson(_$BiodataImpl instance) =>
       'showColons': instance.showColons,
       'customHeaderStyle': instance.customHeaderStyle,
       'customHeadingAlignment': instance.customHeadingAlignment,
+      'language': instance.language,
+      'sectionOrder': instance.sectionOrder,
     };

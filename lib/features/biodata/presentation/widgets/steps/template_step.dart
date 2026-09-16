@@ -252,6 +252,22 @@ class _LayoutControls extends StatelessWidget {
               ],
             ),
             const SizedBox(height: 12),
+            Text(Strings.tr('Biodata Language'), style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.onSurfaceVariant)),
+            const SizedBox(height: 4),
+            SegmentedButton<String>(
+              segments: const [
+                ButtonSegment(value: 'en', label: Text('English')),
+                ButtonSegment(value: 'hi', label: Text('हिंदी (Hindi)')),
+              ],
+              selected: {biodata.language.isEmpty ? 'en' : biodata.language},
+              onSelectionChanged: (Set<String> newSelection) {
+                onUpdate(biodata.copyWith(language: newSelection.first));
+              },
+              style: SegmentedButton.styleFrom(
+                visualDensity: VisualDensity.compact,
+              ),
+            ),
+            const SizedBox(height: 12),
             Text(Strings.tr('Photo Position'), style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.onSurfaceVariant)),
             const SizedBox(height: 4),
             SegmentedButton<String>(
@@ -285,6 +301,9 @@ class _LayoutControls extends StatelessWidget {
                 DropdownMenuItem(value: 'cross', child: Text('Cross')),
                 DropdownMenuItem(value: 'moon', child: Text('Crescent Moon')),
                 DropdownMenuItem(value: 'khanda', child: Text('Khanda')),
+                DropdownMenuItem(value: 'kalash', child: Text('Kalash')),
+                DropdownMenuItem(value: 'diya', child: Text('Diya')),
+                DropdownMenuItem(value: 'bismillah', child: Text('Bismillah')),
               ],
               onChanged: (String? value) {
                 if (value != null) {
@@ -477,6 +496,25 @@ class _LayoutControls extends StatelessWidget {
                       biodata: biodata,
                       onUpdate: onUpdate,
                       template: template,
+                    ),
+                  );
+                },
+              ),
+            ),
+            const SizedBox(height: 16),
+            SizedBox(
+              width: double.infinity,
+              child: OutlinedButton.icon(
+                icon: const Icon(Icons.low_priority),
+                label: Text(Strings.tr('Reorder Sections')),
+                onPressed: () {
+                  showModalBottomSheet(
+                    context: context,
+                    isScrollControlled: true,
+                    backgroundColor: Colors.transparent,
+                    builder: (_) => _ReorderSectionsBottomSheet(
+                      biodata: biodata,
+                      onUpdate: onUpdate,
                     ),
                   );
                 },
@@ -824,6 +862,109 @@ class _ColorPickerTile extends StatelessWidget {
             ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+class _ReorderSectionsBottomSheet extends StatefulWidget {
+  final Biodata biodata;
+  final void Function(Biodata) onUpdate;
+
+  const _ReorderSectionsBottomSheet({
+    required this.biodata,
+    required this.onUpdate,
+  });
+
+  @override
+  State<_ReorderSectionsBottomSheet> createState() => _ReorderSectionsBottomSheetState();
+}
+
+class _ReorderSectionsBottomSheetState extends State<_ReorderSectionsBottomSheet> {
+  late List<String> _currentOrder;
+
+  @override
+  void initState() {
+    super.initState();
+    _currentOrder = widget.biodata.sectionOrder.isNotEmpty
+        ? List.from(widget.biodata.sectionOrder)
+        : ['personal', 'family', 'contact', 'education', 'additional'];
+  }
+
+  String _getSectionTitle(String key) {
+    switch (key) {
+      case 'personal': return Strings.tr('Personal Details');
+      case 'family': return Strings.tr('Family Details');
+      case 'contact': return Strings.tr('Contact Details');
+      case 'education': return Strings.tr('Education & Career');
+      case 'additional': return Strings.tr('Additional Details');
+      default: return key;
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final bottomPadding = MediaQuery.of(context).viewInsets.bottom;
+    
+    return Container(
+      padding: EdgeInsets.only(bottom: bottomPadding),
+      decoration: BoxDecoration(
+        color: theme.scaffoldBackgroundColor,
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      child: SafeArea(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Padding(
+              padding: const EdgeInsets.fromLTRB(24, 20, 24, 16),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(Strings.tr('Reorder Sections'), style: theme.textTheme.titleLarge),
+                  IconButton(
+                    icon: const Icon(Icons.close),
+                    onPressed: () => Navigator.pop(context),
+                  ),
+                ],
+              ),
+            ),
+            const Divider(height: 1),
+            Flexible(
+              child: ReorderableListView(
+                shrinkWrap: true,
+                padding: const EdgeInsets.symmetric(vertical: 8),
+                onReorder: (oldIndex, newIndex) {
+                  setState(() {
+                    if (newIndex > oldIndex) {
+                      newIndex -= 1;
+                    }
+                    final item = _currentOrder.removeAt(oldIndex);
+                    _currentOrder.insert(newIndex, item);
+                  });
+                  widget.onUpdate(widget.biodata.copyWith(sectionOrder: _currentOrder));
+                },
+                children: [
+                  for (int index = 0; index < _currentOrder.length; index++)
+                    ListTile(
+                      key: ValueKey(_currentOrder[index]),
+                      leading: const Icon(Icons.drag_handle),
+                      title: Text(_getSectionTitle(_currentOrder[index])),
+                    ),
+                ],
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(24),
+              child: FilledButton(
+                onPressed: () => Navigator.pop(context),
+                child: Text(Strings.tr('Done')),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

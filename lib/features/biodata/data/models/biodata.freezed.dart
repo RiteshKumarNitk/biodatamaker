@@ -229,6 +229,10 @@ mixin _$Biodata {
   String get customHeaderStyle => throw _privateConstructorUsedError;
   @HiveField(100)
   String get customHeadingAlignment => throw _privateConstructorUsedError;
+  @HiveField(101)
+  String get language => throw _privateConstructorUsedError;
+  @HiveField(102)
+  List<String> get sectionOrder => throw _privateConstructorUsedError;
 
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
   @JsonKey(ignore: true)
@@ -341,7 +345,9 @@ abstract class $BiodataCopyWith<$Res> {
       @HiveField(97) bool boldLabels,
       @HiveField(98) bool showColons,
       @HiveField(99) String customHeaderStyle,
-      @HiveField(100) String customHeadingAlignment});
+      @HiveField(100) String customHeadingAlignment,
+      @HiveField(101) String language,
+      @HiveField(102) List<String> sectionOrder});
 }
 
 /// @nodoc
@@ -458,6 +464,8 @@ class _$BiodataCopyWithImpl<$Res, $Val extends Biodata>
     Object? showColons = null,
     Object? customHeaderStyle = null,
     Object? customHeadingAlignment = null,
+    Object? language = null,
+    Object? sectionOrder = null,
   }) {
     return _then(_value.copyWith(
       id: null == id
@@ -864,6 +872,14 @@ class _$BiodataCopyWithImpl<$Res, $Val extends Biodata>
           ? _value.customHeadingAlignment
           : customHeadingAlignment // ignore: cast_nullable_to_non_nullable
               as String,
+      language: null == language
+          ? _value.language
+          : language // ignore: cast_nullable_to_non_nullable
+              as String,
+      sectionOrder: null == sectionOrder
+          ? _value.sectionOrder
+          : sectionOrder // ignore: cast_nullable_to_non_nullable
+              as List<String>,
     ) as $Val);
   }
 }
@@ -976,7 +992,9 @@ abstract class _$$BiodataImplCopyWith<$Res> implements $BiodataCopyWith<$Res> {
       @HiveField(97) bool boldLabels,
       @HiveField(98) bool showColons,
       @HiveField(99) String customHeaderStyle,
-      @HiveField(100) String customHeadingAlignment});
+      @HiveField(100) String customHeadingAlignment,
+      @HiveField(101) String language,
+      @HiveField(102) List<String> sectionOrder});
 }
 
 /// @nodoc
@@ -1091,6 +1109,8 @@ class __$$BiodataImplCopyWithImpl<$Res>
     Object? showColons = null,
     Object? customHeaderStyle = null,
     Object? customHeadingAlignment = null,
+    Object? language = null,
+    Object? sectionOrder = null,
   }) {
     return _then(_$BiodataImpl(
       id: null == id
@@ -1497,6 +1517,14 @@ class __$$BiodataImplCopyWithImpl<$Res>
           ? _value.customHeadingAlignment
           : customHeadingAlignment // ignore: cast_nullable_to_non_nullable
               as String,
+      language: null == language
+          ? _value.language
+          : language // ignore: cast_nullable_to_non_nullable
+              as String,
+      sectionOrder: null == sectionOrder
+          ? _value._sectionOrder
+          : sectionOrder // ignore: cast_nullable_to_non_nullable
+              as List<String>,
     ));
   }
 }
@@ -1606,10 +1634,19 @@ class _$BiodataImpl implements _Biodata {
       @HiveField(97) this.boldLabels = false,
       @HiveField(98) this.showColons = true,
       @HiveField(99) this.customHeaderStyle = '',
-      @HiveField(100) this.customHeadingAlignment = ''})
+      @HiveField(100) this.customHeadingAlignment = '',
+      @HiveField(101) this.language = 'en',
+      @HiveField(102) final List<String> sectionOrder = const [
+        'personal',
+        'family',
+        'contact',
+        'education',
+        'additional'
+      ]})
       : _photos = photos,
         _customFields = customFields,
-        _siblings = siblings;
+        _siblings = siblings,
+        _sectionOrder = sectionOrder;
 
   factory _$BiodataImpl.fromJson(Map<String, dynamic> json) =>
       _$$BiodataImplFromJson(json);
@@ -2039,10 +2076,23 @@ class _$BiodataImpl implements _Biodata {
   @JsonKey()
   @HiveField(100)
   final String customHeadingAlignment;
+  @override
+  @JsonKey()
+  @HiveField(101)
+  final String language;
+  final List<String> _sectionOrder;
+  @override
+  @JsonKey()
+  @HiveField(102)
+  List<String> get sectionOrder {
+    if (_sectionOrder is EqualUnmodifiableListView) return _sectionOrder;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(_sectionOrder);
+  }
 
   @override
   String toString() {
-    return 'Biodata(id: $id, name: $name, createdAt: $createdAt, updatedAt: $updatedAt, templateId: $templateId, isFavorite: $isFavorite, isArchived: $isArchived, isDraft: $isDraft, downloadCount: $downloadCount, fullName: $fullName, gender: $gender, dateOfBirth: $dateOfBirth, age: $age, height: $height, weight: $weight, religion: $religion, caste: $caste, subCaste: $subCaste, motherTongue: $motherTongue, maritalStatus: $maritalStatus, bloodGroup: $bloodGroup, complexion: $complexion, manglik: $manglik, horoscope: $horoscope, rashi: $rashi, nakshatra: $nakshatra, gotra: $gotra, birthPlace: $birthPlace, birthTime: $birthTime, aboutMe: $aboutMe, qualification: $qualification, college: $college, university: $university, occupation: $occupation, company: $company, business: $business, designation: $designation, annualIncome: $annualIncome, fatherName: $fatherName, fatherOccupation: $fatherOccupation, motherName: $motherName, motherOccupation: $motherOccupation, brothers: $brothers, sisters: $sisters, familyType: $familyType, familyValues: $familyValues, nativePlace: $nativePlace, diet: $diet, smoking: $smoking, drinking: $drinking, languages: $languages, hobbies: $hobbies, personality: $personality, mobile: $mobile, whatsapp: $whatsapp, email: $email, address: $address, city: $city, state: $state, country: $country, preferredAge: $preferredAge, preferredHeight: $preferredHeight, preferredEducation: $preferredEducation, preferredOccupation: $preferredOccupation, preferredReligion: $preferredReligion, preferredLocation: $preferredLocation, expectations: $expectations, photos: $photos, profilePhotoPath: $profilePhotoPath, customFields: $customFields, siblings: $siblings, grandFatherName: $grandFatherName, grandFatherOccupation: $grandFatherOccupation, grandMotherName: $grandMotherName, familyStatus: $familyStatus, familyDescription: $familyDescription, contactPerson: $contactPerson, contactPersonRelation: $contactPersonRelation, alternateNumber: $alternateNumber, pinCode: $pinCode, selectedFontId: $selectedFontId, userId: $userId, photoAlignment: $photoAlignment, headerIcon: $headerIcon, customHeadingFontSize: $customHeadingFontSize, customBodyFontSize: $customBodyFontSize, contentAlignment: $contentAlignment, showFooterLine: $showFooterLine, customFieldSpacing: $customFieldSpacing, customSectionSpacing: $customSectionSpacing, customMargin: $customMargin, customPrimaryColor: $customPrimaryColor, customBackgroundColor: $customBackgroundColor, customPhotoShape: $customPhotoShape, customPhotoSize: $customPhotoSize, showPhotoBorder: $showPhotoBorder, uppercaseHeadings: $uppercaseHeadings, boldLabels: $boldLabels, showColons: $showColons, customHeaderStyle: $customHeaderStyle, customHeadingAlignment: $customHeadingAlignment)';
+    return 'Biodata(id: $id, name: $name, createdAt: $createdAt, updatedAt: $updatedAt, templateId: $templateId, isFavorite: $isFavorite, isArchived: $isArchived, isDraft: $isDraft, downloadCount: $downloadCount, fullName: $fullName, gender: $gender, dateOfBirth: $dateOfBirth, age: $age, height: $height, weight: $weight, religion: $religion, caste: $caste, subCaste: $subCaste, motherTongue: $motherTongue, maritalStatus: $maritalStatus, bloodGroup: $bloodGroup, complexion: $complexion, manglik: $manglik, horoscope: $horoscope, rashi: $rashi, nakshatra: $nakshatra, gotra: $gotra, birthPlace: $birthPlace, birthTime: $birthTime, aboutMe: $aboutMe, qualification: $qualification, college: $college, university: $university, occupation: $occupation, company: $company, business: $business, designation: $designation, annualIncome: $annualIncome, fatherName: $fatherName, fatherOccupation: $fatherOccupation, motherName: $motherName, motherOccupation: $motherOccupation, brothers: $brothers, sisters: $sisters, familyType: $familyType, familyValues: $familyValues, nativePlace: $nativePlace, diet: $diet, smoking: $smoking, drinking: $drinking, languages: $languages, hobbies: $hobbies, personality: $personality, mobile: $mobile, whatsapp: $whatsapp, email: $email, address: $address, city: $city, state: $state, country: $country, preferredAge: $preferredAge, preferredHeight: $preferredHeight, preferredEducation: $preferredEducation, preferredOccupation: $preferredOccupation, preferredReligion: $preferredReligion, preferredLocation: $preferredLocation, expectations: $expectations, photos: $photos, profilePhotoPath: $profilePhotoPath, customFields: $customFields, siblings: $siblings, grandFatherName: $grandFatherName, grandFatherOccupation: $grandFatherOccupation, grandMotherName: $grandMotherName, familyStatus: $familyStatus, familyDescription: $familyDescription, contactPerson: $contactPerson, contactPersonRelation: $contactPersonRelation, alternateNumber: $alternateNumber, pinCode: $pinCode, selectedFontId: $selectedFontId, userId: $userId, photoAlignment: $photoAlignment, headerIcon: $headerIcon, customHeadingFontSize: $customHeadingFontSize, customBodyFontSize: $customBodyFontSize, contentAlignment: $contentAlignment, showFooterLine: $showFooterLine, customFieldSpacing: $customFieldSpacing, customSectionSpacing: $customSectionSpacing, customMargin: $customMargin, customPrimaryColor: $customPrimaryColor, customBackgroundColor: $customBackgroundColor, customPhotoShape: $customPhotoShape, customPhotoSize: $customPhotoSize, showPhotoBorder: $showPhotoBorder, uppercaseHeadings: $uppercaseHeadings, boldLabels: $boldLabels, showColons: $showColons, customHeaderStyle: $customHeaderStyle, customHeadingAlignment: $customHeadingAlignment, language: $language, sectionOrder: $sectionOrder)';
   }
 
   @override
@@ -2193,7 +2243,9 @@ class _$BiodataImpl implements _Biodata {
             (identical(other.boldLabels, boldLabels) || other.boldLabels == boldLabels) &&
             (identical(other.showColons, showColons) || other.showColons == showColons) &&
             (identical(other.customHeaderStyle, customHeaderStyle) || other.customHeaderStyle == customHeaderStyle) &&
-            (identical(other.customHeadingAlignment, customHeadingAlignment) || other.customHeadingAlignment == customHeadingAlignment));
+            (identical(other.customHeadingAlignment, customHeadingAlignment) || other.customHeadingAlignment == customHeadingAlignment) &&
+            (identical(other.language, language) || other.language == language) &&
+            const DeepCollectionEquality().equals(other._sectionOrder, _sectionOrder));
   }
 
   @JsonKey(ignore: true)
@@ -2300,7 +2352,9 @@ class _$BiodataImpl implements _Biodata {
         boldLabels,
         showColons,
         customHeaderStyle,
-        customHeadingAlignment
+        customHeadingAlignment,
+        language,
+        const DeepCollectionEquality().hash(_sectionOrder)
       ]);
 
   @JsonKey(ignore: true)
@@ -2419,7 +2473,9 @@ abstract class _Biodata implements Biodata {
       @HiveField(97) final bool boldLabels,
       @HiveField(98) final bool showColons,
       @HiveField(99) final String customHeaderStyle,
-      @HiveField(100) final String customHeadingAlignment}) = _$BiodataImpl;
+      @HiveField(100) final String customHeadingAlignment,
+      @HiveField(101) final String language,
+      @HiveField(102) final List<String> sectionOrder}) = _$BiodataImpl;
 
   factory _Biodata.fromJson(Map<String, dynamic> json) = _$BiodataImpl.fromJson;
 
@@ -2733,6 +2789,12 @@ abstract class _Biodata implements Biodata {
   @override
   @HiveField(100)
   String get customHeadingAlignment;
+  @override
+  @HiveField(101)
+  String get language;
+  @override
+  @HiveField(102)
+  List<String> get sectionOrder;
   @override
   @JsonKey(ignore: true)
   _$$BiodataImplCopyWith<_$BiodataImpl> get copyWith =>

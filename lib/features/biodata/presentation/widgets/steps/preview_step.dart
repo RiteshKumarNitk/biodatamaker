@@ -9,7 +9,9 @@ import 'package:biodata_maker/features/templates/data/models/theme_config.dart';
 import 'package:biodata_maker/features/templates/data/models/theme_engine.dart';
 import 'package:biodata_maker/features/templates/data/repositories/template_repository.dart';
 import 'package:biodata_maker/features/preview/presentation/screens/final_preview_screen.dart';
+import 'package:biodata_maker/features/settings/data/repositories/settings_repository.dart';
 import 'package:biodata_maker/shared/widgets/biodata_renderer.dart';
+import 'package:biodata_maker/core/services/ad_service.dart';
 
 class PreviewStep extends StatefulWidget {
   final Biodata biodata;
@@ -90,6 +92,26 @@ class _PreviewStepState extends State<PreviewStep> {
           onEditSection: (sectionKey) => _editSection(context, sectionKey),
         ),
         const SizedBox(height: 16),
+        if (!sl<SettingsRepository>().getSettings().isWatermarkRemoved) ...[
+          SizedBox(
+            width: double.infinity,
+            height: 48,
+            child: FilledButton.tonalIcon(
+              onPressed: () {
+                sl<AdService>().showRewardedAd(
+                  onEarnedReward: () {
+                    final repo = sl<SettingsRepository>();
+                    repo.updateSettings(repo.getSettings().copyWith(isWatermarkRemoved: true));
+                    setState(() {}); // Re-render to hide button
+                  },
+                );
+              },
+              icon: const Icon(Icons.workspace_premium),
+              label: Text(Strings.tr('Remove Watermark (Watch Ad)')),
+            ),
+          ),
+          const SizedBox(height: 16),
+        ],
         SizedBox(
           width: double.infinity,
           height: 48,
@@ -98,7 +120,7 @@ class _PreviewStepState extends State<PreviewStep> {
               builder: (_) => FinalPreviewScreen(biodata: widget.biodata, theme: t),
             )),
             icon: const Icon(Icons.picture_as_pdf_outlined),
-            label: Text(Strings.tr('Preview Final PDF')),
+            label: Text(Strings.tr('Preview Final PDF & Share')),
           ),
         ),
         const SizedBox(height: 32),
