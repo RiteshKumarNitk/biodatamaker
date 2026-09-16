@@ -600,8 +600,12 @@ class BiodataRenderer extends StatelessWidget {
     }
     
     Alignment alignment = Alignment.centerLeft;
-    if (theme.headingAlignment == 'center') alignment = Alignment.center;
-    if (theme.headingAlignment == 'right') alignment = Alignment.centerRight;
+    final alignConfig = (biodata != null && biodata.customHeadingAlignment.isNotEmpty) 
+        ? biodata.customHeadingAlignment 
+        : theme.headingAlignment;
+        
+    if (alignConfig == 'center') alignment = Alignment.center;
+    if (alignConfig == 'right') alignment = Alignment.centerRight;
 
     return Align(alignment: alignment, child: titleWidget);
   }
@@ -1130,8 +1134,12 @@ class BiodataRenderer extends StatelessWidget {
     }
     
     pw.Alignment alignment = pw.Alignment.centerLeft;
-    if (theme.headingAlignment == 'center') alignment = pw.Alignment.center;
-    if (theme.headingAlignment == 'right') alignment = pw.Alignment.centerRight;
+    final alignConfig = biodata.customHeadingAlignment.isNotEmpty 
+        ? biodata.customHeadingAlignment 
+        : theme.headingAlignment;
+        
+    if (alignConfig == 'center') alignment = pw.Alignment.center;
+    if (alignConfig == 'right') alignment = pw.Alignment.centerRight;
 
     return pw.Padding(
       padding: const pw.EdgeInsets.only(bottom: 8),

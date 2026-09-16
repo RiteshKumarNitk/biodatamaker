@@ -8,6 +8,7 @@ import 'package:biodata_maker/core/i18n/strings.dart';
 import 'package:biodata_maker/core/services/hive_service.dart';
 import 'package:biodata_maker/core/services/service_locator.dart';
 import 'package:biodata_maker/core/theme/app_theme.dart';
+import 'package:biodata_maker/core/services/ad_service.dart';
 import 'package:biodata_maker/core/router/app_router.dart';
 import 'package:biodata_maker/features/auth/data/models/user.dart';
 import 'package:biodata_maker/features/auth/presentation/bloc/auth_bloc.dart';
@@ -27,12 +28,6 @@ void main() async {
   final hiveService = HiveService();
   await hiveService.init();
 
-  try {
-    await MobileAds.instance.initialize();
-  } catch (_) {
-    // Ads may fail on some devices; app must still work offline
-  }
-
   await SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
     DeviceOrientation.portraitDown,
@@ -46,6 +41,12 @@ void main() async {
   );
 
   setupServiceLocator(hiveService);
+
+  try {
+    await sl<AdService>().initialize();
+  } catch (_) {
+    // Ads may fail on some devices; app must still work offline
+  }
 
   // Seed default templates on initial startup if empty
   await _seedTemplates(hiveService);

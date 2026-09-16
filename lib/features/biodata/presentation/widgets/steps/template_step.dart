@@ -11,6 +11,7 @@ import 'package:biodata_maker/features/templates/data/models/theme_engine.dart';
 import 'package:biodata_maker/shared/widgets/sample_biodata.dart';
 import 'package:biodata_maker/core/services/pdf_service.dart';
 import 'package:biodata_maker/core/services/service_locator.dart';
+import 'package:biodata_maker/features/settings/data/repositories/settings_repository.dart';
 import 'package:printing/printing.dart';
 
 class TemplateStep extends StatefulWidget {
@@ -41,25 +42,37 @@ class _TemplateStepState extends State<TemplateStep> {
     );
   }
 
-  void _loadTemplates() {
+  Future<void> _loadTemplates() async {
     try {
       final repo = sl<TemplateRepository>();
-      var templates = repo.getAll();
-      if (templates.isEmpty) {
-        templates = ThemeEngine.defaultTemplates;
+      var allTemplates = repo.getAll();
+      if (allTemplates.isEmpty) {
+        allTemplates = ThemeEngine.defaultTemplates;
       }
-      setState(() {
-        _templates = templates;
-        _isLoading = false;
-      });
-      if (widget.biodata.templateId.isEmpty && templates.isNotEmpty) {
-        widget.onUpdate(widget.biodata.copyWith(templateId: templates.first.id));
+      
+      final settingsRepo = sl<SettingsRepository>();
+      final unlocked = await settingsRepo.getUnlockedTemplates();
+      
+      final templates = allTemplates.where((t) => !t.isPremium || unlocked.contains(t.id)).toList();
+
+      if (mounted) {
+        setState(() {
+          _templates = templates;
+          _isLoading = false;
+        });
+        if (widget.biodata.templateId.isEmpty && templates.isNotEmpty) {
+          widget.onUpdate(widget.biodata.copyWith(templateId: templates.first.id));
+        } else if (templates.isNotEmpty && !templates.any((t) => t.id == widget.biodata.templateId)) {
+          widget.onUpdate(widget.biodata.copyWith(templateId: templates.first.id));
+        }
       }
     } catch (e) {
-      setState(() {
-        _templates = ThemeEngine.defaultTemplates;
-        _isLoading = false;
-      });
+      if (mounted) {
+        setState(() {
+          _templates = ThemeEngine.defaultTemplates.where((t) => !t.isPremium).toList();
+          _isLoading = false;
+        });
+      }
     }
   }
 
@@ -303,6 +316,28 @@ class _LayoutControls extends StatelessWidget {
               },
             ),
             const SizedBox(height: 16),
+            Text(Strings.tr('Heading Alignment'), style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.onSurfaceVariant)),
+            const SizedBox(height: 4),
+            DropdownButtonFormField<String>(
+              value: biodata.customHeadingAlignment.isEmpty ? 'default' : biodata.customHeadingAlignment,
+              decoration: InputDecoration(
+                border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
+                contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                isDense: true,
+              ),
+              items: const [
+                DropdownMenuItem(value: 'default', child: Text('Default')),
+                DropdownMenuItem(value: 'left', child: Text('Left')),
+                DropdownMenuItem(value: 'center', child: Text('Center')),
+                DropdownMenuItem(value: 'right', child: Text('Right')),
+              ],
+              onChanged: (String? value) {
+                if (value != null) {
+                  onUpdate(biodata.copyWith(customHeadingAlignment: value == 'default' ? '' : value));
+                }
+              },
+            ),
+            const SizedBox(height: 16),
             SwitchListTile(
               contentPadding: EdgeInsets.zero,
               title: Text(Strings.tr('Show Footer Separator Line'), style: theme.textTheme.bodyMedium),
@@ -426,6 +461,26 @@ class _LayoutControls extends StatelessWidget {
               divisions: 60,
               label: biodata.customMargin > 0 ? biodata.customMargin.toStringAsFixed(1) : 'Default',
               onChanged: (val) => onUpdate(biodata.copyWith(customMargin: val)),
+            ),
+            const SizedBox(height: 16),
+            SizedBox(
+              width: double.infinity,
+              child: OutlinedButton.icon(
+                icon: const Icon(Icons.settings_suggest),
+                label: Text(Strings.tr('Advanced Options & Colors')),
+                onPressed: () {
+                  showModalBottomSheet(
+                    context: context,
+                    isScrollControlled: true,
+                    backgroundColor: Colors.transparent,
+                    builder: (_) => _AdvancedLayoutBottomSheet(
+                      biodata: biodata,
+                      onUpdate: onUpdate,
+                      template: template,
+                    ),
+                  );
+                },
+              ),
             ),
           ],
         ),

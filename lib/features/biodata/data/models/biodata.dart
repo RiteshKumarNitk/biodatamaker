@@ -118,6 +118,7 @@ class Biodata with _$Biodata {
     @HiveField(97) @Default(false) bool boldLabels,
     @HiveField(98) @Default(true) bool showColons,
     @HiveField(99) @Default('') String customHeaderStyle,
+    @HiveField(100) @Default('') String customHeadingAlignment,
   }) = _Biodata;
 
   factory Biodata.fromJson(Map<String, dynamic> json) => _$BiodataFromJson(json);

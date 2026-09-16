@@ -117,13 +117,14 @@ class BiodataAdapter extends TypeAdapter<Biodata> {
       boldLabels: fields[97] as bool,
       showColons: fields[98] as bool,
       customHeaderStyle: fields[99] as String,
+      customHeadingAlignment: fields[100] as String,
     );
   }
 
   @override
   void write(BinaryWriter writer, Biodata obj) {
     writer
-      ..writeByte(100)
+      ..writeByte(101)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
@@ -323,7 +324,9 @@ class BiodataAdapter extends TypeAdapter<Biodata> {
       ..writeByte(98)
       ..write(obj.showColons)
       ..writeByte(99)
-      ..write(obj.customHeaderStyle);
+      ..write(obj.customHeaderStyle)
+      ..writeByte(100)
+      ..write(obj.customHeadingAlignment);
   }
 
   @override
@@ -457,6 +460,7 @@ _$BiodataImpl _$$BiodataImplFromJson(Map<String, dynamic> json) =>
       boldLabels: json['boldLabels'] as bool? ?? false,
       showColons: json['showColons'] as bool? ?? true,
       customHeaderStyle: json['customHeaderStyle'] as String? ?? '',
+      customHeadingAlignment: json['customHeadingAlignment'] as String? ?? '',
     );
 
 Map<String, dynamic> _$$BiodataImplToJson(_$BiodataImpl instance) =>
@@ -561,4 +565,5 @@ Map<String, dynamic> _$$BiodataImplToJson(_$BiodataImpl instance) =>
       'boldLabels': instance.boldLabels,
       'showColons': instance.showColons,
       'customHeaderStyle': instance.customHeaderStyle,
+      'customHeadingAlignment': instance.customHeadingAlignment,
     };
