@@ -19,6 +19,11 @@ class AssetConstants {
   static const String onboarding2 = 'assets/lottie/onboarding2.json';
   static const String onboarding3 = 'assets/lottie/onboarding3.json';
 
+  // Images
+  static const String onboardingImage1 = 'assets/images/onboarding1.png';
+  static const String onboardingImage2 = 'assets/images/onboarding2.png';
+  static const String onboardingImage3 = 'assets/images/onboarding3.png';
+
   static String decorationAsset(String key) {
     switch (key) {
       case 'mandala': return mandala;

@@ -71,7 +71,7 @@ dependencies:
   url_launcher: ^6.3.0
 
   # In-app purchases (real store billing for premium)
-  in_app_purchase: ^3.2.0
+  # removed in favor of rewarded ads
 
   # Save exported images to the device gallery
   gal: ^2.3.0
@@ -84,6 +84,7 @@ dependencies:
 
   # Ads
   google_mobile_ads: ^5.3.0
+  flutter_colorpicker: ^1.1.0
 
 dev_dependencies:
   flutter_test:
@@ -106,6 +107,7 @@ flutter:
     - assets/templates/
     - assets/fonts/
     - assets/icon.png
+    - assets/images/
 
 flutter_native_splash:
   color: "#C62828"

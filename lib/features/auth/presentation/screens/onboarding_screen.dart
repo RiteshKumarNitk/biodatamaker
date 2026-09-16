@@ -21,17 +21,17 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     _OnboardingPage(
       title: 'Create Beautiful Biodata',
       subtitle: 'Make professional marriage biodatas in minutes',
-      lottie: AssetConstants.onboarding1,
+      image: AssetConstants.onboardingImage1,
     ),
     _OnboardingPage(
       title: 'Choose Stunning Templates',
       subtitle: 'Pick from premium temple and modern designs',
-      lottie: AssetConstants.onboarding2,
+      image: AssetConstants.onboardingImage2,
     ),
     _OnboardingPage(
       title: 'Share with Family',
       subtitle: 'Download as PDF and share with potential matches',
-      lottie: AssetConstants.onboarding3,
+      image: AssetConstants.onboardingImage3,
     ),
   ];
 
@@ -95,8 +95,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                         Expanded(
                           flex: 5,
                           child: Center(
-                            child: Lottie.asset(
-                              page.lottie,
+                            child: Image.asset(
+                              page.image,
                               fit: BoxFit.contain,
                               errorBuilder: (context, error, stackTrace) {
                                 return Icon(
@@ -208,11 +208,11 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
 class _OnboardingPage {
   final String title;
   final String subtitle;
-  final String lottie;
+  final String image;
 
   const _OnboardingPage({
     required this.title,
     required this.subtitle,
-    required this.lottie,
+    required this.image,
   });
 }

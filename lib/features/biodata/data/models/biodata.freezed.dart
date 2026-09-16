@@ -199,6 +199,34 @@ mixin _$Biodata {
   double get customHeadingFontSize => throw _privateConstructorUsedError;
   @HiveField(85)
   double get customBodyFontSize => throw _privateConstructorUsedError;
+  @HiveField(86)
+  String get contentAlignment => throw _privateConstructorUsedError;
+  @HiveField(87)
+  bool get showFooterLine => throw _privateConstructorUsedError;
+  @HiveField(88)
+  double get customFieldSpacing => throw _privateConstructorUsedError;
+  @HiveField(89)
+  double get customSectionSpacing => throw _privateConstructorUsedError;
+  @HiveField(90)
+  double get customMargin => throw _privateConstructorUsedError;
+  @HiveField(91)
+  int get customPrimaryColor => throw _privateConstructorUsedError;
+  @HiveField(92)
+  int get customBackgroundColor => throw _privateConstructorUsedError;
+  @HiveField(93)
+  String get customPhotoShape => throw _privateConstructorUsedError;
+  @HiveField(94)
+  double get customPhotoSize => throw _privateConstructorUsedError;
+  @HiveField(95)
+  bool get showPhotoBorder => throw _privateConstructorUsedError;
+  @HiveField(96)
+  bool get uppercaseHeadings => throw _privateConstructorUsedError;
+  @HiveField(97)
+  bool get boldLabels => throw _privateConstructorUsedError;
+  @HiveField(98)
+  bool get showColons => throw _privateConstructorUsedError;
+  @HiveField(99)
+  String get customHeaderStyle => throw _privateConstructorUsedError;
 
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
   @JsonKey(ignore: true)
@@ -296,7 +324,21 @@ abstract class $BiodataCopyWith<$Res> {
       @HiveField(82) String photoAlignment,
       @HiveField(83) String headerIcon,
       @HiveField(84) double customHeadingFontSize,
-      @HiveField(85) double customBodyFontSize});
+      @HiveField(85) double customBodyFontSize,
+      @HiveField(86) String contentAlignment,
+      @HiveField(87) bool showFooterLine,
+      @HiveField(88) double customFieldSpacing,
+      @HiveField(89) double customSectionSpacing,
+      @HiveField(90) double customMargin,
+      @HiveField(91) int customPrimaryColor,
+      @HiveField(92) int customBackgroundColor,
+      @HiveField(93) String customPhotoShape,
+      @HiveField(94) double customPhotoSize,
+      @HiveField(95) bool showPhotoBorder,
+      @HiveField(96) bool uppercaseHeadings,
+      @HiveField(97) bool boldLabels,
+      @HiveField(98) bool showColons,
+      @HiveField(99) String customHeaderStyle});
 }
 
 /// @nodoc
@@ -398,6 +440,20 @@ class _$BiodataCopyWithImpl<$Res, $Val extends Biodata>
     Object? headerIcon = null,
     Object? customHeadingFontSize = null,
     Object? customBodyFontSize = null,
+    Object? contentAlignment = null,
+    Object? showFooterLine = null,
+    Object? customFieldSpacing = null,
+    Object? customSectionSpacing = null,
+    Object? customMargin = null,
+    Object? customPrimaryColor = null,
+    Object? customBackgroundColor = null,
+    Object? customPhotoShape = null,
+    Object? customPhotoSize = null,
+    Object? showPhotoBorder = null,
+    Object? uppercaseHeadings = null,
+    Object? boldLabels = null,
+    Object? showColons = null,
+    Object? customHeaderStyle = null,
   }) {
     return _then(_value.copyWith(
       id: null == id
@@ -744,6 +800,62 @@ class _$BiodataCopyWithImpl<$Res, $Val extends Biodata>
           ? _value.customBodyFontSize
           : customBodyFontSize // ignore: cast_nullable_to_non_nullable
               as double,
+      contentAlignment: null == contentAlignment
+          ? _value.contentAlignment
+          : contentAlignment // ignore: cast_nullable_to_non_nullable
+              as String,
+      showFooterLine: null == showFooterLine
+          ? _value.showFooterLine
+          : showFooterLine // ignore: cast_nullable_to_non_nullable
+              as bool,
+      customFieldSpacing: null == customFieldSpacing
+          ? _value.customFieldSpacing
+          : customFieldSpacing // ignore: cast_nullable_to_non_nullable
+              as double,
+      customSectionSpacing: null == customSectionSpacing
+          ? _value.customSectionSpacing
+          : customSectionSpacing // ignore: cast_nullable_to_non_nullable
+              as double,
+      customMargin: null == customMargin
+          ? _value.customMargin
+          : customMargin // ignore: cast_nullable_to_non_nullable
+              as double,
+      customPrimaryColor: null == customPrimaryColor
+          ? _value.customPrimaryColor
+          : customPrimaryColor // ignore: cast_nullable_to_non_nullable
+              as int,
+      customBackgroundColor: null == customBackgroundColor
+          ? _value.customBackgroundColor
+          : customBackgroundColor // ignore: cast_nullable_to_non_nullable
+              as int,
+      customPhotoShape: null == customPhotoShape
+          ? _value.customPhotoShape
+          : customPhotoShape // ignore: cast_nullable_to_non_nullable
+              as String,
+      customPhotoSize: null == customPhotoSize
+          ? _value.customPhotoSize
+          : customPhotoSize // ignore: cast_nullable_to_non_nullable
+              as double,
+      showPhotoBorder: null == showPhotoBorder
+          ? _value.showPhotoBorder
+          : showPhotoBorder // ignore: cast_nullable_to_non_nullable
+              as bool,
+      uppercaseHeadings: null == uppercaseHeadings
+          ? _value.uppercaseHeadings
+          : uppercaseHeadings // ignore: cast_nullable_to_non_nullable
+              as bool,
+      boldLabels: null == boldLabels
+          ? _value.boldLabels
+          : boldLabels // ignore: cast_nullable_to_non_nullable
+              as bool,
+      showColons: null == showColons
+          ? _value.showColons
+          : showColons // ignore: cast_nullable_to_non_nullable
+              as bool,
+      customHeaderStyle: null == customHeaderStyle
+          ? _value.customHeaderStyle
+          : customHeaderStyle // ignore: cast_nullable_to_non_nullable
+              as String,
     ) as $Val);
   }
 }
@@ -841,7 +953,21 @@ abstract class _$$BiodataImplCopyWith<$Res> implements $BiodataCopyWith<$Res> {
       @HiveField(82) String photoAlignment,
       @HiveField(83) String headerIcon,
       @HiveField(84) double customHeadingFontSize,
-      @HiveField(85) double customBodyFontSize});
+      @HiveField(85) double customBodyFontSize,
+      @HiveField(86) String contentAlignment,
+      @HiveField(87) bool showFooterLine,
+      @HiveField(88) double customFieldSpacing,
+      @HiveField(89) double customSectionSpacing,
+      @HiveField(90) double customMargin,
+      @HiveField(91) int customPrimaryColor,
+      @HiveField(92) int customBackgroundColor,
+      @HiveField(93) String customPhotoShape,
+      @HiveField(94) double customPhotoSize,
+      @HiveField(95) bool showPhotoBorder,
+      @HiveField(96) bool uppercaseHeadings,
+      @HiveField(97) bool boldLabels,
+      @HiveField(98) bool showColons,
+      @HiveField(99) String customHeaderStyle});
 }
 
 /// @nodoc
@@ -941,6 +1067,20 @@ class __$$BiodataImplCopyWithImpl<$Res>
     Object? headerIcon = null,
     Object? customHeadingFontSize = null,
     Object? customBodyFontSize = null,
+    Object? contentAlignment = null,
+    Object? showFooterLine = null,
+    Object? customFieldSpacing = null,
+    Object? customSectionSpacing = null,
+    Object? customMargin = null,
+    Object? customPrimaryColor = null,
+    Object? customBackgroundColor = null,
+    Object? customPhotoShape = null,
+    Object? customPhotoSize = null,
+    Object? showPhotoBorder = null,
+    Object? uppercaseHeadings = null,
+    Object? boldLabels = null,
+    Object? showColons = null,
+    Object? customHeaderStyle = null,
   }) {
     return _then(_$BiodataImpl(
       id: null == id
@@ -1287,6 +1427,62 @@ class __$$BiodataImplCopyWithImpl<$Res>
           ? _value.customBodyFontSize
           : customBodyFontSize // ignore: cast_nullable_to_non_nullable
               as double,
+      contentAlignment: null == contentAlignment
+          ? _value.contentAlignment
+          : contentAlignment // ignore: cast_nullable_to_non_nullable
+              as String,
+      showFooterLine: null == showFooterLine
+          ? _value.showFooterLine
+          : showFooterLine // ignore: cast_nullable_to_non_nullable
+              as bool,
+      customFieldSpacing: null == customFieldSpacing
+          ? _value.customFieldSpacing
+          : customFieldSpacing // ignore: cast_nullable_to_non_nullable
+              as double,
+      customSectionSpacing: null == customSectionSpacing
+          ? _value.customSectionSpacing
+          : customSectionSpacing // ignore: cast_nullable_to_non_nullable
+              as double,
+      customMargin: null == customMargin
+          ? _value.customMargin
+          : customMargin // ignore: cast_nullable_to_non_nullable
+              as double,
+      customPrimaryColor: null == customPrimaryColor
+          ? _value.customPrimaryColor
+          : customPrimaryColor // ignore: cast_nullable_to_non_nullable
+              as int,
+      customBackgroundColor: null == customBackgroundColor
+          ? _value.customBackgroundColor
+          : customBackgroundColor // ignore: cast_nullable_to_non_nullable
+              as int,
+      customPhotoShape: null == customPhotoShape
+          ? _value.customPhotoShape
+          : customPhotoShape // ignore: cast_nullable_to_non_nullable
+              as String,
+      customPhotoSize: null == customPhotoSize
+          ? _value.customPhotoSize
+          : customPhotoSize // ignore: cast_nullable_to_non_nullable
+              as double,
+      showPhotoBorder: null == showPhotoBorder
+          ? _value.showPhotoBorder
+          : showPhotoBorder // ignore: cast_nullable_to_non_nullable
+              as bool,
+      uppercaseHeadings: null == uppercaseHeadings
+          ? _value.uppercaseHeadings
+          : uppercaseHeadings // ignore: cast_nullable_to_non_nullable
+              as bool,
+      boldLabels: null == boldLabels
+          ? _value.boldLabels
+          : boldLabels // ignore: cast_nullable_to_non_nullable
+              as bool,
+      showColons: null == showColons
+          ? _value.showColons
+          : showColons // ignore: cast_nullable_to_non_nullable
+              as bool,
+      customHeaderStyle: null == customHeaderStyle
+          ? _value.customHeaderStyle
+          : customHeaderStyle // ignore: cast_nullable_to_non_nullable
+              as String,
     ));
   }
 }
@@ -1381,7 +1577,21 @@ class _$BiodataImpl implements _Biodata {
       @HiveField(82) this.photoAlignment = 'left',
       @HiveField(83) this.headerIcon = 'none',
       @HiveField(84) this.customHeadingFontSize = 0.0,
-      @HiveField(85) this.customBodyFontSize = 0.0})
+      @HiveField(85) this.customBodyFontSize = 0.0,
+      @HiveField(86) this.contentAlignment = 'left',
+      @HiveField(87) this.showFooterLine = false,
+      @HiveField(88) this.customFieldSpacing = 0.0,
+      @HiveField(89) this.customSectionSpacing = 0.0,
+      @HiveField(90) this.customMargin = 0.0,
+      @HiveField(91) this.customPrimaryColor = 0,
+      @HiveField(92) this.customBackgroundColor = 0,
+      @HiveField(93) this.customPhotoShape = '',
+      @HiveField(94) this.customPhotoSize = 1.0,
+      @HiveField(95) this.showPhotoBorder = false,
+      @HiveField(96) this.uppercaseHeadings = false,
+      @HiveField(97) this.boldLabels = false,
+      @HiveField(98) this.showColons = true,
+      @HiveField(99) this.customHeaderStyle = ''})
       : _photos = photos,
         _customFields = customFields,
         _siblings = siblings;
@@ -1754,10 +1964,66 @@ class _$BiodataImpl implements _Biodata {
   @JsonKey()
   @HiveField(85)
   final double customBodyFontSize;
+  @override
+  @JsonKey()
+  @HiveField(86)
+  final String contentAlignment;
+  @override
+  @JsonKey()
+  @HiveField(87)
+  final bool showFooterLine;
+  @override
+  @JsonKey()
+  @HiveField(88)
+  final double customFieldSpacing;
+  @override
+  @JsonKey()
+  @HiveField(89)
+  final double customSectionSpacing;
+  @override
+  @JsonKey()
+  @HiveField(90)
+  final double customMargin;
+  @override
+  @JsonKey()
+  @HiveField(91)
+  final int customPrimaryColor;
+  @override
+  @JsonKey()
+  @HiveField(92)
+  final int customBackgroundColor;
+  @override
+  @JsonKey()
+  @HiveField(93)
+  final String customPhotoShape;
+  @override
+  @JsonKey()
+  @HiveField(94)
+  final double customPhotoSize;
+  @override
+  @JsonKey()
+  @HiveField(95)
+  final bool showPhotoBorder;
+  @override
+  @JsonKey()
+  @HiveField(96)
+  final bool uppercaseHeadings;
+  @override
+  @JsonKey()
+  @HiveField(97)
+  final bool boldLabels;
+  @override
+  @JsonKey()
+  @HiveField(98)
+  final bool showColons;
+  @override
+  @JsonKey()
+  @HiveField(99)
+  final String customHeaderStyle;
 
   @override
   String toString() {
-    return 'Biodata(id: $id, name: $name, createdAt: $createdAt, updatedAt: $updatedAt, templateId: $templateId, isFavorite: $isFavorite, isArchived: $isArchived, isDraft: $isDraft, downloadCount: $downloadCount, fullName: $fullName, gender: $gender, dateOfBirth: $dateOfBirth, age: $age, height: $height, weight: $weight, religion: $religion, caste: $caste, subCaste: $subCaste, motherTongue: $motherTongue, maritalStatus: $maritalStatus, bloodGroup: $bloodGroup, complexion: $complexion, manglik: $manglik, horoscope: $horoscope, rashi: $rashi, nakshatra: $nakshatra, gotra: $gotra, birthPlace: $birthPlace, birthTime: $birthTime, aboutMe: $aboutMe, qualification: $qualification, college: $college, university: $university, occupation: $occupation, company: $company, business: $business, designation: $designation, annualIncome: $annualIncome, fatherName: $fatherName, fatherOccupation: $fatherOccupation, motherName: $motherName, motherOccupation: $motherOccupation, brothers: $brothers, sisters: $sisters, familyType: $familyType, familyValues: $familyValues, nativePlace: $nativePlace, diet: $diet, smoking: $smoking, drinking: $drinking, languages: $languages, hobbies: $hobbies, personality: $personality, mobile: $mobile, whatsapp: $whatsapp, email: $email, address: $address, city: $city, state: $state, country: $country, preferredAge: $preferredAge, preferredHeight: $preferredHeight, preferredEducation: $preferredEducation, preferredOccupation: $preferredOccupation, preferredReligion: $preferredReligion, preferredLocation: $preferredLocation, expectations: $expectations, photos: $photos, profilePhotoPath: $profilePhotoPath, customFields: $customFields, siblings: $siblings, grandFatherName: $grandFatherName, grandFatherOccupation: $grandFatherOccupation, grandMotherName: $grandMotherName, familyStatus: $familyStatus, familyDescription: $familyDescription, contactPerson: $contactPerson, contactPersonRelation: $contactPersonRelation, alternateNumber: $alternateNumber, pinCode: $pinCode, selectedFontId: $selectedFontId, userId: $userId, photoAlignment: $photoAlignment, headerIcon: $headerIcon, customHeadingFontSize: $customHeadingFontSize, customBodyFontSize: $customBodyFontSize)';
+    return 'Biodata(id: $id, name: $name, createdAt: $createdAt, updatedAt: $updatedAt, templateId: $templateId, isFavorite: $isFavorite, isArchived: $isArchived, isDraft: $isDraft, downloadCount: $downloadCount, fullName: $fullName, gender: $gender, dateOfBirth: $dateOfBirth, age: $age, height: $height, weight: $weight, religion: $religion, caste: $caste, subCaste: $subCaste, motherTongue: $motherTongue, maritalStatus: $maritalStatus, bloodGroup: $bloodGroup, complexion: $complexion, manglik: $manglik, horoscope: $horoscope, rashi: $rashi, nakshatra: $nakshatra, gotra: $gotra, birthPlace: $birthPlace, birthTime: $birthTime, aboutMe: $aboutMe, qualification: $qualification, college: $college, university: $university, occupation: $occupation, company: $company, business: $business, designation: $designation, annualIncome: $annualIncome, fatherName: $fatherName, fatherOccupation: $fatherOccupation, motherName: $motherName, motherOccupation: $motherOccupation, brothers: $brothers, sisters: $sisters, familyType: $familyType, familyValues: $familyValues, nativePlace: $nativePlace, diet: $diet, smoking: $smoking, drinking: $drinking, languages: $languages, hobbies: $hobbies, personality: $personality, mobile: $mobile, whatsapp: $whatsapp, email: $email, address: $address, city: $city, state: $state, country: $country, preferredAge: $preferredAge, preferredHeight: $preferredHeight, preferredEducation: $preferredEducation, preferredOccupation: $preferredOccupation, preferredReligion: $preferredReligion, preferredLocation: $preferredLocation, expectations: $expectations, photos: $photos, profilePhotoPath: $profilePhotoPath, customFields: $customFields, siblings: $siblings, grandFatherName: $grandFatherName, grandFatherOccupation: $grandFatherOccupation, grandMotherName: $grandMotherName, familyStatus: $familyStatus, familyDescription: $familyDescription, contactPerson: $contactPerson, contactPersonRelation: $contactPersonRelation, alternateNumber: $alternateNumber, pinCode: $pinCode, selectedFontId: $selectedFontId, userId: $userId, photoAlignment: $photoAlignment, headerIcon: $headerIcon, customHeadingFontSize: $customHeadingFontSize, customBodyFontSize: $customBodyFontSize, contentAlignment: $contentAlignment, showFooterLine: $showFooterLine, customFieldSpacing: $customFieldSpacing, customSectionSpacing: $customSectionSpacing, customMargin: $customMargin, customPrimaryColor: $customPrimaryColor, customBackgroundColor: $customBackgroundColor, customPhotoShape: $customPhotoShape, customPhotoSize: $customPhotoSize, showPhotoBorder: $showPhotoBorder, uppercaseHeadings: $uppercaseHeadings, boldLabels: $boldLabels, showColons: $showColons, customHeaderStyle: $customHeaderStyle)';
   }
 
   @override
@@ -1893,7 +2159,21 @@ class _$BiodataImpl implements _Biodata {
             (identical(other.photoAlignment, photoAlignment) || other.photoAlignment == photoAlignment) &&
             (identical(other.headerIcon, headerIcon) || other.headerIcon == headerIcon) &&
             (identical(other.customHeadingFontSize, customHeadingFontSize) || other.customHeadingFontSize == customHeadingFontSize) &&
-            (identical(other.customBodyFontSize, customBodyFontSize) || other.customBodyFontSize == customBodyFontSize));
+            (identical(other.customBodyFontSize, customBodyFontSize) || other.customBodyFontSize == customBodyFontSize) &&
+            (identical(other.contentAlignment, contentAlignment) || other.contentAlignment == contentAlignment) &&
+            (identical(other.showFooterLine, showFooterLine) || other.showFooterLine == showFooterLine) &&
+            (identical(other.customFieldSpacing, customFieldSpacing) || other.customFieldSpacing == customFieldSpacing) &&
+            (identical(other.customSectionSpacing, customSectionSpacing) || other.customSectionSpacing == customSectionSpacing) &&
+            (identical(other.customMargin, customMargin) || other.customMargin == customMargin) &&
+            (identical(other.customPrimaryColor, customPrimaryColor) || other.customPrimaryColor == customPrimaryColor) &&
+            (identical(other.customBackgroundColor, customBackgroundColor) || other.customBackgroundColor == customBackgroundColor) &&
+            (identical(other.customPhotoShape, customPhotoShape) || other.customPhotoShape == customPhotoShape) &&
+            (identical(other.customPhotoSize, customPhotoSize) || other.customPhotoSize == customPhotoSize) &&
+            (identical(other.showPhotoBorder, showPhotoBorder) || other.showPhotoBorder == showPhotoBorder) &&
+            (identical(other.uppercaseHeadings, uppercaseHeadings) || other.uppercaseHeadings == uppercaseHeadings) &&
+            (identical(other.boldLabels, boldLabels) || other.boldLabels == boldLabels) &&
+            (identical(other.showColons, showColons) || other.showColons == showColons) &&
+            (identical(other.customHeaderStyle, customHeaderStyle) || other.customHeaderStyle == customHeaderStyle));
   }
 
   @JsonKey(ignore: true)
@@ -1985,7 +2265,21 @@ class _$BiodataImpl implements _Biodata {
         photoAlignment,
         headerIcon,
         customHeadingFontSize,
-        customBodyFontSize
+        customBodyFontSize,
+        contentAlignment,
+        showFooterLine,
+        customFieldSpacing,
+        customSectionSpacing,
+        customMargin,
+        customPrimaryColor,
+        customBackgroundColor,
+        customPhotoShape,
+        customPhotoSize,
+        showPhotoBorder,
+        uppercaseHeadings,
+        boldLabels,
+        showColons,
+        customHeaderStyle
       ]);
 
   @JsonKey(ignore: true)
@@ -2089,7 +2383,21 @@ abstract class _Biodata implements Biodata {
       @HiveField(82) final String photoAlignment,
       @HiveField(83) final String headerIcon,
       @HiveField(84) final double customHeadingFontSize,
-      @HiveField(85) final double customBodyFontSize}) = _$BiodataImpl;
+      @HiveField(85) final double customBodyFontSize,
+      @HiveField(86) final String contentAlignment,
+      @HiveField(87) final bool showFooterLine,
+      @HiveField(88) final double customFieldSpacing,
+      @HiveField(89) final double customSectionSpacing,
+      @HiveField(90) final double customMargin,
+      @HiveField(91) final int customPrimaryColor,
+      @HiveField(92) final int customBackgroundColor,
+      @HiveField(93) final String customPhotoShape,
+      @HiveField(94) final double customPhotoSize,
+      @HiveField(95) final bool showPhotoBorder,
+      @HiveField(96) final bool uppercaseHeadings,
+      @HiveField(97) final bool boldLabels,
+      @HiveField(98) final bool showColons,
+      @HiveField(99) final String customHeaderStyle}) = _$BiodataImpl;
 
   factory _Biodata.fromJson(Map<String, dynamic> json) = _$BiodataImpl.fromJson;
 
@@ -2358,6 +2666,48 @@ abstract class _Biodata implements Biodata {
   @override
   @HiveField(85)
   double get customBodyFontSize;
+  @override
+  @HiveField(86)
+  String get contentAlignment;
+  @override
+  @HiveField(87)
+  bool get showFooterLine;
+  @override
+  @HiveField(88)
+  double get customFieldSpacing;
+  @override
+  @HiveField(89)
+  double get customSectionSpacing;
+  @override
+  @HiveField(90)
+  double get customMargin;
+  @override
+  @HiveField(91)
+  int get customPrimaryColor;
+  @override
+  @HiveField(92)
+  int get customBackgroundColor;
+  @override
+  @HiveField(93)
+  String get customPhotoShape;
+  @override
+  @HiveField(94)
+  double get customPhotoSize;
+  @override
+  @HiveField(95)
+  bool get showPhotoBorder;
+  @override
+  @HiveField(96)
+  bool get uppercaseHeadings;
+  @override
+  @HiveField(97)
+  bool get boldLabels;
+  @override
+  @HiveField(98)
+  bool get showColons;
+  @override
+  @HiveField(99)
+  String get customHeaderStyle;
   @override
   @JsonKey(ignore: true)
   _$$BiodataImplCopyWith<_$BiodataImpl> get copyWith =>

@@ -12,7 +12,6 @@ import 'package:biodata_maker/features/biodata/presentation/screens/create_bioda
 import 'package:biodata_maker/features/biodata/presentation/screens/edit_biodata_screen.dart';
 import 'package:biodata_maker/features/templates/presentation/screens/templates_screen.dart';
 import 'package:biodata_maker/features/preview/presentation/screens/preview_screen.dart';
-import 'package:biodata_maker/features/preview/presentation/screens/paywall_screen.dart';
 import 'package:biodata_maker/features/profile/presentation/screens/profile_screen.dart';
 import 'package:biodata_maker/features/settings/presentation/screens/settings_screen.dart';
 import 'package:biodata_maker/features/settings/presentation/screens/privacy_policy_screen.dart';
@@ -125,11 +124,6 @@ class AppRouter {
         builder: (context, state) => PreviewScreen(
           biodataId: state.pathParameters['id']!,
         ),
-      ),
-      GoRoute(
-        path: '/paywall',
-        parentNavigatorKey: _rootNavigatorKey,
-        builder: (context, state) => const PaywallScreen(),
       ),
       GoRoute(
         path: '/settings',

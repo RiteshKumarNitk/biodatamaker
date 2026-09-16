@@ -1,6 +1,7 @@
 import 'package:biodata_maker/core/services/hive_service.dart';
 import 'package:biodata_maker/core/services/service_locator.dart';
 import 'package:biodata_maker/features/settings/data/models/user_settings.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class SettingsRepository {
   final HiveService _hiveService;
@@ -62,5 +63,25 @@ class SettingsRepository {
     if (settings.subscriptionTier == 'free') return false;
     if (settings.subscriptionExpiresAt == null) return true;
     return settings.subscriptionExpiresAt!.isAfter(DateTime.now());
+  }
+
+  Future<List<String>> getUnlockedTemplates() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getStringList('unlocked_templates') ?? [];
+  }
+
+  Future<void> unlockTemplate(String templateId) async {
+    final prefs = await SharedPreferences.getInstance();
+    final unlocked = prefs.getStringList('unlocked_templates') ?? [];
+    if (!unlocked.contains(templateId)) {
+      unlocked.add(templateId);
+      await prefs.setStringList('unlocked_templates', unlocked);
+    }
+  }
+
+  Future<bool> isTemplateUnlocked(String templateId) async {
+    final prefs = await SharedPreferences.getInstance();
+    final unlocked = prefs.getStringList('unlocked_templates') ?? [];
+    return unlocked.contains(templateId);
   }
 }

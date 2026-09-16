@@ -284,13 +284,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     trailing: const Icon(Icons.chevron_right),
                     onTap: () => context.push('/admin/dashboard'),
                   ).animate().fadeIn(delay: 50.ms).slideX(begin: 0.1),
-                const Divider(height: 1),
-                ListTile(
-                  leading: const Icon(Icons.subscriptions_outlined),
-                  title: Text(Strings.tr('My Subscription')),
-                  trailing: const Icon(Icons.chevron_right),
-                  onTap: () => context.push('/paywall'),
-                ).animate().fadeIn(delay: 100.ms).slideX(begin: 0.1),
+
                 const Divider(height: 1),
                 ListTile(
                   leading: const Icon(Icons.settings_outlined),

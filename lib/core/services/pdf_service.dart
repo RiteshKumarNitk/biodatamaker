@@ -104,6 +104,7 @@ class PdfService {
     final firstPageSpacer = useImageLayout
         ? pw.SizedBox(height: (theme.contentAreaTop - theme.continuationContentAreaTop).clamp(0.0, double.infinity))
         : null;
+    final resolvedMargin = biodata.customMargin > 0 ? biodata.customMargin : theme.margin;
     final pageMargin = useImageLayout
         ? pw.EdgeInsets.fromLTRB(
             theme.contentAreaLeft,
@@ -111,7 +112,7 @@ class PdfService {
             theme.contentAreaRight,
             theme.contentAreaBottom,
           )
-        : pw.EdgeInsets.all(theme.margin);
+        : pw.EdgeInsets.all(resolvedMargin);
 
     pdf.addPage(
       pw.MultiPage(
@@ -121,6 +122,7 @@ class PdfService {
           theme: pw.ThemeData.withFont(base: font),
           buildBackground: (context) => _buildPageBackground(
             theme,
+            biodata,
             isFirstPage: context.pageNumber == 1,
             backgroundImage: backgroundImage,
             continuationBackgroundImage: continuationBackgroundImage,
@@ -155,7 +157,8 @@ class PdfService {
   /// configures (reuse the main image, a separate continuation image, or
   /// none at all).
   static pw.Widget _buildPageBackground(
-    ThemeConfig theme, {
+    ThemeConfig theme,
+    Biodata biodata, {
     required bool isFirstPage,
     pw.MemoryImage? backgroundImage,
     pw.MemoryImage? continuationBackgroundImage,
@@ -176,14 +179,17 @@ class PdfService {
       }
     }
 
+    final bgColor = biodata.customBackgroundColor > 0 ? biodata.customBackgroundColor : theme.backgroundColor;
+    final primaryColor = biodata.customPrimaryColor > 0 ? biodata.customPrimaryColor : theme.primaryColor;
+
     final container = pw.Container(
       decoration: pw.BoxDecoration(
-        color: PdfColor.fromInt(theme.backgroundColor),
+        color: PdfColor.fromInt(bgColor),
         image: pageImage != null ? pw.DecorationImage(image: pageImage, fit: pw.BoxFit.cover) : null,
         borderRadius: pageImage != null ? null : pw.BorderRadius.circular(10),
         border: pageImage != null || theme.borderStyle == 'none'
             ? null
-            : pw.Border.all(color: PdfColor.fromInt(theme.primaryColor), width: 1.2),
+            : pw.Border.all(color: PdfColor.fromInt(primaryColor), width: 1.2),
       ),
     );
 
@@ -220,10 +226,11 @@ class PdfService {
             top: theme.photoRectTop,
             child: BiodataRenderer.pdfPhotoBox(
               theme,
+              biodata,
               profileImage,
               displayName,
-              width: theme.photoRectWidth,
-              height: theme.photoRectHeight,
+              width: theme.photoRectWidth * (biodata.customPhotoSize > 0 ? biodata.customPhotoSize : 1.0),
+              height: theme.photoRectHeight * (biodata.customPhotoSize > 0 ? biodata.customPhotoSize : 1.0),
               customFont: font,
             ),
           ),

@@ -103,13 +103,27 @@ class BiodataAdapter extends TypeAdapter<Biodata> {
       headerIcon: fields[83] as String,
       customHeadingFontSize: fields[84] as double,
       customBodyFontSize: fields[85] as double,
+      contentAlignment: fields[86] as String,
+      showFooterLine: fields[87] as bool,
+      customFieldSpacing: fields[88] as double,
+      customSectionSpacing: fields[89] as double,
+      customMargin: fields[90] as double,
+      customPrimaryColor: fields[91] as int,
+      customBackgroundColor: fields[92] as int,
+      customPhotoShape: fields[93] as String,
+      customPhotoSize: fields[94] as double,
+      showPhotoBorder: fields[95] as bool,
+      uppercaseHeadings: fields[96] as bool,
+      boldLabels: fields[97] as bool,
+      showColons: fields[98] as bool,
+      customHeaderStyle: fields[99] as String,
     );
   }
 
   @override
   void write(BinaryWriter writer, Biodata obj) {
     writer
-      ..writeByte(86)
+      ..writeByte(100)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
@@ -281,7 +295,35 @@ class BiodataAdapter extends TypeAdapter<Biodata> {
       ..writeByte(84)
       ..write(obj.customHeadingFontSize)
       ..writeByte(85)
-      ..write(obj.customBodyFontSize);
+      ..write(obj.customBodyFontSize)
+      ..writeByte(86)
+      ..write(obj.contentAlignment)
+      ..writeByte(87)
+      ..write(obj.showFooterLine)
+      ..writeByte(88)
+      ..write(obj.customFieldSpacing)
+      ..writeByte(89)
+      ..write(obj.customSectionSpacing)
+      ..writeByte(90)
+      ..write(obj.customMargin)
+      ..writeByte(91)
+      ..write(obj.customPrimaryColor)
+      ..writeByte(92)
+      ..write(obj.customBackgroundColor)
+      ..writeByte(93)
+      ..write(obj.customPhotoShape)
+      ..writeByte(94)
+      ..write(obj.customPhotoSize)
+      ..writeByte(95)
+      ..write(obj.showPhotoBorder)
+      ..writeByte(96)
+      ..write(obj.uppercaseHeadings)
+      ..writeByte(97)
+      ..write(obj.boldLabels)
+      ..writeByte(98)
+      ..write(obj.showColons)
+      ..writeByte(99)
+      ..write(obj.customHeaderStyle);
   }
 
   @override
@@ -398,6 +440,23 @@ _$BiodataImpl _$$BiodataImplFromJson(Map<String, dynamic> json) =>
           (json['customHeadingFontSize'] as num?)?.toDouble() ?? 0.0,
       customBodyFontSize:
           (json['customBodyFontSize'] as num?)?.toDouble() ?? 0.0,
+      contentAlignment: json['contentAlignment'] as String? ?? 'left',
+      showFooterLine: json['showFooterLine'] as bool? ?? false,
+      customFieldSpacing:
+          (json['customFieldSpacing'] as num?)?.toDouble() ?? 0.0,
+      customSectionSpacing:
+          (json['customSectionSpacing'] as num?)?.toDouble() ?? 0.0,
+      customMargin: (json['customMargin'] as num?)?.toDouble() ?? 0.0,
+      customPrimaryColor: (json['customPrimaryColor'] as num?)?.toInt() ?? 0,
+      customBackgroundColor:
+          (json['customBackgroundColor'] as num?)?.toInt() ?? 0,
+      customPhotoShape: json['customPhotoShape'] as String? ?? '',
+      customPhotoSize: (json['customPhotoSize'] as num?)?.toDouble() ?? 1.0,
+      showPhotoBorder: json['showPhotoBorder'] as bool? ?? false,
+      uppercaseHeadings: json['uppercaseHeadings'] as bool? ?? false,
+      boldLabels: json['boldLabels'] as bool? ?? false,
+      showColons: json['showColons'] as bool? ?? true,
+      customHeaderStyle: json['customHeaderStyle'] as String? ?? '',
     );
 
 Map<String, dynamic> _$$BiodataImplToJson(_$BiodataImpl instance) =>
@@ -488,4 +547,18 @@ Map<String, dynamic> _$$BiodataImplToJson(_$BiodataImpl instance) =>
       'headerIcon': instance.headerIcon,
       'customHeadingFontSize': instance.customHeadingFontSize,
       'customBodyFontSize': instance.customBodyFontSize,
+      'contentAlignment': instance.contentAlignment,
+      'showFooterLine': instance.showFooterLine,
+      'customFieldSpacing': instance.customFieldSpacing,
+      'customSectionSpacing': instance.customSectionSpacing,
+      'customMargin': instance.customMargin,
+      'customPrimaryColor': instance.customPrimaryColor,
+      'customBackgroundColor': instance.customBackgroundColor,
+      'customPhotoShape': instance.customPhotoShape,
+      'customPhotoSize': instance.customPhotoSize,
+      'showPhotoBorder': instance.showPhotoBorder,
+      'uppercaseHeadings': instance.uppercaseHeadings,
+      'boldLabels': instance.boldLabels,
+      'showColons': instance.showColons,
+      'customHeaderStyle': instance.customHeaderStyle,
     };

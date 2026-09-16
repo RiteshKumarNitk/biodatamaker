@@ -104,6 +104,20 @@ class Biodata with _$Biodata {
     @HiveField(83) @Default('none') String headerIcon,
     @HiveField(84) @Default(0.0) double customHeadingFontSize,
     @HiveField(85) @Default(0.0) double customBodyFontSize,
+    @HiveField(86) @Default('left') String contentAlignment,
+    @HiveField(87) @Default(false) bool showFooterLine,
+    @HiveField(88) @Default(0.0) double customFieldSpacing,
+    @HiveField(89) @Default(0.0) double customSectionSpacing,
+    @HiveField(90) @Default(0.0) double customMargin,
+    @HiveField(91) @Default(0) int customPrimaryColor,
+    @HiveField(92) @Default(0) int customBackgroundColor,
+    @HiveField(93) @Default('') String customPhotoShape,
+    @HiveField(94) @Default(1.0) double customPhotoSize,
+    @HiveField(95) @Default(false) bool showPhotoBorder,
+    @HiveField(96) @Default(false) bool uppercaseHeadings,
+    @HiveField(97) @Default(false) bool boldLabels,
+    @HiveField(98) @Default(true) bool showColons,
+    @HiveField(99) @Default('') String customHeaderStyle,
   }) = _Biodata;
 
   factory Biodata.fromJson(Map<String, dynamic> json) => _$BiodataFromJson(json);

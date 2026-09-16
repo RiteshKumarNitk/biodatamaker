@@ -7,6 +7,7 @@ import 'package:go_router/go_router.dart';
 import 'package:biodata_maker/core/i18n/strings.dart';
 import 'package:biodata_maker/core/services/service_locator.dart';
 import 'package:biodata_maker/features/settings/data/repositories/settings_repository.dart';
+import 'package:biodata_maker/core/services/ad_service.dart';
 import 'package:biodata_maker/features/templates/data/models/theme_config.dart';
 import 'package:biodata_maker/features/templates/presentation/bloc/template_bloc.dart';
 import 'package:biodata_maker/features/templates/presentation/bloc/template_event.dart';
@@ -63,7 +64,7 @@ class _TemplateContent extends StatefulWidget {
 class _TemplateContentState extends State<_TemplateContent>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
-  bool _isPremiumUser = false;
+  List<String> _unlockedTemplates = [];
 
   @override
   void initState() {
@@ -82,8 +83,8 @@ class _TemplateContentState extends State<_TemplateContent>
   }
 
   Future<void> _loadPremiumState() async {
-    final isPremium = sl<SettingsRepository>().isPremium;
-    if (mounted) setState(() => _isPremiumUser = isPremium);
+    final unlocked = await sl<SettingsRepository>().getUnlockedTemplates();
+    if (mounted) setState(() => _unlockedTemplates = unlocked);
   }
 
   void _onTabChanged() {
@@ -153,7 +154,8 @@ class _TemplateContentState extends State<_TemplateContent>
                     }
                     return _TemplateGrid(
                       templates: tabTemplates,
-                      isPremiumUser: _isPremiumUser,
+                      unlockedTemplates: _unlockedTemplates,
+                      onUnlocked: _loadPremiumState,
                     );
                   }).toList(),
                 );
@@ -169,11 +171,13 @@ class _TemplateContentState extends State<_TemplateContent>
 
 class _TemplateGrid extends StatelessWidget {
   final List<ThemeConfig> templates;
-  final bool isPremiumUser;
+  final List<String> unlockedTemplates;
+  final VoidCallback onUnlocked;
 
   const _TemplateGrid({
     required this.templates,
-    required this.isPremiumUser,
+    required this.unlockedTemplates,
+    required this.onUnlocked,
   });
 
   @override
@@ -203,7 +207,8 @@ class _TemplateGrid extends StatelessWidget {
       itemCount: templates.length,
       itemBuilder: (context, index) => _TemplateCard(
         template: templates[index],
-        isPremiumUser: isPremiumUser,
+        isUnlocked: unlockedTemplates.contains(templates[index].id),
+        onUnlocked: onUnlocked,
       ).animate().fadeIn(delay: (index * 60).ms).slideY(begin: 0.08),
     );
   }
@@ -211,16 +216,18 @@ class _TemplateGrid extends StatelessWidget {
 
 class _TemplateCard extends StatelessWidget {
   final ThemeConfig template;
-  final bool isPremiumUser;
+  final bool isUnlocked;
+  final VoidCallback onUnlocked;
 
   const _TemplateCard({
     required this.template,
-    required this.isPremiumUser,
+    required this.isUnlocked,
+    required this.onUnlocked,
   });
 
   @override
   Widget build(BuildContext context) {
-    final locked = template.isPremium && !isPremiumUser;
+    final locked = template.isPremium && !isUnlocked;
 
     return GestureDetector(
       onTap: () => _onTap(context),
@@ -261,7 +268,7 @@ class _TemplateCard extends StatelessWidget {
                                 borderRadius: BorderRadius.circular(10),
                               ),
                               child: Text(
-                                Strings.tr('PRO'),
+                                Strings.tr('Watch Ad'),
                                 style: GoogleFonts.poppins(
                                   fontSize: 10,
                                   fontWeight: FontWeight.w700,
@@ -316,18 +323,54 @@ class _TemplateCard extends StatelessWidget {
   }
 
   void _onTap(BuildContext context) {
-    final locked = template.isPremium && !isPremiumUser;
+    final locked = template.isPremium && !isUnlocked;
     if (locked) {
-      // Offer the upgrade instead of previewing a locked template.
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
+      // Offer to unlock via rewarded video
+      showDialog(
+        context: context,
+        builder: (ctx) => AlertDialog(
+          title: Text(Strings.tr('Unlock Template')),
           content: Text(Strings.tr(
-              'This template is Premium. Upgrade to unlock all designs.')),
-          behavior: SnackBarBehavior.floating,
-          action: SnackBarAction(
-            label: Strings.tr('Upgrade'),
-            onPressed: () => context.push('/paywall'),
-          ),
+              'This is a premium template. Watch a short video ad to unlock it permanently!')),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(ctx),
+              child: Text(Strings.tr('Cancel')),
+            ),
+            ElevatedButton(
+              onPressed: () async {
+                Navigator.pop(ctx);
+                // Show loading indicator
+                showDialog(
+                  context: context,
+                  barrierDismissible: false,
+                  builder: (c) => const Center(child: CircularProgressIndicator()),
+                );
+                
+                final earned = await sl<AdService>().showRewardedAd();
+                
+                // Pop loading indicator
+                if (context.mounted) Navigator.pop(context);
+                
+                if (earned) {
+                  await sl<SettingsRepository>().unlockTemplate(template.id);
+                  onUnlocked();
+                  if (context.mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                      content: Text(Strings.tr('Template unlocked successfully!')),
+                    ));
+                  }
+                } else {
+                  if (context.mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                      content: Text(Strings.tr('Ad was not completed or failed to load.')),
+                    ));
+                  }
+                }
+              },
+              child: Text(Strings.tr('Watch Ad')),
+            ),
+          ],
         ),
       );
       return;
