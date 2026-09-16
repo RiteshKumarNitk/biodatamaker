@@ -129,6 +129,7 @@ class PdfService {
             context,
             theme,
             font,
+            biodata: biodata,
             profileImage: profileImage,
             displayName: displayName,
           ),
@@ -202,6 +203,7 @@ class PdfService {
     pw.Context context,
     ThemeConfig theme,
     pw.Font font, {
+    required Biodata biodata,
     required pw.MemoryImage? profileImage,
     required String displayName,
   }) {
@@ -213,7 +215,8 @@ class PdfService {
       children: [
         if (showPhotoOverlay)
           pw.Positioned(
-            left: theme.photoRectLeft,
+            left: biodata.photoAlignment == 'right' ? null : theme.photoRectLeft,
+            right: biodata.photoAlignment == 'right' ? theme.photoRectLeft : null,
             top: theme.photoRectTop,
             child: BiodataRenderer.pdfPhotoBox(
               theme,

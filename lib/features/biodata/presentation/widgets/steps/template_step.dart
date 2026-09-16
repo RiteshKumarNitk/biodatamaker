@@ -7,7 +7,10 @@ import 'package:biodata_maker/features/templates/data/models/theme_config.dart';
 import 'package:biodata_maker/features/templates/data/repositories/template_repository.dart';
 
 import 'package:biodata_maker/features/templates/data/models/theme_engine.dart';
-import 'package:biodata_maker/shared/widgets/biodata_renderer.dart';
+import 'package:biodata_maker/shared/widgets/sample_biodata.dart';
+import 'package:biodata_maker/core/services/pdf_service.dart';
+import 'package:biodata_maker/core/services/service_locator.dart';
+import 'package:printing/printing.dart';
 
 class TemplateStep extends StatefulWidget {
   final Biodata biodata;
@@ -74,130 +77,208 @@ class _TemplateStepState extends State<TemplateStep> {
         Text(Strings.tr('Select a design template for your biodata'), style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.onSurfaceVariant)),
         const SizedBox(height: 16),
         if (!_isLoading)
-          _LiveTemplatePreview(
-            biodata: widget.biodata,
-            template: _selectedTemplate,
-          ),
-        if (!_isLoading) const SizedBox(height: 16),
-        if (_isLoading)
-          const Center(child: CircularProgressIndicator())
-        else if (_templates.isEmpty)
-          Center(
-            child: Column(
-              children: [
-                Icon(Icons.dashboard_customize, size: 64, color: theme.colorScheme.onSurfaceVariant),
-                const SizedBox(height: 12),
-                Text(Strings.tr('No templates available'), style: theme.textTheme.bodyLarge),
-              ],
-            ),
-          )
-        else
-          GridView.builder(
-            shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
-            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 2,
-              childAspectRatio: 0.7,
-              crossAxisSpacing: 12,
-              mainAxisSpacing: 12,
-            ),
-            itemCount: _templates.length,
-            itemBuilder: (context, index) {
-              final template = _templates[index];
-              final isSelected = widget.biodata.templateId == template.id;
-              final primary = _colorFromInt(template.primaryColor);
-              final secondary = _colorFromInt(template.secondaryColor);
-              final bg = _colorFromInt(template.backgroundColor);
-              return GestureDetector(
-                key: ValueKey('templateCard-${template.id}'),
-                onTap: () => widget.onUpdate(widget.biodata.copyWith(templateId: template.id)),
-                child: AnimatedContainer(
-                  duration: const Duration(milliseconds: 200),
-                  decoration: BoxDecoration(
-                    color: bg,
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(
-                      color: isSelected ? theme.colorScheme.primary : theme.colorScheme.outlineVariant,
-                      width: isSelected ? 2.5 : 1,
+          SizedBox(
+            height: 220,
+            child: _templates.isEmpty
+                ? Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(Icons.dashboard_customize, size: 64, color: theme.colorScheme.onSurfaceVariant),
+                        const SizedBox(height: 12),
+                        Text(Strings.tr('No templates available'), style: theme.textTheme.bodyLarge),
+                      ],
                     ),
-                    boxShadow: isSelected
-                        ? [
-                            BoxShadow(color: theme.colorScheme.primary.withValues(alpha: 0.3), blurRadius: 12, offset: const Offset(0, 4)),
-                            BoxShadow(color: theme.colorScheme.primary.withValues(alpha: 0.1), blurRadius: 24, offset: const Offset(0, 8)),
-                          ]
-                        : [BoxShadow(color: theme.colorScheme.shadow.withValues(alpha: 0.08), blurRadius: 6, offset: const Offset(0, 2))],
-                    image: template.backgroundImage.isNotEmpty
-                        ? DecorationImage(image: AssetImage(template.backgroundImage), fit: BoxFit.cover)
-                        : null,
-                  ),
-                  clipBehavior: Clip.antiAlias,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const SizedBox(height: 18),
-                      Expanded(
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 8),
+                  )
+                : ListView.builder(
+                    scrollDirection: Axis.horizontal,
+                    itemCount: _templates.length,
+                    itemBuilder: (context, index) {
+                      final template = _templates[index];
+                      final isSelected = widget.biodata.templateId == template.id;
+                      final primary = _colorFromInt(template.primaryColor);
+                      final secondary = _colorFromInt(template.secondaryColor);
+                      final bg = _colorFromInt(template.backgroundColor);
+                      return GestureDetector(
+                        key: ValueKey('templateCard-${template.id}'),
+                        onTap: () => widget.onUpdate(widget.biodata.copyWith(templateId: template.id)),
+                        child: AnimatedContainer(
+                          duration: const Duration(milliseconds: 200),
+                          width: 150,
+                          margin: const EdgeInsets.only(right: 12, bottom: 8),
+                          decoration: BoxDecoration(
+                            color: bg,
+                            borderRadius: BorderRadius.circular(12),
+                            border: Border.all(
+                              color: isSelected ? theme.colorScheme.primary : theme.colorScheme.outlineVariant,
+                              width: isSelected ? 2.5 : 1,
+                            ),
+                            boxShadow: isSelected
+                                ? [
+                                    BoxShadow(color: theme.colorScheme.primary.withValues(alpha: 0.3), blurRadius: 12, offset: const Offset(0, 4)),
+                                    BoxShadow(color: theme.colorScheme.primary.withValues(alpha: 0.1), blurRadius: 24, offset: const Offset(0, 8)),
+                                  ]
+                                : [BoxShadow(color: theme.colorScheme.shadow.withValues(alpha: 0.08), blurRadius: 6, offset: const Offset(0, 2))],
+                            image: template.backgroundImage.isNotEmpty
+                                ? DecorationImage(image: AssetImage(template.backgroundImage), fit: BoxFit.cover)
+                                : null,
+                          ),
+                          clipBehavior: Clip.antiAlias,
                           child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Container(
-                                width: 40,
-                                height: 40,
-                                decoration: BoxDecoration(
-                                  color: primary,
-                                  shape: BoxShape.circle,
-                                ),
-                                child: Center(
-                                  child: Text(
-                                    widget.biodata.fullName.isNotEmpty
-                                        ? widget.biodata.fullName.split(' ').map((s) => s.isNotEmpty ? s[0] : '').take(2).join().toUpperCase()
-                                        : 'BM',
-                                    style: const TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.bold),
+                              const SizedBox(height: 18),
+                              Expanded(
+                                child: Padding(
+                                  padding: const EdgeInsets.symmetric(horizontal: 8),
+                                  child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Container(
+                                        width: 40,
+                                        height: 40,
+                                        decoration: BoxDecoration(
+                                          color: primary,
+                                          shape: BoxShape.circle,
+                                        ),
+                                        child: Center(
+                                          child: Text(
+                                            widget.biodata.fullName.isNotEmpty
+                                                ? widget.biodata.fullName.split(' ').map((s) => s.isNotEmpty ? s[0] : '').take(2).join().toUpperCase()
+                                                : 'BM',
+                                            style: const TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.bold),
+                                          ),
+                                        ),
+                                      ),
+                                      const SizedBox(height: 8),
+                                      Text(
+                                        template.name,
+                                        textAlign: TextAlign.center,
+                                        maxLines: 1,
+                                        overflow: TextOverflow.ellipsis,
+                                        style: TextStyle(
+                                          color: _colorFromInt(template.textColor),
+                                          fontWeight: FontWeight.w600,
+                                          fontSize: 13,
+                                          fontFamily: template.headingFont,
+                                        ),
+                                      ),
+                                      const SizedBox(height: 2),
+                                      Text(
+                                        template.category,
+                                        style: TextStyle(
+                                          color: _colorFromInt(template.subtitleColor),
+                                          fontSize: 11,
+                                          fontFamily: template.bodyFont,
+                                        ),
+                                      ),
+                                    ],
                                   ),
                                 ),
                               ),
-                              const SizedBox(height: 8),
-                              Text(
-                                template.name,
-                                textAlign: TextAlign.center,
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                                style: TextStyle(
-                                  color: _colorFromInt(template.textColor),
-                                  fontWeight: FontWeight.w600,
-                                  fontSize: 13,
-                                  fontFamily: template.headingFont,
-                                ),
-                              ),
-                              const SizedBox(height: 2),
-                              Text(
-                                template.category,
-                                style: TextStyle(
-                                  color: _colorFromInt(template.subtitleColor),
-                                  fontSize: 11,
-                                  fontFamily: template.bodyFont,
+                              Container(
+                                height: 4,
+                                decoration: BoxDecoration(
+                                  color: secondary,
+                                  borderRadius: const BorderRadius.vertical(bottom: Radius.circular(11)),
                                 ),
                               ),
                             ],
                           ),
                         ),
-                      ),
-                      Container(
-                        height: 4,
-                        decoration: BoxDecoration(
-                          color: secondary,
-                          borderRadius: const BorderRadius.vertical(bottom: Radius.circular(11)),
-                        ),
-                      ),
-                    ],
+                      );
+                    },
                   ),
-                ),
-              );
-            },
           ),
+        const SizedBox(height: 16),
+        if (!_isLoading)
+          _LayoutControls(
+            biodata: widget.biodata,
+            onUpdate: widget.onUpdate,
+          ),
+        if (!_isLoading) const SizedBox(height: 16),
+        if (!_isLoading)
+          _LiveTemplatePreview(
+            biodata: widget.biodata,
+            template: _selectedTemplate,
+          ),
+        if (_isLoading)
+          const Center(child: CircularProgressIndicator()),
         const SizedBox(height: 32),
       ],
+    );
+  }
+}
+
+class _LayoutControls extends StatelessWidget {
+  final Biodata biodata;
+  final void Function(Biodata) onUpdate;
+
+  const _LayoutControls({required this.biodata, required this.onUpdate});
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Icon(Icons.tune, size: 18, color: theme.colorScheme.primary),
+                const SizedBox(width: 8),
+                Text(
+                  Strings.tr('Layout Details'),
+                  style: theme.textTheme.titleSmall?.copyWith(color: theme.colorScheme.primary, fontWeight: FontWeight.w600),
+                ),
+              ],
+            ),
+            const SizedBox(height: 12),
+            Text(Strings.tr('Photo Position'), style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.onSurfaceVariant)),
+            const SizedBox(height: 4),
+            SegmentedButton<String>(
+              segments: const [
+                ButtonSegment(value: 'left', icon: Icon(Icons.align_horizontal_left), label: Text('Left')),
+                ButtonSegment(value: 'right', icon: Icon(Icons.align_horizontal_right), label: Text('Right')),
+              ],
+              selected: {biodata.photoAlignment.isEmpty ? 'left' : biodata.photoAlignment},
+              onSelectionChanged: (Set<String> newSelection) {
+                onUpdate(biodata.copyWith(photoAlignment: newSelection.first));
+              },
+              style: SegmentedButton.styleFrom(
+                visualDensity: VisualDensity.compact,
+              ),
+            ),
+            const SizedBox(height: 16),
+            Text(Strings.tr('Header Icon'), style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.onSurfaceVariant)),
+            const SizedBox(height: 4),
+            DropdownButtonFormField<String>(
+              value: biodata.headerIcon.isEmpty ? 'none' : biodata.headerIcon,
+              decoration: InputDecoration(
+                border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
+                contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                isDense: true,
+              ),
+              items: const [
+                DropdownMenuItem(value: 'none', child: Text('None')),
+                DropdownMenuItem(value: 'ganesh', child: Text('Ganesh Ji')),
+                DropdownMenuItem(value: 'om', child: Text('Om')),
+                DropdownMenuItem(value: 'swastik', child: Text('Swastik')),
+                DropdownMenuItem(value: 'cross', child: Text('Cross')),
+                DropdownMenuItem(value: 'moon', child: Text('Crescent Moon')),
+                DropdownMenuItem(value: 'khanda', child: Text('Khanda')),
+              ],
+              onChanged: (String? value) {
+                if (value != null) {
+                  onUpdate(biodata.copyWith(headerIcon: value));
+                }
+              },
+            ),
+          ],
+        ),
+      ),
     );
   }
 }
@@ -260,7 +341,7 @@ class _LiveTemplatePreview extends StatelessWidget {
             const SizedBox(height: 12),
             Container(
               key: const ValueKey('templateLivePreview'),
-              height: 420,
+              height: 480,
               width: double.infinity,
               decoration: BoxDecoration(
                 color: Color(template.backgroundColor),
@@ -276,11 +357,14 @@ class _LiveTemplatePreview extends StatelessWidget {
               ),
               clipBehavior: Clip.antiAlias,
               child: IgnorePointer(
-                child: SingleChildScrollView(
-                  child: BiodataRenderer(
-                    biodata: biodata,
-                    theme: template,
-                  ),
+                child: PdfPreview(
+                  build: (format) => sl<PdfService>().generatePdf(biodata, template),
+                  allowPrinting: false,
+                  allowSharing: false,
+                  canChangePageFormat: false,
+                  canChangeOrientation: false,
+                  canDebug: false,
+                  scrollViewDecoration: const BoxDecoration(color: Colors.transparent),
                 ),
               ),
             ),

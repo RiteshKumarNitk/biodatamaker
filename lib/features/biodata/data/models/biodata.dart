@@ -100,6 +100,10 @@ class Biodata with _$Biodata {
     // defaultValue makes the generated adapter null-safe when deserializing
     // rows written before this field existed (fields[81] == null → '').
     @HiveField(81, defaultValue: '') @Default('') String userId,
+    @HiveField(82) @Default('left') String photoAlignment,
+    @HiveField(83) @Default('none') String headerIcon,
+    @HiveField(84) @Default(0.0) double customHeadingFontSize,
+    @HiveField(85) @Default(0.0) double customBodyFontSize,
   }) = _Biodata;
 
   factory Biodata.fromJson(Map<String, dynamic> json) => _$BiodataFromJson(json);

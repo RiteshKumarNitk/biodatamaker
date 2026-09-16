@@ -191,6 +191,14 @@ mixin _$Biodata {
 // rows written before this field existed (fields[81] == null → '').
   @HiveField(81, defaultValue: '')
   String get userId => throw _privateConstructorUsedError;
+  @HiveField(82)
+  String get photoAlignment => throw _privateConstructorUsedError;
+  @HiveField(83)
+  String get headerIcon => throw _privateConstructorUsedError;
+  @HiveField(84)
+  double get customHeadingFontSize => throw _privateConstructorUsedError;
+  @HiveField(85)
+  double get customBodyFontSize => throw _privateConstructorUsedError;
 
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
   @JsonKey(ignore: true)
@@ -284,7 +292,11 @@ abstract class $BiodataCopyWith<$Res> {
       @HiveField(78) String alternateNumber,
       @HiveField(79) String pinCode,
       @HiveField(80) String selectedFontId,
-      @HiveField(81, defaultValue: '') String userId});
+      @HiveField(81, defaultValue: '') String userId,
+      @HiveField(82) String photoAlignment,
+      @HiveField(83) String headerIcon,
+      @HiveField(84) double customHeadingFontSize,
+      @HiveField(85) double customBodyFontSize});
 }
 
 /// @nodoc
@@ -382,6 +394,10 @@ class _$BiodataCopyWithImpl<$Res, $Val extends Biodata>
     Object? pinCode = null,
     Object? selectedFontId = null,
     Object? userId = null,
+    Object? photoAlignment = null,
+    Object? headerIcon = null,
+    Object? customHeadingFontSize = null,
+    Object? customBodyFontSize = null,
   }) {
     return _then(_value.copyWith(
       id: null == id
@@ -712,6 +728,22 @@ class _$BiodataCopyWithImpl<$Res, $Val extends Biodata>
           ? _value.userId
           : userId // ignore: cast_nullable_to_non_nullable
               as String,
+      photoAlignment: null == photoAlignment
+          ? _value.photoAlignment
+          : photoAlignment // ignore: cast_nullable_to_non_nullable
+              as String,
+      headerIcon: null == headerIcon
+          ? _value.headerIcon
+          : headerIcon // ignore: cast_nullable_to_non_nullable
+              as String,
+      customHeadingFontSize: null == customHeadingFontSize
+          ? _value.customHeadingFontSize
+          : customHeadingFontSize // ignore: cast_nullable_to_non_nullable
+              as double,
+      customBodyFontSize: null == customBodyFontSize
+          ? _value.customBodyFontSize
+          : customBodyFontSize // ignore: cast_nullable_to_non_nullable
+              as double,
     ) as $Val);
   }
 }
@@ -805,7 +837,11 @@ abstract class _$$BiodataImplCopyWith<$Res> implements $BiodataCopyWith<$Res> {
       @HiveField(78) String alternateNumber,
       @HiveField(79) String pinCode,
       @HiveField(80) String selectedFontId,
-      @HiveField(81, defaultValue: '') String userId});
+      @HiveField(81, defaultValue: '') String userId,
+      @HiveField(82) String photoAlignment,
+      @HiveField(83) String headerIcon,
+      @HiveField(84) double customHeadingFontSize,
+      @HiveField(85) double customBodyFontSize});
 }
 
 /// @nodoc
@@ -901,6 +937,10 @@ class __$$BiodataImplCopyWithImpl<$Res>
     Object? pinCode = null,
     Object? selectedFontId = null,
     Object? userId = null,
+    Object? photoAlignment = null,
+    Object? headerIcon = null,
+    Object? customHeadingFontSize = null,
+    Object? customBodyFontSize = null,
   }) {
     return _then(_$BiodataImpl(
       id: null == id
@@ -1231,6 +1271,22 @@ class __$$BiodataImplCopyWithImpl<$Res>
           ? _value.userId
           : userId // ignore: cast_nullable_to_non_nullable
               as String,
+      photoAlignment: null == photoAlignment
+          ? _value.photoAlignment
+          : photoAlignment // ignore: cast_nullable_to_non_nullable
+              as String,
+      headerIcon: null == headerIcon
+          ? _value.headerIcon
+          : headerIcon // ignore: cast_nullable_to_non_nullable
+              as String,
+      customHeadingFontSize: null == customHeadingFontSize
+          ? _value.customHeadingFontSize
+          : customHeadingFontSize // ignore: cast_nullable_to_non_nullable
+              as double,
+      customBodyFontSize: null == customBodyFontSize
+          ? _value.customBodyFontSize
+          : customBodyFontSize // ignore: cast_nullable_to_non_nullable
+              as double,
     ));
   }
 }
@@ -1321,7 +1377,11 @@ class _$BiodataImpl implements _Biodata {
       @HiveField(78) this.alternateNumber = '',
       @HiveField(79) this.pinCode = '',
       @HiveField(80) this.selectedFontId = '',
-      @HiveField(81, defaultValue: '') this.userId = ''})
+      @HiveField(81, defaultValue: '') this.userId = '',
+      @HiveField(82) this.photoAlignment = 'left',
+      @HiveField(83) this.headerIcon = 'none',
+      @HiveField(84) this.customHeadingFontSize = 0.0,
+      @HiveField(85) this.customBodyFontSize = 0.0})
       : _photos = photos,
         _customFields = customFields,
         _siblings = siblings;
@@ -1678,10 +1738,26 @@ class _$BiodataImpl implements _Biodata {
   @JsonKey()
   @HiveField(81, defaultValue: '')
   final String userId;
+  @override
+  @JsonKey()
+  @HiveField(82)
+  final String photoAlignment;
+  @override
+  @JsonKey()
+  @HiveField(83)
+  final String headerIcon;
+  @override
+  @JsonKey()
+  @HiveField(84)
+  final double customHeadingFontSize;
+  @override
+  @JsonKey()
+  @HiveField(85)
+  final double customBodyFontSize;
 
   @override
   String toString() {
-    return 'Biodata(id: $id, name: $name, createdAt: $createdAt, updatedAt: $updatedAt, templateId: $templateId, isFavorite: $isFavorite, isArchived: $isArchived, isDraft: $isDraft, downloadCount: $downloadCount, fullName: $fullName, gender: $gender, dateOfBirth: $dateOfBirth, age: $age, height: $height, weight: $weight, religion: $religion, caste: $caste, subCaste: $subCaste, motherTongue: $motherTongue, maritalStatus: $maritalStatus, bloodGroup: $bloodGroup, complexion: $complexion, manglik: $manglik, horoscope: $horoscope, rashi: $rashi, nakshatra: $nakshatra, gotra: $gotra, birthPlace: $birthPlace, birthTime: $birthTime, aboutMe: $aboutMe, qualification: $qualification, college: $college, university: $university, occupation: $occupation, company: $company, business: $business, designation: $designation, annualIncome: $annualIncome, fatherName: $fatherName, fatherOccupation: $fatherOccupation, motherName: $motherName, motherOccupation: $motherOccupation, brothers: $brothers, sisters: $sisters, familyType: $familyType, familyValues: $familyValues, nativePlace: $nativePlace, diet: $diet, smoking: $smoking, drinking: $drinking, languages: $languages, hobbies: $hobbies, personality: $personality, mobile: $mobile, whatsapp: $whatsapp, email: $email, address: $address, city: $city, state: $state, country: $country, preferredAge: $preferredAge, preferredHeight: $preferredHeight, preferredEducation: $preferredEducation, preferredOccupation: $preferredOccupation, preferredReligion: $preferredReligion, preferredLocation: $preferredLocation, expectations: $expectations, photos: $photos, profilePhotoPath: $profilePhotoPath, customFields: $customFields, siblings: $siblings, grandFatherName: $grandFatherName, grandFatherOccupation: $grandFatherOccupation, grandMotherName: $grandMotherName, familyStatus: $familyStatus, familyDescription: $familyDescription, contactPerson: $contactPerson, contactPersonRelation: $contactPersonRelation, alternateNumber: $alternateNumber, pinCode: $pinCode, selectedFontId: $selectedFontId, userId: $userId)';
+    return 'Biodata(id: $id, name: $name, createdAt: $createdAt, updatedAt: $updatedAt, templateId: $templateId, isFavorite: $isFavorite, isArchived: $isArchived, isDraft: $isDraft, downloadCount: $downloadCount, fullName: $fullName, gender: $gender, dateOfBirth: $dateOfBirth, age: $age, height: $height, weight: $weight, religion: $religion, caste: $caste, subCaste: $subCaste, motherTongue: $motherTongue, maritalStatus: $maritalStatus, bloodGroup: $bloodGroup, complexion: $complexion, manglik: $manglik, horoscope: $horoscope, rashi: $rashi, nakshatra: $nakshatra, gotra: $gotra, birthPlace: $birthPlace, birthTime: $birthTime, aboutMe: $aboutMe, qualification: $qualification, college: $college, university: $university, occupation: $occupation, company: $company, business: $business, designation: $designation, annualIncome: $annualIncome, fatherName: $fatherName, fatherOccupation: $fatherOccupation, motherName: $motherName, motherOccupation: $motherOccupation, brothers: $brothers, sisters: $sisters, familyType: $familyType, familyValues: $familyValues, nativePlace: $nativePlace, diet: $diet, smoking: $smoking, drinking: $drinking, languages: $languages, hobbies: $hobbies, personality: $personality, mobile: $mobile, whatsapp: $whatsapp, email: $email, address: $address, city: $city, state: $state, country: $country, preferredAge: $preferredAge, preferredHeight: $preferredHeight, preferredEducation: $preferredEducation, preferredOccupation: $preferredOccupation, preferredReligion: $preferredReligion, preferredLocation: $preferredLocation, expectations: $expectations, photos: $photos, profilePhotoPath: $profilePhotoPath, customFields: $customFields, siblings: $siblings, grandFatherName: $grandFatherName, grandFatherOccupation: $grandFatherOccupation, grandMotherName: $grandMotherName, familyStatus: $familyStatus, familyDescription: $familyDescription, contactPerson: $contactPerson, contactPersonRelation: $contactPersonRelation, alternateNumber: $alternateNumber, pinCode: $pinCode, selectedFontId: $selectedFontId, userId: $userId, photoAlignment: $photoAlignment, headerIcon: $headerIcon, customHeadingFontSize: $customHeadingFontSize, customBodyFontSize: $customBodyFontSize)';
   }
 
   @override
@@ -1813,7 +1889,11 @@ class _$BiodataImpl implements _Biodata {
             (identical(other.alternateNumber, alternateNumber) || other.alternateNumber == alternateNumber) &&
             (identical(other.pinCode, pinCode) || other.pinCode == pinCode) &&
             (identical(other.selectedFontId, selectedFontId) || other.selectedFontId == selectedFontId) &&
-            (identical(other.userId, userId) || other.userId == userId));
+            (identical(other.userId, userId) || other.userId == userId) &&
+            (identical(other.photoAlignment, photoAlignment) || other.photoAlignment == photoAlignment) &&
+            (identical(other.headerIcon, headerIcon) || other.headerIcon == headerIcon) &&
+            (identical(other.customHeadingFontSize, customHeadingFontSize) || other.customHeadingFontSize == customHeadingFontSize) &&
+            (identical(other.customBodyFontSize, customBodyFontSize) || other.customBodyFontSize == customBodyFontSize));
   }
 
   @JsonKey(ignore: true)
@@ -1901,7 +1981,11 @@ class _$BiodataImpl implements _Biodata {
         alternateNumber,
         pinCode,
         selectedFontId,
-        userId
+        userId,
+        photoAlignment,
+        headerIcon,
+        customHeadingFontSize,
+        customBodyFontSize
       ]);
 
   @JsonKey(ignore: true)
@@ -2001,7 +2085,11 @@ abstract class _Biodata implements Biodata {
       @HiveField(78) final String alternateNumber,
       @HiveField(79) final String pinCode,
       @HiveField(80) final String selectedFontId,
-      @HiveField(81, defaultValue: '') final String userId}) = _$BiodataImpl;
+      @HiveField(81, defaultValue: '') final String userId,
+      @HiveField(82) final String photoAlignment,
+      @HiveField(83) final String headerIcon,
+      @HiveField(84) final double customHeadingFontSize,
+      @HiveField(85) final double customBodyFontSize}) = _$BiodataImpl;
 
   factory _Biodata.fromJson(Map<String, dynamic> json) = _$BiodataImpl.fromJson;
 
@@ -2258,6 +2346,18 @@ abstract class _Biodata implements Biodata {
 // rows written before this field existed (fields[81] == null → '').
   @HiveField(81, defaultValue: '')
   String get userId;
+  @override
+  @HiveField(82)
+  String get photoAlignment;
+  @override
+  @HiveField(83)
+  String get headerIcon;
+  @override
+  @HiveField(84)
+  double get customHeadingFontSize;
+  @override
+  @HiveField(85)
+  double get customBodyFontSize;
   @override
   @JsonKey(ignore: true)
   _$$BiodataImplCopyWith<_$BiodataImpl> get copyWith =>

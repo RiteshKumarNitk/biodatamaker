@@ -89,6 +89,65 @@ class FontSelectionStep extends StatelessWidget {
             ),
           ),
         ),
+        const SizedBox(height: 16),
+        Card(
+          child: Padding(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      Strings.tr('Font Size Adjustments'),
+                      style: theme.textTheme.titleSmall?.copyWith(
+                        color: theme.colorScheme.primary,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    if (biodata.customHeadingFontSize > 0 || biodata.customBodyFontSize > 0)
+                      TextButton(
+                        onPressed: () {
+                          onUpdate(biodata.copyWith(
+                            customHeadingFontSize: 0.0,
+                            customBodyFontSize: 0.0,
+                          ));
+                        },
+                        child: Text(Strings.tr('Reset'), style: const TextStyle(fontSize: 12)),
+                      ),
+                  ],
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  Strings.tr('Heading Size (e.g. Personal Information)'),
+                  style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.onSurfaceVariant),
+                ),
+                Slider(
+                  value: biodata.customHeadingFontSize > 0 ? biodata.customHeadingFontSize : 24.0,
+                  min: 16.0,
+                  max: 48.0,
+                  divisions: 32,
+                  label: biodata.customHeadingFontSize > 0 ? biodata.customHeadingFontSize.toStringAsFixed(0) : 'Default',
+                  onChanged: (val) => onUpdate(biodata.copyWith(customHeadingFontSize: val)),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  Strings.tr('Normal Text Size'),
+                  style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.onSurfaceVariant),
+                ),
+                Slider(
+                  value: biodata.customBodyFontSize > 0 ? biodata.customBodyFontSize : 14.0,
+                  min: 10.0,
+                  max: 32.0,
+                  divisions: 22,
+                  label: biodata.customBodyFontSize > 0 ? biodata.customBodyFontSize.toStringAsFixed(0) : 'Default',
+                  onChanged: (val) => onUpdate(biodata.copyWith(customBodyFontSize: val)),
+                ),
+              ],
+            ),
+          ),
+        ),
         const SizedBox(height: 32),
       ],
     );

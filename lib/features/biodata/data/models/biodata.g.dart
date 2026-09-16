@@ -99,13 +99,17 @@ class BiodataAdapter extends TypeAdapter<Biodata> {
       pinCode: fields[79] as String,
       selectedFontId: fields[80] as String,
       userId: fields[81] == null ? '' : fields[81] as String,
+      photoAlignment: fields[82] as String,
+      headerIcon: fields[83] as String,
+      customHeadingFontSize: fields[84] as double,
+      customBodyFontSize: fields[85] as double,
     );
   }
 
   @override
   void write(BinaryWriter writer, Biodata obj) {
     writer
-      ..writeByte(82)
+      ..writeByte(86)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
@@ -269,7 +273,15 @@ class BiodataAdapter extends TypeAdapter<Biodata> {
       ..writeByte(80)
       ..write(obj.selectedFontId)
       ..writeByte(81)
-      ..write(obj.userId);
+      ..write(obj.userId)
+      ..writeByte(82)
+      ..write(obj.photoAlignment)
+      ..writeByte(83)
+      ..write(obj.headerIcon)
+      ..writeByte(84)
+      ..write(obj.customHeadingFontSize)
+      ..writeByte(85)
+      ..write(obj.customBodyFontSize);
   }
 
   @override
@@ -380,6 +392,12 @@ _$BiodataImpl _$$BiodataImplFromJson(Map<String, dynamic> json) =>
       pinCode: json['pinCode'] as String? ?? '',
       selectedFontId: json['selectedFontId'] as String? ?? '',
       userId: json['userId'] as String? ?? '',
+      photoAlignment: json['photoAlignment'] as String? ?? 'left',
+      headerIcon: json['headerIcon'] as String? ?? 'none',
+      customHeadingFontSize:
+          (json['customHeadingFontSize'] as num?)?.toDouble() ?? 0.0,
+      customBodyFontSize:
+          (json['customBodyFontSize'] as num?)?.toDouble() ?? 0.0,
     );
 
 Map<String, dynamic> _$$BiodataImplToJson(_$BiodataImpl instance) =>
@@ -466,4 +484,8 @@ Map<String, dynamic> _$$BiodataImplToJson(_$BiodataImpl instance) =>
       'pinCode': instance.pinCode,
       'selectedFontId': instance.selectedFontId,
       'userId': instance.userId,
+      'photoAlignment': instance.photoAlignment,
+      'headerIcon': instance.headerIcon,
+      'customHeadingFontSize': instance.customHeadingFontSize,
+      'customBodyFontSize': instance.customBodyFontSize,
     };
