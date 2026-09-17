@@ -120,13 +120,17 @@ class BiodataAdapter extends TypeAdapter<Biodata> {
       customHeadingAlignment: fields[100] as String,
       language: fields[101] as String,
       sectionOrder: (fields[102] as List).cast<String>(),
+      showWatermark: fields[103] as bool,
+      headerLayoutMode: fields[104] as String,
+      highlightedSections: (fields[105] as List).cast<String>(),
+      customSecondaryFont: fields[106] as String,
     );
   }
 
   @override
   void write(BinaryWriter writer, Biodata obj) {
     writer
-      ..writeByte(103)
+      ..writeByte(107)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
@@ -332,7 +336,15 @@ class BiodataAdapter extends TypeAdapter<Biodata> {
       ..writeByte(101)
       ..write(obj.language)
       ..writeByte(102)
-      ..write(obj.sectionOrder);
+      ..write(obj.sectionOrder)
+      ..writeByte(103)
+      ..write(obj.showWatermark)
+      ..writeByte(104)
+      ..write(obj.headerLayoutMode)
+      ..writeByte(105)
+      ..write(obj.highlightedSections)
+      ..writeByte(106)
+      ..write(obj.customSecondaryFont);
   }
 
   @override
@@ -472,6 +484,13 @@ _$BiodataImpl _$$BiodataImplFromJson(Map<String, dynamic> json) =>
               ?.map((e) => e as String)
               .toList() ??
           const ['personal', 'family', 'contact', 'education', 'additional'],
+      showWatermark: json['showWatermark'] as bool? ?? false,
+      headerLayoutMode: json['headerLayoutMode'] as String? ?? 'classic',
+      highlightedSections: (json['highlightedSections'] as List<dynamic>?)
+              ?.map((e) => e as String)
+              .toList() ??
+          const <String>[],
+      customSecondaryFont: json['customSecondaryFont'] as String? ?? '',
     );
 
 Map<String, dynamic> _$$BiodataImplToJson(_$BiodataImpl instance) =>
@@ -579,4 +598,8 @@ Map<String, dynamic> _$$BiodataImplToJson(_$BiodataImpl instance) =>
       'customHeadingAlignment': instance.customHeadingAlignment,
       'language': instance.language,
       'sectionOrder': instance.sectionOrder,
+      'showWatermark': instance.showWatermark,
+      'headerLayoutMode': instance.headerLayoutMode,
+      'highlightedSections': instance.highlightedSections,
+      'customSecondaryFont': instance.customSecondaryFont,
     };

@@ -31,8 +31,9 @@ class Strings {
 
   static bool get isHindi => _language == hi;
 
-  static String tr(String text) {
-    if (!isHindi) return text;
+  static String tr(String text, {String? forcedLanguage}) {
+    final bool useHindi = forcedLanguage != null ? forcedLanguage == hi : isHindi;
+    if (!useHindi) return text;
     return kHiStrings[text] ?? text;
   }
 }

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:go_router/go_router.dart';
 
 import 'package:biodata_maker/core/i18n/strings.dart';
 import 'package:biodata_maker/core/services/service_locator.dart';
@@ -154,6 +155,12 @@ class _PreviewScreenState extends State<PreviewScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text(Strings.tr('Preview')),
+        leading: Navigator.canPop(context) 
+            ? null 
+            : IconButton(
+                icon: const Icon(Icons.arrow_back),
+                onPressed: () => context.go('/dashboard'),
+              ),
         actions: [
           IconButton(
             icon: const Icon(Icons.picture_as_pdf_outlined),

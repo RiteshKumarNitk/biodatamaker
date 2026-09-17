@@ -77,7 +77,15 @@ class _MultiStepFormState extends State<MultiStepForm> {
         final isForward = state.currentStep >= _previousStep;
         _previousStep = state.currentStep;
 
-        return Column(
+        return PopScope(
+          canPop: state.currentStep == 0,
+          onPopInvokedWithResult: (didPop, result) {
+            if (didPop) return;
+            if (state.currentStep > 0) {
+              context.read<BiodataFormBloc>().add(const PrevStep());
+            }
+          },
+          child: Column(
           children: [
             _StepIndicator(
               key: ValueKey(state.currentStep),
@@ -174,7 +182,7 @@ class _MultiStepFormState extends State<MultiStepForm> {
               },
             ).animate().slideY(begin: 0.2, duration: 300.ms),
           ],
-        );
+        ));
       },
     );
   }

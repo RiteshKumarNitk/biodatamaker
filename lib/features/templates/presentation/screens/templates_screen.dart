@@ -340,17 +340,11 @@ class _TemplateCard extends StatelessWidget {
             ElevatedButton(
               onPressed: () async {
                 Navigator.pop(ctx);
-                // Show loading indicator
-                showDialog(
-                  context: context,
-                  barrierDismissible: false,
-                  builder: (c) => const Center(child: CircularProgressIndicator()),
-                );
+                // Allow the dialog pop animation to complete before the native ad overlay
+                // takes over the screen. This prevents Flutter from freezing on a black screen.
+                await Future.delayed(const Duration(milliseconds: 300));
                 
                 final earned = await sl<AdService>().showRewardedAd();
-                
-                // Pop loading indicator
-                if (context.mounted) Navigator.pop(context);
                 
                 if (earned) {
                   await sl<SettingsRepository>().unlockTemplate(template.id);

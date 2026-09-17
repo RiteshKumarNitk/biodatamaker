@@ -121,6 +121,10 @@ class Biodata with _$Biodata {
     @HiveField(100) @Default('') String customHeadingAlignment,
     @HiveField(101) @Default('en') String language,
     @HiveField(102) @Default(['personal', 'family', 'contact', 'education', 'additional']) List<String> sectionOrder,
+    @HiveField(103) @Default(false) bool showWatermark,
+    @HiveField(104) @Default('classic') String headerLayoutMode,
+    @HiveField(105) @Default(<String>[]) List<String> highlightedSections,
+    @HiveField(106) @Default('') String customSecondaryFont,
   }) = _Biodata;
 
   factory Biodata.fromJson(Map<String, dynamic> json) => _$BiodataFromJson(json);

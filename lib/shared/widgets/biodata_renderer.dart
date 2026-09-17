@@ -63,7 +63,12 @@ final List<SectionConfig> kSections = [
       FieldConfig(label: 'Gotra', value: (b) => b.gotra),
       FieldConfig(label: 'Place of Birth', value: (b) => b.birthPlace),
       FieldConfig(label: 'Time of Birth', value: (b) => b.birthTime),
-      // -- Education & Career --
+    ],
+  ),
+  SectionConfig(
+    key: 'education',
+    title: 'Education & Career',
+    fields: [
       FieldConfig(label: 'Qualification', value: (b) => b.qualification),
       FieldConfig(label: 'College', value: (b) => b.college),
       FieldConfig(label: 'University', value: (b) => b.university),
@@ -71,20 +76,6 @@ final List<SectionConfig> kSections = [
       FieldConfig(label: 'Company', value: (b) => b.company),
       FieldConfig(label: 'Designation', value: (b) => b.designation),
       FieldConfig(label: 'Annual Income', value: (b) => b.annualIncome),
-      // -- Lifestyle & Interests --
-      FieldConfig(label: 'Diet', value: (b) => b.diet),
-      FieldConfig(label: 'Smoking', value: (b) => b.smoking),
-      FieldConfig(label: 'Drinking', value: (b) => b.drinking),
-      FieldConfig(label: 'Hobbies', value: (b) => b.hobbies),
-      FieldConfig(label: 'Personality', value: (b) => b.personality),
-      // -- Partner Preference --
-      FieldConfig(label: 'Preferred Age', value: (b) => b.preferredAge),
-      FieldConfig(label: 'Preferred Height', value: (b) => b.preferredHeight),
-      FieldConfig(label: 'Preferred Education', value: (b) => b.preferredEducation),
-      FieldConfig(label: 'Preferred Occupation', value: (b) => b.preferredOccupation),
-      FieldConfig(label: 'Preferred Religion', value: (b) => b.preferredReligion),
-      FieldConfig(label: 'Preferred Location', value: (b) => b.preferredLocation),
-      FieldConfig(label: 'Expectations', value: (b) => b.expectations),
     ],
   ),
   SectionConfig(key: 'family', title: 'Family Details', fields: [
@@ -100,6 +91,24 @@ final List<SectionConfig> kSections = [
     FieldConfig(label: 'Native Place', value: (b) => b.nativePlace),
     FieldConfig(label: 'Family Description', value: (b) => b.familyDescription),
   ]),
+  SectionConfig(
+    key: 'additional',
+    title: 'Additional Details',
+    fields: [
+      FieldConfig(label: 'Diet', value: (b) => b.diet),
+      FieldConfig(label: 'Smoking', value: (b) => b.smoking),
+      FieldConfig(label: 'Drinking', value: (b) => b.drinking),
+      FieldConfig(label: 'Hobbies', value: (b) => b.hobbies),
+      FieldConfig(label: 'Personality', value: (b) => b.personality),
+      FieldConfig(label: 'Preferred Age', value: (b) => b.preferredAge),
+      FieldConfig(label: 'Preferred Height', value: (b) => b.preferredHeight),
+      FieldConfig(label: 'Preferred Education', value: (b) => b.preferredEducation),
+      FieldConfig(label: 'Preferred Occupation', value: (b) => b.preferredOccupation),
+      FieldConfig(label: 'Preferred Religion', value: (b) => b.preferredReligion),
+      FieldConfig(label: 'Preferred Location', value: (b) => b.preferredLocation),
+      FieldConfig(label: 'Expectations', value: (b) => b.expectations),
+    ],
+  ),
   SectionConfig(key: 'contact', title: 'Contact Details', fields: [
     FieldConfig(label: 'Contact Person', value: (b) => b.contactPerson),
     FieldConfig(label: 'Relationship', value: (b) => b.contactPersonRelation),
@@ -268,14 +277,15 @@ class BiodataRenderer extends StatelessWidget {
     String? fontName,
   }) {
     final resolvedFont = fontName ?? GoogleFonts.playfairDisplay().fontFamily ?? 'Playfair Display';
+    final resolvedBodyFont = biodata.customSecondaryFont.isNotEmpty ? biodata.customSecondaryFont : resolvedFont;
     final widgets = <Widget>[];
     final displayName = biodata.fullName.isNotEmpty ? biodata.fullName : biodata.name;
 
     // Header (photo + name block, or text-only when the photo is positioned
     // independently by the image-mode layout); gains an edit button in review mode.
     final header = includePhotoInHeader
-        ? _buildFlutterHeader(biodata, theme, primary, text, subtitle, displayName, resolvedFont)
-        : _buildFlutterHeaderTextOnly(biodata, theme, text, subtitle, displayName, resolvedFont);
+        ? _buildFlutterHeader(biodata, theme, primary, text, subtitle, displayName, resolvedFont, resolvedBodyFont)
+        : _buildFlutterHeaderTextOnly(biodata, theme, text, subtitle, displayName, resolvedFont, resolvedBodyFont);
     widgets.add(onEditSection == null
         ? header
         : Row(
@@ -285,7 +295,7 @@ class BiodataRenderer extends StatelessWidget {
               const SizedBox(width: 8),
               Padding(
                 padding: const EdgeInsets.only(top: 4),
-                child: _flutterEditIcon(context, 'photo', 'Photo', primary, onEditSection),
+                child: _flutterEditIcon(context, 'photo', 'Photo', primary, biodata.language, onEditSection),
               ),
             ],
           ));
@@ -318,11 +328,12 @@ class BiodataRenderer extends StatelessWidget {
       final resolvedFieldSpacing = biodata.customFieldSpacing > 0 ? biodata.customFieldSpacing : theme.fieldSpacing;
       final resolvedSectionSpacing = biodata.customSectionSpacing > 0 ? biodata.customSectionSpacing : theme.sectionSpacing;
 
-      widgets.add(_flutterSectionHeading(context, section.key, section.title, primary, theme, biodata, onEditSection, resolvedFont));
-      widgets.add(SizedBox(height: resolvedFieldSpacing));
+      final sectionWidgets = <Widget>[];
+      sectionWidgets.add(_flutterSectionHeading(context, section.key, section.title, primary, theme, biodata, onEditSection, resolvedFont));
+      sectionWidgets.add(SizedBox(height: resolvedFieldSpacing));
 
       for (final field in sectionFields) {
-        widgets.add(_flutterFieldRow(field.label, field.value(biodata), subtitle, text, theme, biodata, resolvedFont: resolvedFont));
+        sectionWidgets.add(_flutterFieldRow(field.label, field.value(biodata), subtitle, text, theme, biodata, resolvedFont: resolvedBodyFont));
       }
 
       // Dynamic sibling rows inside the Family Details section
@@ -330,19 +341,37 @@ class BiodataRenderer extends StatelessWidget {
         for (final sibling in biodata.siblings) {
           final display = _siblingDisplay(sibling, biodata.siblings);
           if (display.value.isEmpty) continue;
-          widgets.add(_flutterFieldRow(display.label, display.value, subtitle, text, theme, biodata, translateLabel: false, resolvedFont: resolvedFont));
+          sectionWidgets.add(_flutterFieldRow(display.label, display.value, subtitle, text, theme, biodata, translateLabel: false, resolvedFont: resolvedBodyFont));
         }
       }
 
       for (final cf in sectionCustom) {
-        widgets.add(_flutterFieldRow(cf.label, cf.value, subtitle, text, theme, biodata, translateLabel: false, resolvedFont: resolvedFont));
+        sectionWidgets.add(_flutterFieldRow(cf.label, cf.value, subtitle, text, theme, biodata, translateLabel: false, resolvedFont: resolvedBodyFont));
       }
 
       if (showAboutMe) {
-        widgets.add(Padding(
+        sectionWidgets.add(Padding(
           padding: EdgeInsets.only(top: resolvedFieldSpacing / 2),
-          child: Center(child: Text(biodata.aboutMe, textAlign: TextAlign.center, style: GoogleFonts.getFont(resolvedFont, fontSize: theme.bodyFontSize, color: text))),
+          child: Center(child: Text(biodata.aboutMe, textAlign: TextAlign.center, style: GoogleFonts.getFont(resolvedBodyFont, fontSize: theme.bodyFontSize, color: text))),
         ));
+      }
+
+      final isHighlighted = biodata.highlightedSections.contains(section.key);
+      if (isHighlighted) {
+        widgets.add(Container(
+          padding: const EdgeInsets.all(12),
+          decoration: BoxDecoration(
+            color: primary.withValues(alpha: 0.05),
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(color: primary.withValues(alpha: 0.2)),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: sectionWidgets,
+          ),
+        ));
+      } else {
+        widgets.addAll(sectionWidgets);
       }
 
       widgets.add(SizedBox(height: resolvedSectionSpacing));
@@ -388,7 +417,7 @@ class BiodataRenderer extends StatelessWidget {
   }
 
   static Widget _buildFlutterHeader(
-    Biodata biodata, ThemeConfig theme, Color primary, Color text, Color subtitle, String displayName, String fontName,
+    Biodata biodata, ThemeConfig theme, Color primary, Color text, Color subtitle, String displayName, String fontName, String bodyFontName,
   ) {
     final headingFontSize = biodata.customHeadingFontSize > 0 ? biodata.customHeadingFontSize : theme.headingFontSize;
     final bodyFontSize = biodata.customBodyFontSize > 0 ? biodata.customBodyFontSize : theme.bodyFontSize;
@@ -415,9 +444,12 @@ class BiodataRenderer extends StatelessWidget {
           : Center(child: _initialsWidget(displayName, Colors.white, fontName)),
     );
 
-    final isRight = biodata.photoAlignment == 'right';
-    final crossAlign = isRight ? CrossAxisAlignment.end : CrossAxisAlignment.start;
-    final textAlign = isRight ? TextAlign.right : TextAlign.left;
+    final mode = biodata.headerLayoutMode.isNotEmpty ? biodata.headerLayoutMode : 'classic';
+    final isRight = mode == 'classic'; // Classic = photo right, Modern = photo left
+    final isCentered = mode == 'centered';
+
+    final crossAlign = isCentered ? CrossAxisAlignment.center : (isRight ? CrossAxisAlignment.end : CrossAxisAlignment.start);
+    final textAlign = isCentered ? TextAlign.center : (isRight ? TextAlign.right : TextAlign.left);
 
     final detailsWidget = Expanded(
       child: Column(
@@ -427,11 +459,11 @@ class BiodataRenderer extends StatelessWidget {
           Text(displayName, textAlign: textAlign, style: GoogleFonts.getFont(fontName, fontSize: headingFontSize + 4, color: text, fontWeight: FontWeight.bold)),
           if (biodata.dateOfBirth.isNotEmpty) ...[
             const SizedBox(height: 4),
-            Text(biodata.dateOfBirth, textAlign: textAlign, style: GoogleFonts.getFont(fontName, fontSize: bodyFontSize + 2, color: subtitle, fontWeight: FontWeight.w500)),
+            Text(biodata.dateOfBirth, textAlign: textAlign, style: GoogleFonts.getFont(bodyFontName, fontSize: bodyFontSize + 2, color: subtitle, fontWeight: FontWeight.w500)),
           ],
           if (biodata.birthPlace.isNotEmpty) ...[
             const SizedBox(height: 2),
-            Text(biodata.birthPlace, textAlign: textAlign, style: GoogleFonts.getFont(fontName, fontSize: bodyFontSize + 2, color: subtitle, fontWeight: FontWeight.w500)),
+            Text(biodata.birthPlace, textAlign: textAlign, style: GoogleFonts.getFont(bodyFontName, fontSize: bodyFontSize + 2, color: subtitle, fontWeight: FontWeight.w500)),
           ],
         ],
       ),
@@ -445,12 +477,20 @@ class BiodataRenderer extends StatelessWidget {
             child: _buildFlutterHeaderIcon(biodata.headerIcon, primary),
           ),
         IntrinsicHeight(
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: isRight
-                ? [detailsWidget, const SizedBox(width: 16), photoWidget]
-                : [photoWidget, const SizedBox(width: 16), detailsWidget],
-          ),
+          child: isCentered
+              ? Column(
+                  children: [
+                    photoWidget,
+                    const SizedBox(height: 16),
+                    detailsWidget,
+                  ],
+                )
+              : Row(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: isRight
+                      ? [detailsWidget, const SizedBox(width: 16), photoWidget]
+                      : [photoWidget, const SizedBox(width: 16), detailsWidget],
+                ),
         ),
       ],
     );
@@ -494,7 +534,7 @@ class BiodataRenderer extends StatelessWidget {
   /// (each skipped if empty) rather than the legacy header's age|gender and
   /// occupation line.
   static Widget _buildFlutterHeaderTextOnly(
-    Biodata biodata, ThemeConfig theme, Color text, Color subtitle, String displayName, String fontName,
+    Biodata biodata, ThemeConfig theme, Color text, Color subtitle, String displayName, String fontName, String bodyFontName,
   ) {
     CrossAxisAlignment crossAlign = CrossAxisAlignment.center;
     TextAlign align = TextAlign.center;
@@ -513,11 +553,11 @@ class BiodataRenderer extends StatelessWidget {
         Text(displayName, textAlign: align, style: GoogleFonts.getFont(fontName, fontSize: theme.headingFontSize, color: text, fontWeight: FontWeight.bold)),
         if (biodata.dateOfBirth.isNotEmpty) ...[
           const SizedBox(height: 6),
-          Text('${Strings.tr('Date of Birth')}${theme.showColon ? ' : ' : '   '}${biodata.dateOfBirth}', textAlign: align, style: GoogleFonts.getFont(fontName, fontSize: theme.bodyFontSize, color: subtitle)),
+          Text('${Strings.tr('Date of Birth', forcedLanguage: biodata.language)}${theme.showColon ? ' : ' : '   '}${biodata.dateOfBirth}', textAlign: align, style: GoogleFonts.getFont(bodyFontName, fontSize: theme.bodyFontSize, color: subtitle)),
         ],
         if (biodata.birthPlace.isNotEmpty) ...[
           const SizedBox(height: 4),
-          Text('${Strings.tr('Place of Birth')}${theme.showColon ? ' : ' : '   '}${biodata.birthPlace}', textAlign: align, style: GoogleFonts.getFont(fontName, fontSize: theme.bodyFontSize, color: subtitle)),
+          Text('${Strings.tr('Place of Birth', forcedLanguage: biodata.language)}${theme.showColon ? ' : ' : '   '}${biodata.birthPlace}', textAlign: align, style: GoogleFonts.getFont(bodyFontName, fontSize: theme.bodyFontSize, color: subtitle)),
         ],
       ],
     );
@@ -549,14 +589,14 @@ class BiodataRenderer extends StatelessWidget {
     void Function(String sectionKey)? onEditSection, [
     String fontName = 'Playfair Display',
   ]) {
-    final heading = _flutterSectionTitle(Strings.tr(title), primary, theme, biodata, fontName);
+    final heading = _flutterSectionTitle(Strings.tr(title, forcedLanguage: biodata.language), primary, theme, biodata, fontName);
     if (onEditSection == null) return heading;
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
         heading,
         const SizedBox(width: 6),
-        _flutterEditIcon(context, sectionKey, Strings.tr(title), primary, onEditSection),
+        _flutterEditIcon(context, sectionKey, Strings.tr(title, forcedLanguage: biodata.language), primary, biodata.language, onEditSection),
       ],
     );
   }
@@ -568,10 +608,11 @@ class BiodataRenderer extends StatelessWidget {
     String sectionKey,
     String editLabel,
     Color primary,
+    String language,
     void Function(String sectionKey) onEditSection,
   ) {
     return Tooltip(
-      message: '${Strings.tr('Edit')} $editLabel',
+      message: '${Strings.tr('Edit', forcedLanguage: language)} $editLabel',
       child: InkWell(
         key: ValueKey('editSection-$sectionKey'),
         borderRadius: BorderRadius.circular(14),
@@ -637,7 +678,7 @@ class BiodataRenderer extends StatelessWidget {
     String resolvedFont = 'Playfair Display',
   }) {
     final bodyFontSize = biodata.customBodyFontSize > 0 ? biodata.customBodyFontSize : theme.bodyFontSize;
-    final shownLabel = translateLabel ? Strings.tr(label) : label;
+    final shownLabel = translateLabel ? Strings.tr(label, forcedLanguage: biodata.language) : label;
     final alignment = biodata.contentAlignment;
     final labelWeight = biodata.boldLabels ? FontWeight.bold : FontWeight.w600;
     final colon = biodata.showColons ? ' : ' : '   ';
@@ -839,13 +880,14 @@ class BiodataRenderer extends StatelessWidget {
     }
   }
 
-  static List<pw.Widget> toPdfWidgets(Biodata biodata, ThemeConfig theme, {pw.MemoryImage? profileImage, pw.Font? customFont}) {
+  static List<pw.Widget> toPdfWidgets(Biodata biodata, ThemeConfig theme, {pw.MemoryImage? profileImage, pw.Font? customFont, pw.Font? customBodyFont}) {
     final primary = biodata.customPrimaryColor > 0 ? PdfColor.fromInt(biodata.customPrimaryColor) : PdfColor.fromInt(theme.primaryColor);
     final text = PdfColor.fromInt(theme.textColor);
     final subtitle = PdfColor.fromInt(theme.subtitleColor);
     final displayName = biodata.fullName.isNotEmpty ? biodata.fullName : biodata.name;
     final chunkChars = _pdfChunkCharsFor(theme);
     final font = customFont ?? pw.Font.helvetica();
+    final bodyFont = customBodyFont ?? font;
 
     final blocks = <pw.Widget>[];
     void add(pw.Widget block) => blocks.add(_pdfPageBlock(block));
@@ -854,7 +896,7 @@ class BiodataRenderer extends StatelessWidget {
     final resolvedSectionSpacing = biodata.customSectionSpacing > 0 ? biodata.customSectionSpacing : theme.sectionSpacing;
 
     // ---- Header ----
-    add(_buildPdfHeader(biodata, theme, primary, text, subtitle, displayName, profileImage, font));
+    add(_buildPdfHeader(biodata, theme, primary, text, subtitle, displayName, profileImage, font, bodyFont));
     blocks.add(pw.SizedBox(height: resolvedSectionSpacing));
 
     final headerShownFields = {'Full Name'};
@@ -883,7 +925,7 @@ class BiodataRenderer extends StatelessWidget {
 
       final rows = <pw.Widget>[];
       for (final field in sectionFields) {
-        rows.addAll(_pdfValueRows(field.label, field.value(biodata), subtitle, text, theme, biodata, maxChars: chunkChars.row, font: font));
+        rows.addAll(_pdfValueRows(field.label, field.value(biodata), subtitle, text, theme, biodata, maxChars: chunkChars.row, font: bodyFont));
       }
 
       // Dynamic sibling rows inside the Family Details section
@@ -891,40 +933,50 @@ class BiodataRenderer extends StatelessWidget {
         for (final sibling in biodata.siblings) {
           final display = _siblingDisplay(sibling, biodata.siblings);
           if (display.value.isEmpty) continue;
-          rows.addAll(_pdfValueRows(display.label, display.value, subtitle, text, theme, biodata, maxChars: chunkChars.row, font: font));
+          rows.addAll(_pdfValueRows(display.label, display.value, subtitle, text, theme, biodata, maxChars: chunkChars.row, font: bodyFont));
         }
       }
 
       for (final cf in sectionCustom) {
-        rows.addAll(_pdfValueRows(cf.label, cf.value, subtitle, text, theme, biodata, maxChars: chunkChars.row, font: font));
+        rows.addAll(_pdfValueRows(cf.label, cf.value, subtitle, text, theme, biodata, maxChars: chunkChars.row, font: bodyFont));
       }
 
       if (showAboutMe) {
-        for (final chunk in _pdfChunkText(biodata.aboutMe, chunkChars.paragraph)) {
-          rows.add(pw.Padding(
-            padding: pw.EdgeInsets.only(top: resolvedFieldSpacing / 2, bottom: resolvedFieldSpacing),
-            child: pw.Center(child: pw.Text(chunk, textAlign: pw.TextAlign.center, style: pw.TextStyle(font: font, fontSize: theme.bodyFontSize, color: text))),
-          ));
-        }
+        final paragraphs = _pdfChunkText(biodata.aboutMe, chunkChars.paragraph);
+        rows.add(pw.SizedBox(height: resolvedFieldSpacing / 2));
+        rows.addAll(paragraphs.map((p) => pw.Padding(
+              padding: pw.EdgeInsets.only(bottom: resolvedFieldSpacing / 2),
+              child: pw.Center(child: pw.Text(p, textAlign: pw.TextAlign.center, style: pw.TextStyle(font: bodyFont, fontSize: theme.bodyFontSize, color: text))),
+            )));
       }
 
-      if (rows.isNotEmpty) {
-        // Section heading + its first row are one unbreakable block, so a page
-        // break can never leave a heading stranded at the bottom of a page.
+      final isHighlighted = biodata.highlightedSections.contains(section.key);
+      if (isHighlighted) {
+        final box = pw.Container(
+          padding: const pw.EdgeInsets.all(12),
+          decoration: pw.BoxDecoration(
+            color: _withAlpha(primary, 0.05),
+            borderRadius: const pw.BorderRadius.all(pw.Radius.circular(12)),
+            border: pw.Border.all(color: _withAlpha(primary, 0.2)),
+          ),
+          child: pw.Column(
+            crossAxisAlignment: pw.CrossAxisAlignment.start,
+            children: [
+              _pdfSectionTitle(section.title, primary, theme, biodata, font),
+              pw.SizedBox(height: resolvedFieldSpacing),
+              ...rows,
+            ],
+          ),
+        );
+        add(_pdfKeepTogether([box]));
+      } else {
         add(_pdfKeepTogether([
           _pdfSectionTitle(section.title, primary, theme, biodata, font),
           pw.SizedBox(height: resolvedFieldSpacing),
-          rows.removeAt(0),
-        ]));
-        for (final row in rows) {
-          add(row);
-        }
-      } else {
-        // Section heading only (no rows, e.g. aboutMe-only sections)
-        add(_pdfKeepTogether([
-          _pdfSectionTitle(section.title, primary, theme, biodata, font),
+          ...rows,
         ]));
       }
+
       blocks.add(pw.SizedBox(height: resolvedSectionSpacing));
     }
 
@@ -952,8 +1004,54 @@ class BiodataRenderer extends StatelessWidget {
     return blocks;
   }
 
+  static PdfColor _withAlpha(PdfColor c, double alpha) {
+    return PdfColor(c.red, c.green, c.blue, alpha);
+  }
+
+  /// Header text block with no inline photo, used by image-mode templates
+  /// where the photo is positioned independently (see [_buildImageModeLayout]).
+  /// Shows Name, then Date of Birth / Place of Birth as "Label : value" lines
+  /// (each skipped if empty) rather than the legacy header's age|gender and
+  /// occupation line.
+  static pw.Widget _buildPdfHeaderTextOnly(
+    Biodata biodata, ThemeConfig theme, PdfColor text, PdfColor subtitle, String displayName, pw.Font font, pw.Font bodyFont,
+  ) {
+    pw.CrossAxisAlignment crossAlign = pw.CrossAxisAlignment.center;
+    pw.TextAlign align = pw.TextAlign.center;
+    if (theme.headerAlignment == 'left') {
+      crossAlign = pw.CrossAxisAlignment.start;
+      align = pw.TextAlign.left;
+    } else if (theme.headerAlignment == 'right') {
+      crossAlign = pw.CrossAxisAlignment.end;
+      align = pw.TextAlign.right;
+    }
+
+    final column = pw.Column(
+      crossAxisAlignment: crossAlign,
+      mainAxisAlignment: theme.headerHeight > 0 ? pw.MainAxisAlignment.center : pw.MainAxisAlignment.start,
+      children: [
+        pw.Text(displayName, textAlign: align, style: pw.TextStyle(font: font, fontSize: theme.headingFontSize, color: text, fontWeight: pw.FontWeight.bold)),
+        if (biodata.dateOfBirth.isNotEmpty) ...[
+          pw.SizedBox(height: 6),
+          pw.Text('${Strings.tr('Date of Birth', forcedLanguage: biodata.language)}${theme.showColon ? ' : ' : '   '}${biodata.dateOfBirth}', textAlign: align, style: pw.TextStyle(font: bodyFont, fontSize: theme.bodyFontSize, color: subtitle)),
+        ],
+        if (biodata.birthPlace.isNotEmpty) ...[
+          pw.SizedBox(height: 4),
+          pw.Text('${Strings.tr('Place of Birth', forcedLanguage: biodata.language)}${theme.showColon ? ' : ' : '   '}${biodata.birthPlace}', textAlign: align, style: pw.TextStyle(font: bodyFont, fontSize: theme.bodyFontSize, color: subtitle)),
+        ],
+      ],
+    );
+
+    return pw.Container(
+      padding: pw.EdgeInsets.only(left: theme.headerPaddingLeft),
+      width: double.infinity,
+      height: theme.headerHeight > 0 ? theme.headerHeight : null,
+      child: column,
+    );
+  }
+
   static pw.Widget _buildPdfHeader(
-    Biodata biodata, ThemeConfig theme, PdfColor primary, PdfColor text, PdfColor subtitle, String displayName, pw.MemoryImage? profileImage, pw.Font font,
+    Biodata biodata, ThemeConfig theme, PdfColor primary, PdfColor text, PdfColor subtitle, String displayName, pw.MemoryImage? profileImage, pw.Font font, pw.Font bodyFont,
   ) {
     final headingFontSize = biodata.customHeadingFontSize > 0 ? biodata.customHeadingFontSize : theme.headingFontSize;
     final bodyFontSize = biodata.customBodyFontSize > 0 ? biodata.customBodyFontSize : theme.bodyFontSize;
@@ -962,34 +1060,7 @@ class BiodataRenderer extends StatelessWidget {
     // Name, then Date of Birth / Place of Birth as "Label : value" lines
     // (each skipped if empty).
     if (theme.backgroundImage.isNotEmpty) {
-      pw.CrossAxisAlignment crossAlign = pw.CrossAxisAlignment.center;
-      pw.TextAlign align = pw.TextAlign.center;
-      if (theme.headerAlignment == 'left') {
-        crossAlign = pw.CrossAxisAlignment.start;
-        align = pw.TextAlign.left;
-      } else if (theme.headerAlignment == 'right') {
-        crossAlign = pw.CrossAxisAlignment.end;
-        align = pw.TextAlign.right;
-      }
-
-      final column = pw.Column(
-        crossAxisAlignment: crossAlign,
-        mainAxisAlignment: theme.headerHeight > 0 ? pw.MainAxisAlignment.center : pw.MainAxisAlignment.start,
-        children: [
-          pw.Text(displayName, textAlign: align, style: pw.TextStyle(font: font, fontSize: headingFontSize, color: text, fontWeight: pw.FontWeight.bold)),
-          if (biodata.dateOfBirth.isNotEmpty)
-            pw.Padding(padding: const pw.EdgeInsets.only(top: 6), child: pw.Text('Date of Birth${theme.showColon ? ' : ' : '   '}${biodata.dateOfBirth}', textAlign: align, style: pw.TextStyle(font: font, fontSize: bodyFontSize, color: subtitle))),
-          if (biodata.birthPlace.isNotEmpty)
-            pw.Padding(padding: const pw.EdgeInsets.only(top: 4), child: pw.Text('Place of Birth${theme.showColon ? ' : ' : '   '}${biodata.birthPlace}', textAlign: align, style: pw.TextStyle(font: font, fontSize: bodyFontSize, color: subtitle))),
-        ],
-      );
-
-      return pw.Container(
-        padding: pw.EdgeInsets.only(left: theme.headerPaddingLeft, bottom: 16),
-        width: double.infinity,
-        height: theme.headerHeight > 0 ? theme.headerHeight : null,
-        child: column,
-      );
+      return _buildPdfHeaderTextOnly(biodata, theme, text, subtitle, displayName, font, bodyFont);
     }
 
     final radius = theme.photoShape == 'circle' ? 40.0 : 12.0;
@@ -1019,9 +1090,12 @@ class BiodataRenderer extends StatelessWidget {
             ),
     );
 
-    final isRight = biodata.photoAlignment == 'right';
-    final crossAlign = isRight ? pw.CrossAxisAlignment.end : pw.CrossAxisAlignment.start;
-    final textAlign = isRight ? pw.TextAlign.right : pw.TextAlign.left;
+    final mode = biodata.headerLayoutMode.isNotEmpty ? biodata.headerLayoutMode : 'classic';
+    final isRight = mode == 'classic';
+    final isCentered = mode == 'centered';
+
+    final crossAlign = isCentered ? pw.CrossAxisAlignment.center : (isRight ? pw.CrossAxisAlignment.end : pw.CrossAxisAlignment.start);
+    final textAlign = isCentered ? pw.TextAlign.center : (isRight ? pw.TextAlign.right : pw.TextAlign.left);
 
     final detailsWidget = pw.Expanded(
       child: pw.Column(
@@ -1029,10 +1103,14 @@ class BiodataRenderer extends StatelessWidget {
         mainAxisAlignment: pw.MainAxisAlignment.center,
         children: [
           pw.Text(displayName, textAlign: textAlign, style: pw.TextStyle(font: font, fontSize: headingFontSize + 4, color: text, fontWeight: pw.FontWeight.bold)),
-          if (biodata.dateOfBirth.isNotEmpty)
-            pw.Padding(padding: const pw.EdgeInsets.only(top: 4), child: pw.Text(biodata.dateOfBirth, textAlign: textAlign, style: pw.TextStyle(font: font, fontSize: bodyFontSize + 2, color: subtitle, fontWeight: pw.FontWeight.normal))),
-          if (biodata.birthPlace.isNotEmpty)
-            pw.Padding(padding: const pw.EdgeInsets.only(top: 2), child: pw.Text(biodata.birthPlace, textAlign: textAlign, style: pw.TextStyle(font: font, fontSize: bodyFontSize + 2, color: subtitle, fontWeight: pw.FontWeight.normal))),
+          if (biodata.dateOfBirth.isNotEmpty) ...[
+            pw.SizedBox(height: 4),
+            pw.Text(biodata.dateOfBirth, textAlign: textAlign, style: pw.TextStyle(font: bodyFont, fontSize: bodyFontSize + 2, color: subtitle, fontWeight: pw.FontWeight.bold)),
+          ],
+          if (biodata.birthPlace.isNotEmpty) ...[
+            pw.SizedBox(height: 2),
+            pw.Text(biodata.birthPlace, textAlign: textAlign, style: pw.TextStyle(font: bodyFont, fontSize: bodyFontSize + 2, color: subtitle, fontWeight: pw.FontWeight.bold)),
+          ],
         ],
       ),
     );
@@ -1043,15 +1121,23 @@ class BiodataRenderer extends StatelessWidget {
         children: [
           if (biodata.headerIcon.isNotEmpty && biodata.headerIcon != 'none')
             pw.Padding(
-              padding: const pw.EdgeInsets.only(bottom: 12.0),
+              padding: const pw.EdgeInsets.only(bottom: 12),
               child: _buildPdfHeaderIcon(biodata.headerIcon, primary, font),
             ),
-          pw.Row(
-            crossAxisAlignment: pw.CrossAxisAlignment.start,
-            children: isRight
-                ? [detailsWidget, pw.SizedBox(width: 16), photoWidget]
-                : [photoWidget, pw.SizedBox(width: 16), detailsWidget],
-          ),
+          isCentered
+              ? pw.Column(
+                  children: [
+                    photoWidget,
+                    pw.SizedBox(height: 16),
+                    detailsWidget,
+                  ],
+                )
+              : pw.Row(
+                  crossAxisAlignment: pw.CrossAxisAlignment.start,
+                  children: isRight
+                      ? [detailsWidget, pw.SizedBox(width: 16), photoWidget]
+                      : [photoWidget, pw.SizedBox(width: 16), detailsWidget],
+                ),
         ],
       ),
     );
@@ -1138,7 +1224,8 @@ class BiodataRenderer extends StatelessWidget {
     final headingFontSize = biodata.customHeadingFontSize > 0 ? biodata.customHeadingFontSize : theme.headingFontSize;
     final headerStyle = biodata.customHeaderStyle.isNotEmpty ? biodata.customHeaderStyle : theme.headerDecoration;
     final bgColor = biodata.customBackgroundColor > 0 ? PdfColor.fromInt(biodata.customBackgroundColor) : PdfColor.fromInt(theme.backgroundColor);
-    final titleText = biodata.uppercaseHeadings ? title.toUpperCase() : title;
+    final translatedTitle = Strings.tr(title, forcedLanguage: biodata.language);
+    final titleText = biodata.uppercaseHeadings ? translatedTitle.toUpperCase() : translatedTitle;
     
     pw.Widget titleWidget;
     if (headerStyle == 'pill') {
@@ -1180,6 +1267,7 @@ class BiodataRenderer extends StatelessWidget {
   }
 
   static pw.Widget _pdfFieldRow(String label, String value, PdfColor subtitle, PdfColor text, ThemeConfig theme, Biodata biodata, pw.Font font) {
+    final shownLabel = Strings.tr(label, forcedLanguage: biodata.language);
     final bodyFontSize = biodata.customBodyFontSize > 0 ? biodata.customBodyFontSize : theme.bodyFontSize;
     final alignment = biodata.contentAlignment;
     final labelWeight = biodata.boldLabels ? pw.FontWeight.bold : pw.FontWeight.normal;
@@ -1192,7 +1280,7 @@ class BiodataRenderer extends StatelessWidget {
           textAlign: pw.TextAlign.center,
           text: pw.TextSpan(
             children: [
-              pw.TextSpan(text: '$label$colon', style: pw.TextStyle(font: font, fontSize: bodyFontSize, color: subtitle, fontWeight: labelWeight)),
+              pw.TextSpan(text: '$shownLabel$colon', style: pw.TextStyle(font: font, fontSize: bodyFontSize, color: subtitle, fontWeight: labelWeight)),
               pw.TextSpan(text: value, style: pw.TextStyle(font: font, fontSize: bodyFontSize, color: text)),
             ],
           ),
@@ -1205,7 +1293,7 @@ class BiodataRenderer extends StatelessWidget {
           textAlign: pw.TextAlign.right,
           text: pw.TextSpan(
             children: [
-              pw.TextSpan(text: '$label$colon', style: pw.TextStyle(font: font, fontSize: bodyFontSize, color: subtitle, fontWeight: labelWeight)),
+              pw.TextSpan(text: '$shownLabel$colon', style: pw.TextStyle(font: font, fontSize: bodyFontSize, color: subtitle, fontWeight: labelWeight)),
               pw.TextSpan(text: value, style: pw.TextStyle(font: font, fontSize: bodyFontSize, color: text)),
             ],
           ),
@@ -1216,7 +1304,7 @@ class BiodataRenderer extends StatelessWidget {
         crossAxisAlignment: pw.CrossAxisAlignment.start,
         mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
         children: [
-          pw.Text(label, style: pw.TextStyle(font: font, fontSize: bodyFontSize, color: subtitle, fontWeight: labelWeight)),
+          pw.Text(shownLabel, style: pw.TextStyle(font: font, fontSize: bodyFontSize, color: subtitle, fontWeight: labelWeight)),
           pw.SizedBox(width: 8),
           pw.Expanded(child: pw.Text(value, textAlign: pw.TextAlign.right, style: pw.TextStyle(font: font, fontSize: bodyFontSize, color: text))),
         ],
@@ -1226,7 +1314,7 @@ class BiodataRenderer extends StatelessWidget {
         crossAxisAlignment: pw.CrossAxisAlignment.start,
         mainAxisAlignment: pw.MainAxisAlignment.spaceAround,
         children: [
-          pw.Text(label, style: pw.TextStyle(font: font, fontSize: bodyFontSize, color: subtitle, fontWeight: labelWeight)),
+          pw.Text(shownLabel, style: pw.TextStyle(font: font, fontSize: bodyFontSize, color: subtitle, fontWeight: labelWeight)),
           pw.Text(value, textAlign: pw.TextAlign.right, style: pw.TextStyle(font: font, fontSize: bodyFontSize, color: text)),
         ],
       );
@@ -1234,7 +1322,7 @@ class BiodataRenderer extends StatelessWidget {
       childWidget = pw.Row(
         crossAxisAlignment: pw.CrossAxisAlignment.start,
         children: [
-          pw.SizedBox(width: 130, child: pw.Text(label, style: pw.TextStyle(font: font, fontSize: bodyFontSize, color: subtitle, fontWeight: labelWeight))),
+          pw.SizedBox(width: 130, child: pw.Text(shownLabel, style: pw.TextStyle(font: font, fontSize: bodyFontSize, color: subtitle, fontWeight: labelWeight))),
           if (biodata.showColons) pw.Text(' : ', style: pw.TextStyle(font: font, fontSize: bodyFontSize, color: subtitle, fontWeight: labelWeight)),
           if (biodata.showColons) pw.SizedBox(width: 4),
           pw.Expanded(child: pw.Text(value, style: pw.TextStyle(font: font, fontSize: bodyFontSize, color: text))),

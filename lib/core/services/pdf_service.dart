@@ -89,6 +89,11 @@ class PdfService {
     }
 
     final font = await BiodataRenderer.loadPdfFont(biodata.selectedFontId);
+    pw.Font? bodyFont;
+    if (biodata.customSecondaryFont.isNotEmpty) {
+      bodyFont = await BiodataRenderer.loadPdfFont(biodata.customSecondaryFont);
+    }
+    
     final fallbacks = <pw.Font>[];
     if (biodata.language == 'hi') {
       try {
@@ -142,7 +147,6 @@ class PdfService {
             biodata: biodata,
             profileImage: profileImage,
             displayName: displayName,
-            isWatermarkRemoved: sl<SettingsRepository>().getSettings().isWatermarkRemoved,
           ),
         ),
         footer: (context) => _buildPageFooter(context, theme, font),
@@ -221,11 +225,8 @@ class PdfService {
     required Biodata biodata,
     required pw.MemoryImage? profileImage,
     required String displayName,
-    required bool isWatermarkRemoved,
   }) {
     final showPhotoOverlay = theme.backgroundImage.isNotEmpty && context.pageNumber == 1;
-    final showWatermark = !isWatermarkRemoved;
-    if (!showPhotoOverlay && !showWatermark) return pw.SizedBox();
 
     final stack = pw.Stack(
       children: [
@@ -244,7 +245,19 @@ class PdfService {
               customFont: font,
             ),
           ),
-        if (showWatermark) _buildWatermark(theme, font),
+        if (biodata.showWatermark)
+          pw.Positioned(
+            bottom: 5,
+            right: 5,
+            child: pw.Text(
+              'Made with Biodata Maker',
+              style: pw.TextStyle(
+                font: font,
+                fontSize: 8,
+                color: PdfColors.grey500,
+              ),
+            ),
+          ),
       ],
     );
 
@@ -276,28 +289,6 @@ class PdfService {
           style: pw.TextStyle(font: font, fontSize: 9, color: PdfColor.fromInt(theme.subtitleColor)),
         ),
       ),
-    );
-  }
-
-  /// Diagonal watermark, drawn on top of every page when enabled.
-  static pw.Widget _buildWatermark(ThemeConfig theme, pw.Font font) {
-    return pw.Stack(
-      children: [
-        pw.Positioned(
-          bottom: 30,
-          right: 30,
-          child: pw.Opacity(
-            opacity: 0.15,
-            child: pw.Transform.rotate(
-              angle: -math.pi / 4,
-              child: pw.Text(
-                'Created with Biodata Maker',
-                style: pw.TextStyle(fontSize: 40, font: font, color: PdfColor.fromInt(theme.textColor)),
-              ),
-            ),
-          ),
-        ),
-      ],
     );
   }
 

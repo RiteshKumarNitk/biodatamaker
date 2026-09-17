@@ -14,11 +14,11 @@
       },
       "oauth_client": [
         {
-          "client_id": "371767486234-69rnbr70jppr2ccoclt1qg5sog057n1k.apps.googleusercontent.com",
+          "client_id": "371767486234-a5qsoo6mlct6sghe4albpj6ch2btln09.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
             "package_name": "com.biodatamaker.biodata_maker",
-            "certificate_hash": "b463646e42400c643f8f55e11df758edfe2d1680"
+            "certificate_hash": "bb5b9763c38318feb6b8fa441f0818241aedb7bd"
           }
         },
         {

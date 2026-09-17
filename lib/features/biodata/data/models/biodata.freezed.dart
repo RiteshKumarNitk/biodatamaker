@@ -233,6 +233,14 @@ mixin _$Biodata {
   String get language => throw _privateConstructorUsedError;
   @HiveField(102)
   List<String> get sectionOrder => throw _privateConstructorUsedError;
+  @HiveField(103)
+  bool get showWatermark => throw _privateConstructorUsedError;
+  @HiveField(104)
+  String get headerLayoutMode => throw _privateConstructorUsedError;
+  @HiveField(105)
+  List<String> get highlightedSections => throw _privateConstructorUsedError;
+  @HiveField(106)
+  String get customSecondaryFont => throw _privateConstructorUsedError;
 
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
   @JsonKey(ignore: true)
@@ -347,7 +355,11 @@ abstract class $BiodataCopyWith<$Res> {
       @HiveField(99) String customHeaderStyle,
       @HiveField(100) String customHeadingAlignment,
       @HiveField(101) String language,
-      @HiveField(102) List<String> sectionOrder});
+      @HiveField(102) List<String> sectionOrder,
+      @HiveField(103) bool showWatermark,
+      @HiveField(104) String headerLayoutMode,
+      @HiveField(105) List<String> highlightedSections,
+      @HiveField(106) String customSecondaryFont});
 }
 
 /// @nodoc
@@ -466,6 +478,10 @@ class _$BiodataCopyWithImpl<$Res, $Val extends Biodata>
     Object? customHeadingAlignment = null,
     Object? language = null,
     Object? sectionOrder = null,
+    Object? showWatermark = null,
+    Object? headerLayoutMode = null,
+    Object? highlightedSections = null,
+    Object? customSecondaryFont = null,
   }) {
     return _then(_value.copyWith(
       id: null == id
@@ -880,6 +896,22 @@ class _$BiodataCopyWithImpl<$Res, $Val extends Biodata>
           ? _value.sectionOrder
           : sectionOrder // ignore: cast_nullable_to_non_nullable
               as List<String>,
+      showWatermark: null == showWatermark
+          ? _value.showWatermark
+          : showWatermark // ignore: cast_nullable_to_non_nullable
+              as bool,
+      headerLayoutMode: null == headerLayoutMode
+          ? _value.headerLayoutMode
+          : headerLayoutMode // ignore: cast_nullable_to_non_nullable
+              as String,
+      highlightedSections: null == highlightedSections
+          ? _value.highlightedSections
+          : highlightedSections // ignore: cast_nullable_to_non_nullable
+              as List<String>,
+      customSecondaryFont: null == customSecondaryFont
+          ? _value.customSecondaryFont
+          : customSecondaryFont // ignore: cast_nullable_to_non_nullable
+              as String,
     ) as $Val);
   }
 }
@@ -994,7 +1026,11 @@ abstract class _$$BiodataImplCopyWith<$Res> implements $BiodataCopyWith<$Res> {
       @HiveField(99) String customHeaderStyle,
       @HiveField(100) String customHeadingAlignment,
       @HiveField(101) String language,
-      @HiveField(102) List<String> sectionOrder});
+      @HiveField(102) List<String> sectionOrder,
+      @HiveField(103) bool showWatermark,
+      @HiveField(104) String headerLayoutMode,
+      @HiveField(105) List<String> highlightedSections,
+      @HiveField(106) String customSecondaryFont});
 }
 
 /// @nodoc
@@ -1111,6 +1147,10 @@ class __$$BiodataImplCopyWithImpl<$Res>
     Object? customHeadingAlignment = null,
     Object? language = null,
     Object? sectionOrder = null,
+    Object? showWatermark = null,
+    Object? headerLayoutMode = null,
+    Object? highlightedSections = null,
+    Object? customSecondaryFont = null,
   }) {
     return _then(_$BiodataImpl(
       id: null == id
@@ -1525,6 +1565,22 @@ class __$$BiodataImplCopyWithImpl<$Res>
           ? _value._sectionOrder
           : sectionOrder // ignore: cast_nullable_to_non_nullable
               as List<String>,
+      showWatermark: null == showWatermark
+          ? _value.showWatermark
+          : showWatermark // ignore: cast_nullable_to_non_nullable
+              as bool,
+      headerLayoutMode: null == headerLayoutMode
+          ? _value.headerLayoutMode
+          : headerLayoutMode // ignore: cast_nullable_to_non_nullable
+              as String,
+      highlightedSections: null == highlightedSections
+          ? _value._highlightedSections
+          : highlightedSections // ignore: cast_nullable_to_non_nullable
+              as List<String>,
+      customSecondaryFont: null == customSecondaryFont
+          ? _value.customSecondaryFont
+          : customSecondaryFont // ignore: cast_nullable_to_non_nullable
+              as String,
     ));
   }
 }
@@ -1642,11 +1698,16 @@ class _$BiodataImpl implements _Biodata {
         'contact',
         'education',
         'additional'
-      ]})
+      ],
+      @HiveField(103) this.showWatermark = false,
+      @HiveField(104) this.headerLayoutMode = 'classic',
+      @HiveField(105) final List<String> highlightedSections = const <String>[],
+      @HiveField(106) this.customSecondaryFont = ''})
       : _photos = photos,
         _customFields = customFields,
         _siblings = siblings,
-        _sectionOrder = sectionOrder;
+        _sectionOrder = sectionOrder,
+        _highlightedSections = highlightedSections;
 
   factory _$BiodataImpl.fromJson(Map<String, dynamic> json) =>
       _$$BiodataImplFromJson(json);
@@ -2091,8 +2152,32 @@ class _$BiodataImpl implements _Biodata {
   }
 
   @override
+  @JsonKey()
+  @HiveField(103)
+  final bool showWatermark;
+  @override
+  @JsonKey()
+  @HiveField(104)
+  final String headerLayoutMode;
+  final List<String> _highlightedSections;
+  @override
+  @JsonKey()
+  @HiveField(105)
+  List<String> get highlightedSections {
+    if (_highlightedSections is EqualUnmodifiableListView)
+      return _highlightedSections;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(_highlightedSections);
+  }
+
+  @override
+  @JsonKey()
+  @HiveField(106)
+  final String customSecondaryFont;
+
+  @override
   String toString() {
-    return 'Biodata(id: $id, name: $name, createdAt: $createdAt, updatedAt: $updatedAt, templateId: $templateId, isFavorite: $isFavorite, isArchived: $isArchived, isDraft: $isDraft, downloadCount: $downloadCount, fullName: $fullName, gender: $gender, dateOfBirth: $dateOfBirth, age: $age, height: $height, weight: $weight, religion: $religion, caste: $caste, subCaste: $subCaste, motherTongue: $motherTongue, maritalStatus: $maritalStatus, bloodGroup: $bloodGroup, complexion: $complexion, manglik: $manglik, horoscope: $horoscope, rashi: $rashi, nakshatra: $nakshatra, gotra: $gotra, birthPlace: $birthPlace, birthTime: $birthTime, aboutMe: $aboutMe, qualification: $qualification, college: $college, university: $university, occupation: $occupation, company: $company, business: $business, designation: $designation, annualIncome: $annualIncome, fatherName: $fatherName, fatherOccupation: $fatherOccupation, motherName: $motherName, motherOccupation: $motherOccupation, brothers: $brothers, sisters: $sisters, familyType: $familyType, familyValues: $familyValues, nativePlace: $nativePlace, diet: $diet, smoking: $smoking, drinking: $drinking, languages: $languages, hobbies: $hobbies, personality: $personality, mobile: $mobile, whatsapp: $whatsapp, email: $email, address: $address, city: $city, state: $state, country: $country, preferredAge: $preferredAge, preferredHeight: $preferredHeight, preferredEducation: $preferredEducation, preferredOccupation: $preferredOccupation, preferredReligion: $preferredReligion, preferredLocation: $preferredLocation, expectations: $expectations, photos: $photos, profilePhotoPath: $profilePhotoPath, customFields: $customFields, siblings: $siblings, grandFatherName: $grandFatherName, grandFatherOccupation: $grandFatherOccupation, grandMotherName: $grandMotherName, familyStatus: $familyStatus, familyDescription: $familyDescription, contactPerson: $contactPerson, contactPersonRelation: $contactPersonRelation, alternateNumber: $alternateNumber, pinCode: $pinCode, selectedFontId: $selectedFontId, userId: $userId, photoAlignment: $photoAlignment, headerIcon: $headerIcon, customHeadingFontSize: $customHeadingFontSize, customBodyFontSize: $customBodyFontSize, contentAlignment: $contentAlignment, showFooterLine: $showFooterLine, customFieldSpacing: $customFieldSpacing, customSectionSpacing: $customSectionSpacing, customMargin: $customMargin, customPrimaryColor: $customPrimaryColor, customBackgroundColor: $customBackgroundColor, customPhotoShape: $customPhotoShape, customPhotoSize: $customPhotoSize, showPhotoBorder: $showPhotoBorder, uppercaseHeadings: $uppercaseHeadings, boldLabels: $boldLabels, showColons: $showColons, customHeaderStyle: $customHeaderStyle, customHeadingAlignment: $customHeadingAlignment, language: $language, sectionOrder: $sectionOrder)';
+    return 'Biodata(id: $id, name: $name, createdAt: $createdAt, updatedAt: $updatedAt, templateId: $templateId, isFavorite: $isFavorite, isArchived: $isArchived, isDraft: $isDraft, downloadCount: $downloadCount, fullName: $fullName, gender: $gender, dateOfBirth: $dateOfBirth, age: $age, height: $height, weight: $weight, religion: $religion, caste: $caste, subCaste: $subCaste, motherTongue: $motherTongue, maritalStatus: $maritalStatus, bloodGroup: $bloodGroup, complexion: $complexion, manglik: $manglik, horoscope: $horoscope, rashi: $rashi, nakshatra: $nakshatra, gotra: $gotra, birthPlace: $birthPlace, birthTime: $birthTime, aboutMe: $aboutMe, qualification: $qualification, college: $college, university: $university, occupation: $occupation, company: $company, business: $business, designation: $designation, annualIncome: $annualIncome, fatherName: $fatherName, fatherOccupation: $fatherOccupation, motherName: $motherName, motherOccupation: $motherOccupation, brothers: $brothers, sisters: $sisters, familyType: $familyType, familyValues: $familyValues, nativePlace: $nativePlace, diet: $diet, smoking: $smoking, drinking: $drinking, languages: $languages, hobbies: $hobbies, personality: $personality, mobile: $mobile, whatsapp: $whatsapp, email: $email, address: $address, city: $city, state: $state, country: $country, preferredAge: $preferredAge, preferredHeight: $preferredHeight, preferredEducation: $preferredEducation, preferredOccupation: $preferredOccupation, preferredReligion: $preferredReligion, preferredLocation: $preferredLocation, expectations: $expectations, photos: $photos, profilePhotoPath: $profilePhotoPath, customFields: $customFields, siblings: $siblings, grandFatherName: $grandFatherName, grandFatherOccupation: $grandFatherOccupation, grandMotherName: $grandMotherName, familyStatus: $familyStatus, familyDescription: $familyDescription, contactPerson: $contactPerson, contactPersonRelation: $contactPersonRelation, alternateNumber: $alternateNumber, pinCode: $pinCode, selectedFontId: $selectedFontId, userId: $userId, photoAlignment: $photoAlignment, headerIcon: $headerIcon, customHeadingFontSize: $customHeadingFontSize, customBodyFontSize: $customBodyFontSize, contentAlignment: $contentAlignment, showFooterLine: $showFooterLine, customFieldSpacing: $customFieldSpacing, customSectionSpacing: $customSectionSpacing, customMargin: $customMargin, customPrimaryColor: $customPrimaryColor, customBackgroundColor: $customBackgroundColor, customPhotoShape: $customPhotoShape, customPhotoSize: $customPhotoSize, showPhotoBorder: $showPhotoBorder, uppercaseHeadings: $uppercaseHeadings, boldLabels: $boldLabels, showColons: $showColons, customHeaderStyle: $customHeaderStyle, customHeadingAlignment: $customHeadingAlignment, language: $language, sectionOrder: $sectionOrder, showWatermark: $showWatermark, headerLayoutMode: $headerLayoutMode, highlightedSections: $highlightedSections, customSecondaryFont: $customSecondaryFont)';
   }
 
   @override
@@ -2245,7 +2330,11 @@ class _$BiodataImpl implements _Biodata {
             (identical(other.customHeaderStyle, customHeaderStyle) || other.customHeaderStyle == customHeaderStyle) &&
             (identical(other.customHeadingAlignment, customHeadingAlignment) || other.customHeadingAlignment == customHeadingAlignment) &&
             (identical(other.language, language) || other.language == language) &&
-            const DeepCollectionEquality().equals(other._sectionOrder, _sectionOrder));
+            const DeepCollectionEquality().equals(other._sectionOrder, _sectionOrder) &&
+            (identical(other.showWatermark, showWatermark) || other.showWatermark == showWatermark) &&
+            (identical(other.headerLayoutMode, headerLayoutMode) || other.headerLayoutMode == headerLayoutMode) &&
+            const DeepCollectionEquality().equals(other._highlightedSections, _highlightedSections) &&
+            (identical(other.customSecondaryFont, customSecondaryFont) || other.customSecondaryFont == customSecondaryFont));
   }
 
   @JsonKey(ignore: true)
@@ -2354,7 +2443,11 @@ class _$BiodataImpl implements _Biodata {
         customHeaderStyle,
         customHeadingAlignment,
         language,
-        const DeepCollectionEquality().hash(_sectionOrder)
+        const DeepCollectionEquality().hash(_sectionOrder),
+        showWatermark,
+        headerLayoutMode,
+        const DeepCollectionEquality().hash(_highlightedSections),
+        customSecondaryFont
       ]);
 
   @JsonKey(ignore: true)
@@ -2475,7 +2568,11 @@ abstract class _Biodata implements Biodata {
       @HiveField(99) final String customHeaderStyle,
       @HiveField(100) final String customHeadingAlignment,
       @HiveField(101) final String language,
-      @HiveField(102) final List<String> sectionOrder}) = _$BiodataImpl;
+      @HiveField(102) final List<String> sectionOrder,
+      @HiveField(103) final bool showWatermark,
+      @HiveField(104) final String headerLayoutMode,
+      @HiveField(105) final List<String> highlightedSections,
+      @HiveField(106) final String customSecondaryFont}) = _$BiodataImpl;
 
   factory _Biodata.fromJson(Map<String, dynamic> json) = _$BiodataImpl.fromJson;
 
@@ -2795,6 +2892,18 @@ abstract class _Biodata implements Biodata {
   @override
   @HiveField(102)
   List<String> get sectionOrder;
+  @override
+  @HiveField(103)
+  bool get showWatermark;
+  @override
+  @HiveField(104)
+  String get headerLayoutMode;
+  @override
+  @HiveField(105)
+  List<String> get highlightedSections;
+  @override
+  @HiveField(106)
+  String get customSecondaryFont;
   @override
   @JsonKey(ignore: true)
   _$$BiodataImplCopyWith<_$BiodataImpl> get copyWith =>

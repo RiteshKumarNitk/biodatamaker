@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 
+import 'package:flutter_bloc/flutter_bloc.dart';
+
 import 'package:biodata_maker/core/i18n/strings.dart';
 import 'package:biodata_maker/core/services/service_locator.dart';
 import 'package:biodata_maker/features/biodata/data/models/biodata.dart';
+import 'package:biodata_maker/features/biodata/presentation/bloc/form_bloc.dart';
 import 'package:biodata_maker/features/templates/data/models/theme_config.dart';
 import 'package:biodata_maker/features/templates/data/repositories/template_repository.dart';
 
@@ -488,14 +491,23 @@ class _LayoutControls extends StatelessWidget {
                 icon: const Icon(Icons.settings_suggest),
                 label: Text(Strings.tr('Advanced Options & Colors')),
                 onPressed: () {
+                  final bloc = context.read<BiodataFormBloc>();
                   showModalBottomSheet(
                     context: context,
                     isScrollControlled: true,
                     backgroundColor: Colors.transparent,
-                    builder: (_) => _AdvancedLayoutBottomSheet(
-                      biodata: biodata,
-                      onUpdate: onUpdate,
-                      template: template,
+                    builder: (_) => BlocProvider.value(
+                      value: bloc,
+                      child: BlocBuilder<BiodataFormBloc, BiodataFormState>(
+                        builder: (context, state) {
+                          if (state.biodata == null) return const SizedBox();
+                          return _AdvancedLayoutBottomSheet(
+                            biodata: state.biodata!,
+                            onUpdate: onUpdate,
+                            template: template,
+                          );
+                        }
+                      ),
                     ),
                   );
                 },
@@ -508,13 +520,22 @@ class _LayoutControls extends StatelessWidget {
                 icon: const Icon(Icons.low_priority),
                 label: Text(Strings.tr('Reorder Sections')),
                 onPressed: () {
+                  final bloc = context.read<BiodataFormBloc>();
                   showModalBottomSheet(
                     context: context,
                     isScrollControlled: true,
                     backgroundColor: Colors.transparent,
-                    builder: (_) => _ReorderSectionsBottomSheet(
-                      biodata: biodata,
-                      onUpdate: onUpdate,
+                    builder: (_) => BlocProvider.value(
+                      value: bloc,
+                      child: BlocBuilder<BiodataFormBloc, BiodataFormState>(
+                        builder: (context, state) {
+                          if (state.biodata == null) return const SizedBox();
+                          return _ReorderSectionsBottomSheet(
+                            biodata: state.biodata!,
+                            onUpdate: onUpdate,
+                          );
+                        }
+                      ),
                     ),
                   );
                 },
@@ -670,13 +691,14 @@ class _AdvancedLayoutBottomSheet extends StatelessWidget {
                       onReset: () => onUpdate(biodata.copyWith(customPrimaryColor: 0)),
                       hasCustom: biodata.customPrimaryColor > 0,
                     ),
-                    _ColorPickerTile(
-                      title: 'Background Color',
-                      currentColor: biodata.customBackgroundColor > 0 ? Color(biodata.customBackgroundColor) : Color(template.backgroundColor),
-                      onColorChanged: (c) => onUpdate(biodata.copyWith(customBackgroundColor: c.value)),
-                      onReset: () => onUpdate(biodata.copyWith(customBackgroundColor: 0)),
-                      hasCustom: biodata.customBackgroundColor > 0,
-                    ),
+                    if (template.backgroundImage.isEmpty)
+                      _ColorPickerTile(
+                        title: 'Background Color',
+                        currentColor: biodata.customBackgroundColor > 0 ? Color(biodata.customBackgroundColor) : Color(template.backgroundColor),
+                        onColorChanged: (c) => onUpdate(biodata.copyWith(customBackgroundColor: c.value)),
+                        onReset: () => onUpdate(biodata.copyWith(customBackgroundColor: 0)),
+                        hasCustom: biodata.customBackgroundColor > 0,
+                      ),
                     const SizedBox(height: 16),
                     _buildSectionHeader(theme, 'Photo Settings'),
                     _buildDropdown(
@@ -736,7 +758,26 @@ class _AdvancedLayoutBottomSheet extends StatelessWidget {
                       contentPadding: EdgeInsets.zero,
                     ),
                     const SizedBox(height: 16),
-                    _buildSectionHeader(theme, 'Header Decoration'),
+                    _buildSectionHeader(theme, 'Additional Settings'),
+                    SwitchListTile(
+                      title: const Text('Show Watermark'),
+                      value: biodata.showWatermark,
+                      onChanged: (val) => onUpdate(biodata.copyWith(showWatermark: val)),
+                      contentPadding: EdgeInsets.zero,
+                    ),
+                    const SizedBox(height: 16),
+                    _buildSectionHeader(theme, 'Header Decoration & Layout'),
+                    _buildDropdown(
+                      'Header Layout Mode',
+                      biodata.headerLayoutMode.isEmpty ? 'classic' : biodata.headerLayoutMode,
+                      [
+                        const DropdownMenuItem(value: 'classic', child: Text('Classic (Photo Right)')),
+                        const DropdownMenuItem(value: 'modern', child: Text('Modern (Photo Left)')),
+                        const DropdownMenuItem(value: 'centered', child: Text('Centered (Photo Top)')),
+                      ],
+                      (val) => onUpdate(biodata.copyWith(headerLayoutMode: val)),
+                    ),
+                    const SizedBox(height: 12),
                     _buildDropdown(
                       'Section Header Style',
                       biodata.customHeaderStyle.isEmpty ? template.headerDecoration : biodata.customHeaderStyle,
@@ -746,6 +787,38 @@ class _AdvancedLayoutBottomSheet extends StatelessWidget {
                         const DropdownMenuItem(value: 'none', child: Text('Text Only')),
                       ],
                       (val) => onUpdate(biodata.copyWith(customHeaderStyle: val)),
+                    ),
+                    const SizedBox(height: 16),
+                    _buildSectionHeader(theme, 'Highlighted Sections'),
+                    Text('Select sections to highlight with a background tint:', style: theme.textTheme.bodySmall),
+                    const SizedBox(height: 8),
+                    Wrap(
+                      spacing: 8,
+                      runSpacing: 8,
+                      children: ['personal', 'family', 'contact', 'education', 'additional'].map((sectionKey) {
+                        final isHighlighted = biodata.highlightedSections.contains(sectionKey);
+                        String label = '';
+                        switch (sectionKey) {
+                          case 'personal': label = 'Personal'; break;
+                          case 'family': label = 'Family'; break;
+                          case 'contact': label = 'Contact'; break;
+                          case 'education': label = 'Education'; break;
+                          case 'additional': label = 'Additional'; break;
+                        }
+                        return FilterChip(
+                          label: Text(label),
+                          selected: isHighlighted,
+                          onSelected: (selected) {
+                            final newHighlights = List<String>.from(biodata.highlightedSections);
+                            if (selected) {
+                              newHighlights.add(sectionKey);
+                            } else {
+                              newHighlights.remove(sectionKey);
+                            }
+                            onUpdate(biodata.copyWith(highlightedSections: newHighlights));
+                          },
+                        );
+                      }).toList(),
                     ),
                     const SizedBox(height: 32),
                   ],

@@ -20,6 +20,11 @@ class FontSelectionStep extends StatelessWidget {
           ? FontConstants.defaultFontId
           : biodata.selectedFontId;
 
+  String get _currentBodyFontId =>
+      biodata.customSecondaryFont.isEmpty
+          ? _currentFontId
+          : biodata.customSecondaryFont;
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -27,28 +32,42 @@ class FontSelectionStep extends StatelessWidget {
         ? biodata.fullName
         : 'Ritesh Sharma';
 
+    return DefaultTabController(
+      length: 2,
+      child: Column(
+        children: [
+          TabBar(
+            labelColor: theme.colorScheme.primary,
+            unselectedLabelColor: theme.colorScheme.onSurfaceVariant,
+            indicatorColor: theme.colorScheme.primary,
+            tabs: const [
+              Tab(text: 'Heading Font'),
+              Tab(text: 'Body Font'),
+            ],
+          ),
+          Expanded(
+            child: TabBarView(
+              children: [
+                _buildFontList(theme, sampleName, true),
+                _buildFontList(theme, sampleName, false),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildFontList(ThemeData theme, String sampleName, bool isHeading) {
+    final currentId = isHeading ? _currentFontId : _currentBodyFontId;
+    
     return ListView(
       padding: const EdgeInsets.all(16),
       children: [
-        Text(
-          Strings.tr('Choose Font'),
-          style: theme.textTheme.titleMedium?.copyWith(
-            fontWeight: FontWeight.w600,
-          ),
-        ),
-        const SizedBox(height: 4),
-        Text(
-          Strings.tr('Select a font style for your biodata'),
-          style: theme.textTheme.bodySmall?.copyWith(
-            color: theme.colorScheme.onSurfaceVariant,
-          ),
-        ),
-        const SizedBox(height: 16),
         _FontPreview(
-          font: FontConstants.getById(_currentFontId),
+          headingFont: FontConstants.getById(_currentFontId),
+          bodyFont: FontConstants.getById(_currentBodyFontId),
           sampleText: sampleName,
-          isSelected: true,
-          onTap: () {},
         ),
         const SizedBox(height: 16),
         Card(
@@ -58,30 +77,25 @@ class FontSelectionStep extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  Strings.tr('Available Fonts'),
+                  isHeading ? Strings.tr('Select Heading Font') : Strings.tr('Select Body Font'),
                   style: theme.textTheme.titleSmall?.copyWith(
                     color: theme.colorScheme.primary,
                     fontWeight: FontWeight.w600,
                   ),
                 ),
-                const SizedBox(height: 4),
-                Text(
-                  Strings.tr('Tap a font to select it'),
-                  style: theme.textTheme.bodySmall?.copyWith(
-                    color: theme.colorScheme.onSurfaceVariant,
-                  ),
-                ),
                 const SizedBox(height: 12),
                 ...FontConstants.availableFonts.map((font) {
-                  final isSelected = font.id == _currentFontId;
+                  final isSelected = font.id == currentId;
                   return _FontOption(
                     font: font,
-                    sampleText: sampleName,
+                    sampleText: isHeading ? sampleName : 'Date of Birth : 01/01/1995',
                     isSelected: isSelected,
                     onTap: () {
-                      onUpdate(
-                        biodata.copyWith(selectedFontId: font.id),
-                      );
+                      if (isHeading) {
+                        onUpdate(biodata.copyWith(selectedFontId: font.id));
+                      } else {
+                        onUpdate(biodata.copyWith(customSecondaryFont: font.id));
+                      }
                     },
                   );
                 }),
@@ -89,7 +103,6 @@ class FontSelectionStep extends StatelessWidget {
             ),
           ),
         ),
-
         const SizedBox(height: 32),
       ],
     );
@@ -97,16 +110,14 @@ class FontSelectionStep extends StatelessWidget {
 }
 
 class _FontPreview extends StatelessWidget {
-  final BiodataFont font;
+  final BiodataFont headingFont;
+  final BiodataFont bodyFont;
   final String sampleText;
-  final bool isSelected;
-  final VoidCallback onTap;
 
   const _FontPreview({
-    required this.font,
+    required this.headingFont,
+    required this.bodyFont,
     required this.sampleText,
-    required this.isSelected,
-    required this.onTap,
   });
 
   @override
@@ -144,13 +155,26 @@ class _FontPreview extends StatelessWidget {
                     color: theme.colorScheme.primary,
                     borderRadius: BorderRadius.circular(20),
                   ),
-                  child: Text(
-                    font.name,
-                    style: TextStyle(
-                      color: theme.colorScheme.onPrimary,
-                      fontSize: 11,
-                      fontWeight: FontWeight.w600,
-                    ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      Text(
+                        headingFont.name,
+                        style: TextStyle(
+                          color: theme.colorScheme.onPrimary,
+                          fontSize: 11,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      if (headingFont.name != bodyFont.name)
+                        Text(
+                          '+ ${bodyFont.name}',
+                          style: TextStyle(
+                            color: theme.colorScheme.onPrimary.withValues(alpha: 0.8),
+                            fontSize: 9,
+                          ),
+                        ),
+                    ],
                   ),
                 ),
               ],
@@ -170,22 +194,22 @@ class _FontPreview extends StatelessWidget {
                 children: [
                   Text(
                     sampleText,
-                    style: _fontStyle(font, 28, FontWeight.bold),
+                    style: _fontStyle(headingFont, 28, FontWeight.bold),
                   ),
                   const SizedBox(height: 8),
                   Text(
                     'Date of Birth : 01/01/1995',
-                    style: _fontStyle(font, 14, FontWeight.normal),
+                    style: _fontStyle(bodyFont, 14, FontWeight.normal),
                   ),
                   const SizedBox(height: 4),
                   Text(
                     'Height : 5\'9"',
-                    style: _fontStyle(font, 14, FontWeight.normal),
+                    style: _fontStyle(bodyFont, 14, FontWeight.normal),
                   ),
                   const SizedBox(height: 4),
                   Text(
                     'Occupation : Software Engineer',
-                    style: _fontStyle(font, 14, FontWeight.normal),
+                    style: _fontStyle(bodyFont, 14, FontWeight.normal),
                   ),
                 ],
               ),

@@ -61,12 +61,18 @@ class CreateBiodataScreen extends StatelessWidget {
             listenWhen: (prev, curr) => !prev.isSaved && curr.isSaved,
             listener: (context, state) {
               if (state.biodata != null) {
-                context.go('/preview/${state.biodata!.id}');
+                context.pushReplacement('/preview/${state.biodata!.id}');
               }
             },
             child: Scaffold(
               appBar: AppBar(
                 title: const Text('Create Biodata'),
+                leading: Navigator.canPop(context) 
+                    ? null 
+                    : IconButton(
+                        icon: const Icon(Icons.arrow_back),
+                        onPressed: () => context.go('/dashboard'),
+                      ),
                 actions: [Builder(builder: (innerContext) => Row(mainAxisSize: MainAxisSize.min, children: wizardPreviewAppBarActions(innerContext)))],
               ),
               body: const MultiStepForm(),
