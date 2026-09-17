@@ -28,6 +28,8 @@ class AppTheme {
       colorScheme: colorScheme,
       textTheme: GoogleFonts.poppinsTextTheme(
         isDark ? ThemeData.dark().textTheme : ThemeData.light().textTheme,
+      ).copyWith(
+        bodyLarge: GoogleFonts.poppins(fontSize: 14),
       ),
       appBarTheme: AppBarTheme(
         centerTitle: true,
@@ -91,12 +93,16 @@ class AppTheme {
           borderSide: BorderSide(color: colorScheme.error, width: 1.5),
         ),
         contentPadding: const EdgeInsets.symmetric(
-          horizontal: 16,
-          vertical: 14,
+          horizontal: 14,
+          vertical: 12,
         ),
         labelStyle: GoogleFonts.poppins(
-          fontSize: 14,
+          fontSize: 13,
           color: colorScheme.onSurfaceVariant,
+        ),
+        hintStyle: GoogleFonts.poppins(
+          fontSize: 13,
+          color: colorScheme.onSurfaceVariant.withValues(alpha: 0.6),
         ),
       ),
       bottomNavigationBarTheme: BottomNavigationBarThemeData(
