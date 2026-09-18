@@ -1,6 +1,5 @@
 name: biodata_maker
 description: "A premium marriage biodata maker app with offline-first architecture."
-publish_to: 'none'
 version: 1.0.0+1
 
 environment:
